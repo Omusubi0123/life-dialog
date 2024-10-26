@@ -10,6 +10,7 @@ def openai_call(
     system_prompt: str,
     user_prompt: str,
     modelname: str = ModelNames.gpt_4o_mini.value,
+    json_format: bool = False,
     print_response: bool = False,
 ) -> str:
     client = OpenAI(api_key=settings.openai_api_key)
@@ -22,6 +23,7 @@ def openai_call(
     response = client.chat.completions.create(
         model=modelname,
         messages=messages,
+        response_format="json_object" if json_format else "text",
         temperature=0.7,
         top_p=0.95,
         timeout=100,
