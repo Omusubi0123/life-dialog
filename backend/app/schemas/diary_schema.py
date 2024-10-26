@@ -21,6 +21,7 @@ class Diary(BaseModel):
     day: int
     items: list[TextItem | FileItem]
     summary: Optional[str] = None
+    feedback: Optional[str] = None
 
 
 class FetchDiary(BaseModel):

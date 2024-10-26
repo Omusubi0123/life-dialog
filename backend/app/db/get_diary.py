@@ -26,20 +26,27 @@ def convert_timestamps(
     return result_list
 
 
-def sort_diary_field_timeorder(
+def get_diary_from_db(
     user_id: str,
     year: int,
     month: int,
     day: int,
-    print_diary: bool = False,
-) -> list[TextItem | FileItem]:
-    """日記を取得し、テキストとファイルを時間順に並び替え"""
+) -> dict[str, Any]:
+    """DBからユーザーの指定した日記を取得
+
+    Args:
+        user_id (str): LINEユーザーID
+        year (int): 日記の年
+        month (int): 日記の月
+        day (int): 日記の日
+
+    Returns:
+        dict[str, Any]: 日記のアイテム
+    """
     day = datetime(year, month, day).strftime("%Y-%m-%d")
-    print(f"あああ: {day}")
     collection_name = os.path.join(
         RootCollection.diary.value, user_id, DiaryCollection.diary.value
     )
-    print(f"いいい: {collection_name}")
     try:
         doc_ref = db.collection(collection_name).document(day)
     except Exception as e:
@@ -47,7 +54,26 @@ def sort_diary_field_timeorder(
         return []
     doc = doc_ref.get()
     doc_dict = doc.to_dict()
+    return doc_dict
 
+
+def sort_diary_messages_timeorder(
+    doc_dict: dict[str, Any],
+    print_diary: bool = False,
+) -> list[TextItem | FileItem]:
+    """日記のメッセージ（テキストとファイル）を時間順に並び替える
+
+    Args:
+        user_id (str): LINEユーザーID
+        year (int): 日記の年
+        month (int): 日記の月
+        day (int): 日記の日
+        print_diary (bool, optional): 日記を標準出力するかどうか. Defaults to False.
+
+    Returns:
+        list[TextItem | FileItem]: 日記のアイテム
+    """
+    """"""
     for item in [DiaryField.files.value, DiaryField.texts.value]:
         if item not in doc_dict:
             doc_dict[item] = {}
