@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-from app.db.get_diary import get_diary_from_db, sort_diary_messages_timeorder
+from app.db.get_diary import get_diary_from_db
+from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.schemas.diary_schema import Diary, FetchDiary
 from app.utils.data_enum import DiaryField
 
@@ -20,7 +21,7 @@ def fetch_diary(fetch_diary: FetchDiary) -> Diary:
         month=fetch_diary.month,
         day=fetch_diary.day,
         items=sorted_diary_items,
-        summary=doc_dict.get(DiaryField.summary.value, None),
-        feedback=doc_dict.get(DiaryField.feedback.value, None),
+        summary=doc_dict.get(DiaryField.summary.value),
+        feedback=doc_dict.get(DiaryField.feedback.value),
     )
     return diary

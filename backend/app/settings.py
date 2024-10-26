@@ -11,8 +11,9 @@ class Settings(BaseSettings):
     gcs_bucket_name: str
 
     openai_api_key: str
-    azure_cognitive_search_endpoint: str
-    azure_cognitive_search_admin_key: str
+    azure_ai_search_endpoint: str
+    azure_ai_search_admin_key: str
+    azure_ai_search_index_name: str
 
     deployment_url: str
     frontend_url: str

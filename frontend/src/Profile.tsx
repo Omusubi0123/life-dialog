@@ -1,23 +1,82 @@
 import './index.css'
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import parseDateString from './utils/parseDateString.ts';
+import { Link, useLocation } from 'react-router-dom';
 
 function Profile() {
+    const [userName, setUserName] = useState<any>(null);
+    const [userIconURL, setUserIconURL] = useState<any>(null);
+    const [userPersonality, setUserPersonality] = useState<any>(null);
+    const [userStrength, setUserStrength] = useState<any>(null);
+    const [userWeakness, setUserWeakness] = useState<any>(null);
+    const [userCreatedAt, setUserCreatedAt] = useState<any>(null);
+    const [userUpdatedAt, setUserUpdatedAt] = useState<any>(null);
+
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const diaryLink = {
+      pathname: "/",
+      search: searchParams.toString(),
+    };
+    const profileLink = {
+      pathname: "/profile",
+      search: searchParams.toString(),
+    };
+
+    const get_fetch_profile = async (user_id: string) => {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/fetch_profile`, {user_id: user_id});
+            setUserName(response.data.user_name);
+            setUserIconURL(response.data.user_icon_url);
+            setUserPersonality(response.data.personality);
+            setUserStrength(response.data.strength);
+            setUserWeakness(response.data.weakness);
+            setUserCreatedAt(parseDateString(response.data.created_at));
+            setUserUpdatedAt(parseDateString(response.data.updated_at));
+            console.log(parseDateString(response.data.created_at));
+            console.log(parseDateString(response.data.updated_at));
+            console.log()
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const user_id = urlParams.get('user_id');
+          if (user_id) {
+            await get_fetch_profile(user_id);
+          }
+        }
+    
+        fetchData();
+    }, []);
+
+
   return (
     <div className="bg-white">
         <div id="a" className="mt-10 mb-20 mx-10">
             <div className="flex items-center gap-4 mb-10">
-                <img className="w-20 h-20 rounded-full" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg" alt=""></img>
+                {userIconURL && (
+                    <img className="w-20 h-20 rounded-full" src={userIconURL} alt=""></img>
+                )}
                 <div className="font-semibold dark:text-white">
-                    <div className="text-lg text-gray-800 dark:text-white">山田吏月</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">August 2023 to October 2024</div>
-                </div>
+                    <div className="text-lg text-gray-800 dark:text-white">{userName}</div>
+                    {userCreatedAt && userUpdatedAt && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {userCreatedAt} to {userUpdatedAt}
+                            </div>
+                        )}
+                    </div>
             </div>
 
             <div className="mb-8">
             <div className="flex items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">あなたは...</h3>
             </div>
-            <p className="text-gray-800">自立心が強いという特徴もあり、一人で何かをするのも気になりません。周りの人が自分に追いついてくるまで待つのを嫌うからかもしれません。何か決断をする際に他の人の意見などを聞くことも、通常、好みません。周りの人の考え・希望・計画を無視してしまうので、この“一匹狼”的な姿勢を無神経だと感じる人もいます。</p>
+            <p className="text-gray-800">{userPersonality}</p>
             </div>
 
             <div className="mb-8">
@@ -28,7 +87,7 @@ function Profile() {
                 </svg>
                 <h3 className="text-xl font-semibold text-gray-600 dark:text-white">あなたの強み</h3>
             </div>
-            <p className="text-gray-800">独立心と論理性を強く持ち、周囲に流されることなく、自分の道を突き進むタイプです。新しいアイデアや革新的なものを好み、既存の概念にとらわれない自由な発想を持っています</p>
+            <p className="text-gray-800">{userStrength}</p>
             </div>
 
             <div className="mb-8">
@@ -38,7 +97,7 @@ function Profile() {
                 </svg>
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">あなたの弱み</h3>
             </div>
-            <p className="text-gray-800">独立心と論理性を強く持ち、周囲に流されることなく、自分の道を突き進むタイプです。新しいアイデアや革新的なものを好み、既存の概念にとらわれない自由な発想を持っています</p>
+            <p className="text-gray-800">{userWeakness}</p>
             </div>
 
         </div>
@@ -49,7 +108,7 @@ function Profile() {
               <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">LINEに戻る</span>
             </Link>
             <Link
-              to="/"
+              to={diaryLink}
               className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group"
             >
               <svg className="w-5 h-5 mb-2 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
@@ -57,7 +116,7 @@ function Profile() {
               </svg>
               <span className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500">Diary</span>
             </Link>
-            <Link to="/profile" type="button" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
+            <Link to={profileLink} type="button" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
               <svg className="w-5 h-5 mb-2 text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"/>
               </svg>
