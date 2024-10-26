@@ -1,9 +1,11 @@
-from app.utils.llm_response import openai_call
+import json
+
+from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
+from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
 from app.db.get_diary import sort_diary_field_timeorder
 from app.schemas.diary_schema import FileItem, TextItem
-from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.utils.datetime_format import get_HMS_from_datetime
+from app.utils.llm_response import openai_call
 
 
 def format_sorted_diary_to_llm_input(
@@ -26,8 +28,11 @@ def format_sorted_diary_to_llm_input(
         hour, minute, second = get_HMS_from_datetime(item.timestamp)
         entry_lines = [f"- {hour}:{minute}:{second}"]
         entry_lines.extend(
-            [f"  {key}: {value}" for key, value in item.model_dump(exclude={'timestamp'}).items()]
-        )   
+            [
+                f"  {key}: {value}"
+                for key, value in item.model_dump(exclude={"timestamp"}).items()
+            ]
+        )
         diary_entries.append("\n".join(entry_lines))
     return date + "\n".join(diary_entries)
 
@@ -48,24 +53,16 @@ def summarize_diary_by_llm(
     """
     sorted_diary_items = sort_diary_field_timeorder(user_id, year, month, day)
     diary_str = format_sorted_diary_to_llm_input(sorted_diary_items, year, month, day)
-    print(diary_str)
+
     result = openai_call(
         system_prompt,
         summarize_diary_prompt.format(diary=diary_str),
         print_response=print_response,
         json_format=True,
     )
-    
-    summary = result.get("summary", "")
-    feedback = result.get("feedback", "")
+
+    result_dict = json.loads(result)
+
+    summary = result_dict.get("summary", "")
+    feedback = result_dict.get("feedback", "")
     return summary, feedback
-
-
-if __name__ == '__main__':
-    data = {
-        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
-        "year": 2024,
-        "month": 10,
-        "day": 26
-    }
-    summarize_diary_by_llm(**data)
