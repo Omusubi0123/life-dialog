@@ -5,7 +5,6 @@ from linebot.models import QuickReply, TextSendMessage
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
 from app.db.manage_user_status import update_user_status
-from app.line_bot.user_status import get_current_status
 from app.line_bot.flex_message import create_flex_message
 from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
 from app.line_bot_settings import line_bot_api
@@ -24,31 +23,29 @@ def create_summary_feedback(event, year, month, day):
         return None, None
 
 
-def create_quick_reply(event):
+def create_quick_reply(
+    event,
+    user_status: str,
+    summary: str,
+    feedback: str,
+    answer: str,
+    year: int,
+    month: int,
+    day: int,
+):
     """返信時に送信するquick replyを作成"""
-    user_id = event.source.user_id
-    today = datetime.now()
-    status = get_current_status(event)
-    text = event.message.text
-
-    if text in QuickReplyField.get_values() and text != status:
-        update_user_status(user_id, status)
-
-    summary, feedback = create_summary_feedback(
-        event, today.year, today.month, today.day
-    )
-
-    reply_text = create_reply_text(event, feedback)
-    quick_reply_buttons = create_quick_reply_buttons(status)
-
+    reply_text = create_reply_text(event, user_status, answer, feedback)
+    quick_reply_buttons = create_quick_reply_buttons(user_status)
     quick_reply_message = TextSendMessage(
         text=reply_text, quick_reply=QuickReply(items=quick_reply_buttons)
     )
 
     messages = [quick_reply_message]
-    flex_message = create_flex_message(
-        event, status, summary, today.year, today.month, today.day
-    )
+    if user_status == QuickReplyField.view_diary.value:
+        flex_message = create_flex_message(
+            event, user_status, summary, year, month, day
+        )
+
     if flex_message:
         messages.insert(0, flex_message)
 

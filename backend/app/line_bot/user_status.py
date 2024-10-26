@@ -1,5 +1,5 @@
-from app.utils.data_enum import QuickReplyField
 from app.db.manage_user_status import get_user_status
+from app.utils.data_enum import QuickReplyField
 
 
 def get_current_status(event):
@@ -10,4 +10,3 @@ def get_current_status(event):
         return QuickReplyField.interactive_mode.value
     else:
         return get_user_status(event.source.user_id)
-

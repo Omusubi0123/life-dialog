@@ -4,13 +4,15 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
 
-def create_reply_text(event, feedback):
+def create_reply_text(event, user_status: str, answer: str, feedback: str):
     if event.message.text == QuickReplyField.diary_mode.value:
         return "【人生を記録】\n日々の生活を記録しよう！\n画像も送信できるよ♪"
     elif event.message.text == QuickReplyField.interactive_mode.value:
         return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪"
     elif event.message.text == QuickReplyField.view_diary.value:
         return feedback
+    elif user_status == QuickReplyField.interactive_mode.value:
+        return answer
     else:
         return "送信ありがとう♪"
 
