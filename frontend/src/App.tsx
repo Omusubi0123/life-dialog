@@ -3,15 +3,15 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './index.css'
 import { Datepicker } from "flowbite-react";
+import { Accordion } from "flowbite-react";
 
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <>
-
-    <div className="fixed top-0 left-0 z-50 w-full h-20 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600 space-x-4 flex items-center justify-center">
+    <div className="bg-white">
+      <div className="fixed top-0 left-0 z-50 w-full h-20 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600 space-x-4 flex items-center justify-center">
         <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -26,6 +26,63 @@ function App() {
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
+      </div>
+
+      <div className="mt-24 mb-20 mx-10 bg-white">
+        <div className="mt-20 mb-5 bg-white" id="accordion-open" data-accordion="open">
+          <Accordion>
+            <Accordion.Panel>
+              <Accordion.Title>この日は何をした日？</Accordion.Title>
+              <Accordion.Content>
+                <p className="mb-2 text-gray-500 dark:text-gray-400">日々の生活が忙しくなると、どうしても小さな楽しみやリフレッシュする時間を忘れがち。でも、こうして少し時間を取るだけで心が穏やかになるのを実感した。今後は意識して自分のための時間も大切にしていきたい。</p>
+              </Accordion.Content>
+            </Accordion.Panel>
+          </Accordion>
+        </div>
+
+
+        <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
+          <li className="mb-3 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time><span className="p-2 text-gray-600"># ご飯</span>
+            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">うどんを食べた</p>
+          </li>
+          <li className="mb-3 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:05</time><span className="p-2 text-gray-600"># ご飯</span>
+            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">朝ごはん美味しかった</p>
+            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">朝ごはん食べると、結構仕事が捗る</p>
+          </li>
+          <li className="mb-3 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:05</time><span className="p-2 text-gray-600"># 学校</span>
+            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">電磁気学の授業を受けた。少し退屈。久しぶりにガウスの発散定理とかをちゃんと勉強した気がする</p>
+          </li>
+          <li className="mb-3 ms-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {/* <div>
+                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg" alt="">
+              </div>
+              <div>
+                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg" alt="">
+              </div>
+              <div>
+                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg" alt="">
+              </div>
+              <div>
+                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg" alt="">
+              </div>
+              <div>
+                <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg" alt="">
+              </div> */}
+            </div>
+          </li>
+          <li className="mb-3 ms-4">
+            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">12:15</time><span className="p-2 text-gray-600"># 友達</span><span className="p-2 text-gray-600"># 学校</span>
+            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">あんどぅーと昼ごはん食べに行った。学食500円以下でほっけ定食食べれた。久しぶりに魚食べたかも。美味かった</p>
+          </li>
+        </ol>
       </div>
 
 
@@ -46,7 +103,7 @@ function App() {
         </div>
       </div>
 
-    </>
+    </div>
   )
 }
 
