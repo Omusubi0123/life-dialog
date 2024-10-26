@@ -58,9 +58,8 @@ def create_reply_text(event, feedback):
     else:
         return "送信ありがとう♪"
 
-def create_flex_message(event, status):
+def create_flex_message(event, status, summary):
     if event.message.text == QuickReplyField.view_diary.value:
-        # TODO: image urlを日記の画像にする
         flex_message = FlexSendMessage(
             alt_text='複数のカードメッセージ',
             contents={
@@ -70,7 +69,7 @@ def create_flex_message(event, status):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg",
+                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg", # TODO: image urlを日記の画像にする
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover"
@@ -87,7 +86,7 @@ def create_flex_message(event, status):
                                 },
                                 {
                                     "type": "text",
-                                    "text": "この日は図書館で勉強を頑張り、家に帰ってからはドラマを見た。夜ご飯は好物をお母さんが作ってくれて...",
+                                    "text": f"{summary[:47]}...",
                                     "size": "md",
                                     "wrap": True
                                 }
@@ -136,7 +135,7 @@ def create_quick_reply(event, reply_text: str):
     )
 
     messages = [quick_reply_message]
-    flex_message = create_flex_message(event, status)
+    flex_message = create_flex_message(event, status, summary)
     if flex_message:
         messages.insert(0, flex_message)
     
