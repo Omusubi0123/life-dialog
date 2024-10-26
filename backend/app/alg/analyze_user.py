@@ -32,9 +32,10 @@ def analyze_user_by_llm(
             format_sorted_diary_to_llm_input(sorted_diary_messages, year, month, day)
             + "\n\n"
         )
-        diaries_str += format_llm_response_json_to_str(
-            diary[DiaryField.summary.value], diary[DiaryField.feedback.value]
-        )
+        if (DiaryField.summary.value in diary) and (DiaryField.feedback.value in diary):
+            diaries_str += format_llm_response_json_to_str(
+                diary[DiaryField.summary.value], diary[DiaryField.feedback.value]
+            )
 
     result = openai_call(
         system_prompt,
