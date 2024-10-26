@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     user_id: str
-    display_name: str
-    picture_url: str
+    user_name: str
+    icon_url: str
     status_message: str
     created_at: datetime
     updated_at: datetime

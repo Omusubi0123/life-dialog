@@ -29,5 +29,3 @@ class FetchDiary(BaseModel):
     year: int
     month: int
     day: int
-
-

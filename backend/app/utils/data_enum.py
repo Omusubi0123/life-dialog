@@ -29,8 +29,8 @@ class UserField(Enum):
     """DBのユーザードキュメントフィールド"""
 
     user_id = "user_id"
-    display_name = "display_name"
-    picture_url = "picture_url"
+    user_name = "user_name"
+    icon_url = "icon_url"
     status_message = "status_message"
     created_at = "created_at"
     updated_at = "updated_at"
