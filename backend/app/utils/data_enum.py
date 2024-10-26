@@ -9,6 +9,14 @@ class QuickReplyField(Enum):
     diary_mode = "人生を記録する"
     day_choice = "日付選択"
 
+    @classmethod
+    def get_values(cls):
+        return [item.value for item in cls]
+
+    @classmethod
+    def get_keys(cls):
+        return [item.name for item in cls]
+
 
 class AnalyzeUserField(Enum):
     """LLMが分析したユーザーの情報"""

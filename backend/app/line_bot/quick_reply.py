@@ -10,8 +10,8 @@ from linebot.models import (
 )
 
 from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.add_diary_summary import add_diary_summary
+from app.db.manage_user_status import get_user_status, update_user_status
 from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
@@ -54,6 +54,7 @@ def create_quick_reply_buttons(status):
 
     return quick_reply_buttons
 
+
 def create_reply_text(event, feedback):
     if event.message.text == QuickReplyField.diary_mode.value:
         return "【人生を記録】\n日々の生活を記録しよう！\n画像も送信できるよ♪"
@@ -63,6 +64,7 @@ def create_reply_text(event, feedback):
         return feedback
     else:
         return "送信ありがとう♪"
+
 
 def create_flex_message(event, status, summary):
     if event.message.text == QuickReplyField.view_diary.value:
@@ -75,7 +77,7 @@ def create_flex_message(event, status, summary):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg", # TODO: image urlを日記の画像にする
+                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg",  # TODO: image urlを日記の画像にする
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
@@ -124,13 +126,15 @@ def create_flex_message(event, status, summary):
     return flex_message
 
 
-def create_quick_reply(event, reply_text: str):
+def create_quick_reply(event):
     user_id = event.source.user_id
     today = datetime.now()
-    
-    summary, feedback = summarize_diary_by_llm(user_id, today.year, today.month, today.day)
+
+    summary, feedback = summarize_diary_by_llm(
+        user_id, today.year, today.month, today.day
+    )
     add_diary_summary(user_id, summary, feedback, today.year, today.month, today.day)
-    
+
     status = get_current_status(event)
     update_user_status(user_id, status)
     reply_text = create_reply_text(event, feedback)
@@ -144,9 +148,5 @@ def create_quick_reply(event, reply_text: str):
     flex_message = create_flex_message(event, status, summary)
     if flex_message:
         messages.insert(0, flex_message)
-    
-    line_bot_api.reply_message(
-        event.reply_token,
-        messages
-    )
 
+    line_bot_api.reply_message(event.reply_token, messages)
