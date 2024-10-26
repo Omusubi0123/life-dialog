@@ -9,6 +9,7 @@ from linebot.models import (
     TextSendMessage,
 )
 
+from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.add_diary_summary import add_diary_summary
 from app.line_bot_settings import line_bot_api
@@ -47,14 +48,12 @@ def create_quick_reply_buttons(status):
 
     return quick_reply_buttons
 
-def create_reply_text(event):
+def create_reply_text(event, feedback):
     if event.message.text == QuickReplyField.diary_mode.value:
         return "【人生を記録】\n日々の生活を記録しよう！\n画像も送信できるよ♪"
     elif event.message.text == QuickReplyField.interactive_mode.value:
         return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪"
     elif event.message.text == QuickReplyField.view_diary.value:
-        today = datetime.now()
-        _, feedback = add_diary_summary(event.source.user_id, today.year, today.month, today.day)
         return feedback
     else:
         return "送信ありがとう♪"
@@ -122,9 +121,14 @@ def create_flex_message(event, status):
 
 def create_quick_reply(event, reply_text: str):
     user_id = event.source.user_id
+    today = datetime.now()
+    
+    summary, feedback = summarize_diary_by_llm(user_id, today.year, today.month, today.day)
+    add_diary_summary(user_id, summary, feedback, today.year, today.month, today.day)
+    
     status = get_current_status(event)
     update_user_status(user_id, status)
-    reply_text = create_reply_text(event)
+    reply_text = create_reply_text(event, feedback)
     quick_reply_buttons = create_quick_reply_buttons(status)
 
     quick_reply_message = TextSendMessage(
@@ -140,5 +144,4 @@ def create_quick_reply(event, reply_text: str):
         event.reply_token,
         messages
     )
-
 
