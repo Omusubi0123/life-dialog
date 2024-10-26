@@ -23,11 +23,12 @@ def openai_call(
     response = client.chat.completions.create(
         model=modelname,
         messages=messages,
-        response_format="json_object" if json_format else "text",
+        response_format={"type": "json_object" if json_format else "text"},
         temperature=0.7,
         top_p=0.95,
         timeout=100,
     )
+    print(response)
     
     if print_response:
         print(response.choices[0].message.content)

@@ -1,7 +1,7 @@
 from app.utils.llm_response import openai_call
 from app.db.get_diary import sort_diary_field_timeorder
 from app.schemas.diary_schema import FileItem, TextItem
-from app.alg.prompt.system_prompt import SYSTEM_PROMPT
+from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
 from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.utils.datetime_format import get_HMS_from_datetime
 
@@ -37,7 +37,7 @@ def summarize_diary_by_llm(
     year: int,
     month: int,
     day: int,
-    system_prompt: str = SYSTEM_PROMPT,
+    system_prompt: str = SYSTEM_PROMPT_JSON,
     summarize_diary_prompt: str = SUMMARIZE_DIARY_PROMPT,
     print_response: bool = True,
 ):
@@ -53,6 +53,7 @@ def summarize_diary_by_llm(
         system_prompt,
         summarize_diary_prompt.format(diary=diary_str),
         print_response=print_response,
+        json_format=True,
     )
     return summary
 
