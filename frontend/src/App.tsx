@@ -8,24 +8,32 @@ import { useEffect, useState } from 'react';
 function App() {
   const [data, setData] = useState<any>(null);
 
+  const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
+    try {
+      const requestBody = {
+        user_id: user_id,
+        year: year,
+        month: month,
+        day: day,
+      };
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
+      return response.data;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const requestBody = {
-          "user_id": "Uefd3135357f2b4550eb07d5a903fb9bb",
-          "year": 2024,
-          "month": 10,
-          "day": 26
-        };
-      
-        console.log(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-        setData(response.data);
-        console.log(data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
+      const user_id = "";
+      const year = 2024;
+      const month = 10;
+      const day = 26;
+
+      const diaryData = await post_fetch_diary(user_id, year, month, day);
+      setData(diaryData);
+      console.log(diaryData);
+    }
 
     fetchData();
   }, []);
