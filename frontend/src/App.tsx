@@ -4,6 +4,7 @@ import { Accordion } from "flowbite-react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import getTimeFromTimestamp from './utils/getTimeFromTimestamp.ts';
 
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
       setItems(response.data);
       setFeedback(response.data.feedback);
+      console.log(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -40,6 +42,7 @@ function App() {
 
   type TextItem = {
     text: string;
+    timestamp: string;
   };
   
   type FileItem = {
@@ -228,11 +231,13 @@ function App() {
               items.items.map((item: TextItem | FileItem, index: number) => (
               <li key={index} className="mb-3 ms-4">
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time>
-                {"text" in item && (
-                  <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
-                    {item.text}
-                  </p>
+                {"text" in item && "timestamp" in item && (
+                  <>
+                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimestamp(item.timestamp)}</time>
+                    <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                      {item.text}
+                    </p>
+                  </>
                 )}
                 {"url" in item && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
