@@ -12,13 +12,14 @@ function App() {
     const fetchData = async () => {
       try {
         const requestBody = {
-          "user_id": "string",
-          "year": 0,
-          "month": 0,
-          "day": 0
+          "user_id": "Uefd3135357f2b4550eb07d5a903fb9bb",
+          "year": 2024,
+          "month": 10,
+          "day": 26
         };
-
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
+      
+        console.log(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`);
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
         setData(response.data);
         console.log(data);
       } catch (err) {
