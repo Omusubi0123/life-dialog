@@ -1,9 +1,10 @@
 import requests
 
 from app.db.add_user import add_user_document
-from app.db.make_diary import add_user_dairy_collection
+from app.db.make_diary_collection import add_user_dairy_collection
 from app.settings import Settings
 from app.utils.timestamp_format import timestamp_md_to_datetime
+from app.utils.data_enum import UserField
 
 settings = Settings()
 channel_access_token = settings.channel_access_token
@@ -24,9 +25,9 @@ def handle_follow_event(event):
         print("Success:", response.json())
         link_token = response.json()["linkToken"]
         user_doc_field = {
-            "user_id": user_id,
-            "timestamp": timestamp,
-            "linkToken": link_token,
+            UserField.user_id.value: user_id,
+            UserField.created_at.value: timestamp,
+            UserField.linkToken.value: link_token,
         }
         add_user_document(user_id, user_doc_field)
         add_user_dairy_collection(user_id, timestamp)
