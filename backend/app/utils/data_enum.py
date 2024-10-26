@@ -40,26 +40,3 @@ class FileField(Enum):
     url = "url"
     mediatype = "mediatype"
     timestamp = "timestamp"
-
-
-class User(BaseModel):
-    user_id: int
-    name: str
-    age: int
-
-
-class Text(BaseModel):
-    text: str
-    time: datetime
-
-
-class File(BaseModel):
-    url: str
-    time: datetime
-
-
-class Diary(BaseModel):
-    date: datetime
-    summary: str
-    texts: dict[str, Text]
-    files: dict[str, File]

@@ -2,7 +2,7 @@ from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
 from app.db.diary import update_doc_field
-from app.handlers.create_quick_reply import create_quick_reply
+from app.line_bot.quick_reply import create_quick_reply
 from app.settings import Settings
 from backend.app.utils.media_enum import MediaType
 

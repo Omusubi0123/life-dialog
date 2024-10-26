@@ -10,11 +10,14 @@ from linebot.models import (
     VideoMessage,
 )
 
+from app.handlers.follow_handlers import handle_follow_event
+from app.handlers.message_handlers import handle_media_message, handle_text_message
 from app.settings import settings
 
 line_bot_router = APIRouter()
 
 handler = WebhookHandler(settings.channel_secret)
+
 
 @line_bot_router.post("/callback")
 async def callback(request: Request):
@@ -28,7 +31,9 @@ async def callback(request: Request):
 
     return {"message": "OK"}
 
+
 handler.add(MessageEvent, message=TextMessage)(handle_text_message)
 handler.add(MessageEvent, message=ImageMessage)(handle_media_message)
 handler.add(MessageEvent, message=VideoMessage)(handle_media_message)
 handler.add(MessageEvent, message=AudioMessage)(handle_media_message)
+handler.add(FollowEvent)(handle_follow_event)

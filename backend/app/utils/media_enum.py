@@ -1,4 +1,3 @@
-import os
 from enum import Enum
 
 
@@ -24,4 +23,3 @@ class MediaExtension(Enum):
     IMAGE = "png"
     VIDEO = "mp4"
     AUDIO = "mp3"
-

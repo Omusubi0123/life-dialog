@@ -9,8 +9,8 @@ from linebot.models import (
 
 from app.db.user import get_user_status, update_user_status
 from app.line_bot_settings import line_bot_api
-from app.utils.data_enum import QuickReplyField
 from app.settings import settings
+from app.utils.data_enum import QuickReplyField
 
 
 def create_flex_message(user_id: str):
