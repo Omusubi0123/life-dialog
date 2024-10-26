@@ -10,6 +10,7 @@ def openai_call(
     system_prompt: str,
     user_prompt: str,
     modelname: str = ModelNames.gpt_4o_mini.value,
+    print_response: bool = False,
 ) -> str:
     client = OpenAI(api_key=settings.openai_api_key)
 
@@ -25,5 +26,8 @@ def openai_call(
         top_p=0.95,
         timeout=100,
     )
+    
+    if print_response:
+        print(response.choices[0].message.content)
 
     return response.choices[0].message.content

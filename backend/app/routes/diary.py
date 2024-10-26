@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.db.get_diary import sort_diary_field_timeorder
-from app.schemas.diary_schema import Diary, FetchDiary, FileItem, TextItem
+from app.schemas.diary_schema import Diary, FetchDiary
 
 diary_router = APIRouter()
 
