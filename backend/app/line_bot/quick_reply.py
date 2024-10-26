@@ -25,6 +25,16 @@ def get_current_status(event):
         return QuickReplyField.interactive_mode.value
     else:
         return get_user_status(event.source.user_id)
+    
+def create_summary_feedback(event, year, month, day):
+  user_id = event.source.user_id
+
+  if event.message.text == QuickReplyField.view_diary.value:
+    summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
+    add_diary_summary(user_id, summary, feedback, year, month, day)
+    return summary, feedback
+  else:
+      return None, None
 
 
 def create_quick_reply_buttons(status):
@@ -83,7 +93,8 @@ def create_flex_message(event, status, summary, year, month, day):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": get_diary_random_image(event.source.user_id, year, month, day),
+                            # "url": get_diary_random_image(event.source.user_id, year, month, day),
+                            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/1200px-Cat_August_2010-4.jpg",
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
@@ -136,11 +147,11 @@ def create_quick_reply(event, reply_text: str):
     user_id = event.source.user_id
     today = datetime.now()
     
-    summary, feedback = summarize_diary_by_llm(user_id, today.year, today.month, today.day)
-    add_diary_summary(user_id, summary, feedback, today.year, today.month, today.day)
-    
     status = get_current_status(event)
     update_user_status(user_id, status)
+
+    summary, feedback = create_summary_feedback(event, today.year, today.month, today.day)
+
     reply_text = create_reply_text(event, feedback)
     quick_reply_buttons = create_quick_reply_buttons(status)
 
