@@ -1,1 +1,14 @@
-SUMMARIZE_DIARY_PROMPT = "What did you do today? How did you feel? What did you learn? What are you grateful for? What are you looking forward to tomorrow?"
+SUMMARIZE_DIARY_PROMPT = """
+ユーザーの本日の日記が時間と入力内容ごとに整理されて与えられます。
+
+与えられた文章から、
+- ストーリー形式でまとめた本日の出来事
+- 本日の出来事に対するあなたの感想やアドバイス
+の2つを生成してください。
+
+Input:
+- 本日の日記の内容
+
+Output:
+
+"""
