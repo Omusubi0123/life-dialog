@@ -4,7 +4,6 @@ import { Accordion } from "flowbite-react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import getTimeFromTimestamp from './utils/getTimeFromTimeStamp.ts';
 
 
 function App() {
@@ -33,9 +32,7 @@ function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      setItems(response.data);
-      setFeedback(response.data.feedback);
-      console.log(response.data);
+      setData(response.data);
     } catch (err) {
       setItems([]);
     }
@@ -43,7 +40,6 @@ function App() {
 
   type TextItem = {
     text: string;
-    timestamp: string;
   };
   
   type FileItem = {
