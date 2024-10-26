@@ -18,11 +18,22 @@ class RootCollection(Enum):
     diary = "Diary"
 
 
+class UserField(Enum):
+    user_id = "user_id"
+    display_name = "display_name"
+    picture_url = "picture_url"
+    status_message = "status_message"
+    created_at = "created_at"
+    updated_at = "updated_at"
+    linkToken = "linkToken"
+
+
 class DiaryCollection(Enum):
     diary = "diary"
 
 
 class DiaryField(Enum):
+    diary_id = "diary_id"
     date = "date"
     summary = "summary"
     feedback = "feedback"
