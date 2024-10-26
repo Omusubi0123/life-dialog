@@ -12,22 +12,63 @@ from app.utils.data_enum import (
     TextField,
 )
 from app.utils.media_enum import MediaType
-from app.utils.timestamp_format import (
-    firestore_timestamp_to_datetime,
-    timestamp_md_to_datetime,
-)
+from app.utils.timestamp_format import timestamp_md_to_datetime
 
 
-def add_user_dairy_collection(
+def update_doc_field(
     user_id: str,
-    timestamp: datetime,
-):
-    """ユーザーの日記コレクション(diary)を作成し、初日の日記ドキュメントを作成"""
+    message_id: str,
+    data: str,
+    mediatype: MediaType,
+    timestamp: str,
+) -> str:
+    """日記ドキュメントにテキストまたはファイルURLを追加"""
+    timestamp = timestamp_md_to_datetime(timestamp)
     today = timestamp.strftime("%Y-%m-%d")
-    diary_collection = (
-        db.collection(RootCollection.diary.value)
-        .document(user_id)
-        .collection(DiaryCollection.diary.value)
+
+    collection_name = os.path.join(
+        RootCollection.diary.value, user_id, DiaryCollection.diary.value
     )
-    diary_collection.document(today).set({DiaryField.date.value: today})
-    print(f"Collection created: user: {user_id}")
+
+    doc_ref = db.collection(collection_name).document(today)
+    doc = doc_ref.get()
+
+    url = ""
+    if mediatype == MediaType.TEXT.value:
+        field_type = DiaryField.texts.value
+        doc_data = {
+            DiaryField.texts.value: {
+                message_id: {
+                    TextField.text.value: data,
+                    TextField.timestamp.value: timestamp,
+                },
+            },
+        }
+    else:
+        field_type = DiaryField.files.value
+        url = upload_to_gcs(f"{user_id}_{timestamp}", data.content, mediatype)
+        doc_data = {
+            DiaryField.files.value: {
+                message_id: {
+                    FileField.url.value: url,
+                    FileField.mediatype.value: mediatype,
+                    FileField.timestamp.value: timestamp,
+                },
+            },
+        }
+
+    if doc.exists:
+        doc_dict = doc.to_dict()
+        if field_type in doc_dict:
+            doc_dict[DiaryField[field_type].value].update(
+                doc_data[DiaryField[field_type].value]
+            )
+        else:
+            doc_dict.update(doc_data)
+        doc_ref.update(doc_dict)
+        print(f"Document updated: {doc_dict}")
+    else:
+        doc_data[DiaryField.date.value] = today
+        doc_ref.set(doc_data)
+        print(f"Document created: {doc_data}")
+    return data if mediatype == MediaType.TEXT.value else url
