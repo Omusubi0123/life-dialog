@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from typing import Any
 
-from app.alg.db_storage import upload_to_gcs
+from app.db.upload_media import upload_media_to_gcs
 from app.gcp_settings import db
 from app.utils.data_enum import (
     DiaryCollection,
