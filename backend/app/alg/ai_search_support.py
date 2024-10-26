@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
@@ -19,8 +20,9 @@ from azure.search.documents.indexes.models import (
 from azure.search.documents.models import Vector
 from openai import OpenAI
 
-from app.settings import Settings
+from app.utils.data_enum import DiaryField, UserField
 from app.utils.modelname import ModelNames
+from app.settings import Settings
 
 
 def create_index(
@@ -45,9 +47,16 @@ def create_index(
         AzureKeyCredential(settings.azure_ai_search_api_key),
     )
     fields = [
-        SimpleField(name="id", type=SearchFieldDataType.String, key=True),
+        SimpleField(name=DiaryField.diary_id.value, type=SearchFieldDataType.String, key=True),
         SearchableField(
-            name="title",
+            name=UserField.user_id.value,
+            type=SearchFieldDataType.String,
+            searchable=True,
+            retrievable=True,
+            analyzer_name="ja.microsoft",
+        ),
+        SearchableField(
+            name=DiaryField.date.value,
             type=SearchFieldDataType.String,
             searchable=True,
             retrievable=True,
@@ -83,9 +92,9 @@ def create_index(
     semantic_config = SemanticConfiguration(
         name="my-semantic-config",
         prioritized_fields=PrioritizedFields(
-            title_field=SemanticField(field_name="title"),
+            title_field=SemanticField(field_name=DiaryField.date.value),
             prioritized_content_fields=[SemanticField(field_name="content")],
-            prioritized_keywords_fields=[],
+            prioritized_keywords_fields=[UserField.user_id.value],
         ),
     )
 
@@ -119,7 +128,11 @@ def delete_index(index_name: str, settings: Settings):
     return result
 
 
-def generate_embeddings(client: OpenAI, text: str, model: str):
+def generate_embedding(
+    client: OpenAI, 
+    text: str, 
+    model: str = ModelNames.text_embedding_3_small.value
+):
     """embeddingを行う
 
     Args:
@@ -129,7 +142,7 @@ def generate_embeddings(client: OpenAI, text: str, model: str):
     """
     text = text.replace("\n", " ")
     response = client.embeddings.create(
-        input=text, model=model  # text-embedding-ada-002 のデプロイ名
+        input=text, model=model
     )
     return response.data[0].embedding
 
@@ -170,7 +183,9 @@ def create_index_documents(
         json.dump(documents, f, ensure_ascii=False, indent=4)
 
 
-def upload_documents(
+def upload_diary(
+    user_id: str,
+    doc_dict: dict[str, Any],
     index_name: str, doc_path: str, settings: Settings, batch_size: int = 100
 ):
     """Indexにドキュメントをアップロード
