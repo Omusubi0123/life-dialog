@@ -3,13 +3,13 @@ import json
 from app.alg.format_diary_for_llm import format_sorted_diary_to_llm_input
 from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_diary import get_diary_from_db
+from app.db.get_diary import get_all_diary_from_db
 from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.utils.data_enum import DiaryField
 from app.utils.llm_response import openai_call
 
 
-def analyze_personality_by_llm(
+def analyze_user_by_llm(
     user_id: str,
     system_prompt: str = SYSTEM_PROMPT_JSON,
     summarize_diary_prompt: str = SUMMARIZE_DIARY_PROMPT,
@@ -20,13 +20,17 @@ def analyze_personality_by_llm(
     Returns:
         LLMによる日記の要約
     """
-    doc_dict = get_diary_from_db(user_id, year, month, day)
-    sorted_diary_items = sort_diary_messages_timeorder(doc_dict)
-    diary_str = format_sorted_diary_to_llm_input(sorted_diary_items, year, month, day)
+    diary_list = get_all_diary_from_db(user_id)
+    diaries_str = ""
+    for diary in diary_list:
+        year, month, day = diary[DiaryField.date.value].split("-")
+        diaries_str += (
+            format_sorted_diary_to_llm_input(diary, year, month, day) + "\n\n"
+        )
 
     result = openai_call(
         system_prompt,
-        summarize_diary_prompt.format(diary=diary_str),
+        summarize_diary_prompt.format(diaries=diaries_str),
         print_response=print_response,
         json_format=True,
     )
