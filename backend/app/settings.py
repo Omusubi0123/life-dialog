@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     firebase_project_id: str
     gcs_bucket_name: str
 
+    openai_api_key: str
+    azure_cognitive_search_endpoint: str
+    azure_cognitive_search_admin_key: str
+
     deployment_url: str
     frontend_url: str
 

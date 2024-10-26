@@ -7,10 +7,10 @@ from linebot.models import (
     TextSendMessage,
 )
 
+from app.db.manage_user_status import get_user_status, update_user_status
 from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
-from backend.app.db.manage_user_status import get_user_status, update_user_status
 
 
 def create_flex_message(user_id: str):

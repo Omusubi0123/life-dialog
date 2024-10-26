@@ -1,10 +1,10 @@
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 
-from app.db.diary import update_doc_field
+from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
 from app.settings import Settings
-from backend.app.utils.media_enum import MediaType
+from app.utils.media_enum import MediaType
 
 settings = Settings()
 line_bot_api = LineBotApi(settings.channel_access_token)

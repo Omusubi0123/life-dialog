@@ -1,9 +1,9 @@
 import requests
 
+from app.db.add_user import add_user_document
+from app.db.make_diary import add_user_dairy_collection
 from app.settings import Settings
 from app.utils.timestamp_format import timestamp_md_to_datetime
-from backend.app.db.add_user import add_user_document
-from backend.app.db.make_diary import add_user_dairy_collection
 
 settings = Settings()
 channel_access_token = settings.channel_access_token
