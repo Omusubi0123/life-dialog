@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 
 from linebot.models import (
     DatetimePickerTemplateAction,
@@ -77,13 +78,25 @@ def create_reply_text(event, feedback):
         return "送信ありがとう♪"
     
 def get_diary_random_image(user_id, year, month, day):
-    # doc_dict = get_diary_from_db(
-    #     user_id, year, fetch_diary.month, fetch_diary.day
-    # )
-    pass
+    doc_dict = get_diary_from_db(
+        user_id, year, month, day
+    )
+    if 'files' in doc_dict and isinstance(doc_dict['files'], dict) and len(doc_dict['files']) > 0:
+        # 'mediatype'が'image'のものだけを抽出
+        image_files = [file_data['url'] for file_data in doc_dict['files'].values() if file_data['mediatype'] == 'image']
+        
+        if image_files:
+            return random.choice(image_files)
+        else:
+            return None
+    else:
+        return None
 
 
 def create_flex_message(event, status, summary, year, month, day):
+    thumbnail_image_url = get_diary_random_image(event.source.user_id, year, month, day)
+    print(thumbnail_image_url)
+
     if event.message.text == QuickReplyField.view_diary.value:
         flex_message = FlexSendMessage(
             alt_text="複数のカードメッセージ",
@@ -94,8 +107,7 @@ def create_flex_message(event, status, summary, year, month, day):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            # "url": get_diary_random_image(event.source.user_id, year, month, day),
-                            "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Cat_August_2010-4.jpg/1200px-Cat_August_2010-4.jpg",
+                            "url": thumbnail_image_url if thumbnail_image_url else "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
