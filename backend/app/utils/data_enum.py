@@ -36,6 +36,10 @@ class UserField(Enum):
     updated_at = "updated_at"
     linkToken = "linkToken"
 
+    personality = "personality"
+    strength = "strength"
+    weakness = "weakness"
+
 
 class DiaryCollection(Enum):
     """DBの日記コレクション"""

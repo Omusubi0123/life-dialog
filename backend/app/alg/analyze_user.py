@@ -50,4 +50,3 @@ def analyze_user_by_llm(
     strength = result_dict.get(AnalyzeUserField.strength.value, "")
     weekness = result_dict.get(AnalyzeUserField.weakness.value, "")
     return personality, strength, weekness
-
