@@ -3,8 +3,8 @@ import requests
 from app.db.add_user import add_user_document
 from app.db.make_diary_collection import add_user_dairy_collection
 from app.settings import Settings
-from app.utils.timestamp_format import timestamp_md_to_datetime
 from app.utils.data_enum import UserField
+from app.utils.timestamp_format import timestamp_md_to_datetime
 
 settings = Settings()
 channel_access_token = settings.channel_access_token

@@ -16,7 +16,7 @@ class QuickReplyField(Enum):
 class RootCollection(Enum):
     user = "Users"
     diary = "Diary"
-    
+
 
 class UserField(Enum):
     user_id = "user_id"

@@ -1,11 +1,11 @@
 import json
 
+from app.alg.format_diary_for_llm import format_sorted_diary_to_llm_input
 from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.alg.format_diary_for_llm import format_sorted_diary_to_llm_input
 from app.db.get_diary import get_diary_from_db, sort_diary_messages_timeorder
-from app.utils.llm_response import openai_call
 from app.utils.data_enum import DiaryField
+from app.utils.llm_response import openai_call
 
 
 def summarize_diary_by_llm(

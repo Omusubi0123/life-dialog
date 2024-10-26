@@ -29,3 +29,19 @@ def format_sorted_diary_to_llm_input(
         )
         diary_entries.append("\n".join(entry_lines))
     return date + "\n".join(diary_entries)
+
+
+def format_llm_response_json_to_str(
+    summary: str,
+    feedback: str,
+) -> str:
+    """LLMの出力を可読性の高い形式に変換する
+
+    Args:
+        summary (str): 日記の要約
+        feedback (str): フィードバック
+
+    Returns:
+        str: 可読性の高い形式の文字列
+    """
+    return f"Summary: {summary}\nFeedback: {feedback}\n"

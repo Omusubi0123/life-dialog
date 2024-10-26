@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from typing import Any
 
 from azure.core.credentials import AzureKeyCredential
@@ -20,34 +21,37 @@ from azure.search.documents.indexes.models import (
 from azure.search.documents.models import Vector
 from openai import OpenAI
 
+from app.alg.format_diary_for_llm import (
+    format_llm_response_json_to_str,
+    format_sorted_diary_to_llm_input,
+)
+from app.db.get_diary import sort_diary_messages_timeorder
+from app.settings import settings
 from app.utils.data_enum import DiaryField, UserField
 from app.utils.modelname import ModelNames
-from app.settings import Settings
+
+client = OpenAI(api_key=settings.openai_api_key)
+
+search_index_client = SearchIndexClient(
+    settings.azure_ai_search_endpoint,
+    AzureKeyCredential(settings.azure_ai_search_api_key),
+)
+
+search_client = SearchClient(
+    endpoint=settings.azure_ai_search_endpoint,
+    index_name=settings.ai_search_index_name,
+    credential=AzureKeyCredential(settings.azure_ai_search_api_key),
+)
 
 
 def create_index(
-    index_name: str,
-    settings: Settings,
-    embd_content: bool = True,
-    search_dimensions: int = 3072,
+    search_dimensions: int = 1536,
 ):
-    """Indexを作成
-
-    Args:
-        index_name (str): Index名
-        settings (Settings): 設定
-        field_category (bool, optional): category fieldを追加するか. Defaults to True.
-        embd_title (bool, optional): title(ファイルパス)をembeddingするか. Defaults to True.
-        embd_content (bool, optional): content(全文)をembeddingするか. Defaults to False.
-        embd_summary (bool, optional): summaryをembeddingするか. Defaults to False.
-        search_dimensions (int, optional): embeddingの次元数. Defaults to 3072 (text-embedding-3-largeの出力次元数).
-    """
-    search_client = SearchIndexClient(
-        settings.azure_ai_search_endpoint,
-        AzureKeyCredential(settings.azure_ai_search_api_key),
-    )
+    """AI search Indexを作成"""
     fields = [
-        SimpleField(name=DiaryField.diary_id.value, type=SearchFieldDataType.String, key=True),
+        SimpleField(
+            name=DiaryField.diary_id.value, type=SearchFieldDataType.String, key=True
+        ),
         SearchableField(
             name=UserField.user_id.value,
             type=SearchFieldDataType.String,
@@ -68,17 +72,14 @@ def create_index(
             searchable=True,
             retrievable=True,
         ),
+        SearchField(
+            name="contentVector",
+            vector_search_dimensions=search_dimensions,
+            type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
+            searchable=True,
+            vector_search_configuration="vectorConfig",
+        ),
     ]
-    if embd_content:
-        fields.append(
-            SearchField(
-                name="contentVector",
-                vector_search_dimensions=search_dimensions,
-                type=SearchFieldDataType.Collection(SearchFieldDataType.Single),
-                searchable=True,
-                vector_search_configuration="vectorConfig",
-            )
-        )
 
     vector_search = VectorSearch(
         algorithm_configurations=[
@@ -101,38 +102,30 @@ def create_index(
     semantic_settings = SemanticSettings(configurations=[semantic_config])
 
     index = SearchIndex(
-        name=index_name,
+        name=settings.ai_search_index_name,
         fields=fields,
         vector_search=vector_search,
         semantic_settings=semantic_settings,
     )
 
-    result = search_client.create_index(index)
+    result = search_index_client.create_index(index)
     print(f" <{result.name} created>")
     return result
 
 
-def delete_index(index_name: str, settings: Settings):
+def delete_index(index_name: str):
     """Indexを削除
 
     Args:
         index_name (str): Index名
         settings (Settings): 設定
     """
-    search_client = SearchIndexClient(
-        settings.azure_ai_search_endpoint,
-        AzureKeyCredential(settings.azure_ai_search_api_key),
-    )
-    result = search_client.delete_index(index_name)
+    result = search_index_client.delete_index(index_name)
     print(f" <{index_name} deleted>")
     return result
 
 
-def generate_embedding(
-    client: OpenAI, 
-    text: str, 
-    model: str = ModelNames.text_embedding_3_small.value
-):
+def generate_embedding(text: str, model: str = ModelNames.text_embedding_3_small.value):
     """embeddingを行う
 
     Args:
@@ -141,124 +134,78 @@ def generate_embedding(
         model (str): embeddingモデル名
     """
     text = text.replace("\n", " ")
-    response = client.embeddings.create(
-        input=text, model=model
-    )
+    response = client.embeddings.create(input=text, model=model)
     return response.data[0].embedding
-
-
-def create_index_documents(
-    client: OpenAI,
-    load_path: str,
-    save_path: str,
-    model: str = ModelNames.text_embedding_3_small.value,
-    embd_content: bool = True,
-):
-    """Indexに登録するドキュメントを作成
-       title(ファイルパス), content(全文)をキーに持つjsonが存在していることを前提とする
-
-    Args:
-        client (openai.OpenAI): OpenAIのクライアント
-        load_path (str): ドキュメントのjsonファイルパス
-        save_path (str): 生成したドキュメントのjsonファイルパス
-        model (str, optional): embeddingモデル名. Defaults to "text-embedding-3-large".
-        embd_title (bool, optional): titleをembeddingするか. Defaults to True.
-        embd_content (bool, optional): contentをembeddingするか. Defaults to False.
-        embd_summary (bool, optional): summaryをembeddingするか. Defaults to False.
-    """
-    with open(load_path, "r", encoding="utf-8") as f:
-        documents = json.load(f)
-
-    for i, document in enumerate(documents, start=1):
-        print(f"Processing: {i}")
-        if embd_content:
-            content = document["content"]
-            content_embeddings = generate_embeddings(client, content, model)
-            document["contentVector"] = content_embeddings
-        if i % 100 == 0:
-            with open(save_path, "w") as f:
-                json.dump(documents, f, ensure_ascii=False, indent=4)
-
-    with open(save_path, "w") as f:
-        json.dump(documents, f, ensure_ascii=False, indent=4)
 
 
 def upload_diary(
     user_id: str,
     doc_dict: dict[str, Any],
-    index_name: str, doc_path: str, settings: Settings, batch_size: int = 100
+    embd_model: str = ModelNames.text_embedding_3_small.value,
 ):
-    """Indexにドキュメントをアップロード
-
-    Args:
-        index_name (str): Index名
-        doc_path (str): ドキュメントのjsonファイルパス
-        settings: 設定
-        batch_size (int, optional): アップロードするドキュメント数のバッチサイズ. Defaults to 100.
-    """
-    search_client = SearchClient(
-        endpoint=settings.azure_ai_search_endpoint,
-        index_name=index_name,
-        credential=AzureKeyCredential(settings.azure_ai_search_api_key),
+    sorted_diary_messages = sort_diary_messages_timeorder(doc_dict)
+    diary_str = format_sorted_diary_to_llm_input(
+        sorted_diary_messages, doc_dict["year"], doc_dict["month"], doc_dict["day"]
     )
-    with open(doc_path, "r", encoding="utf-8") as f:
-        documents = json.load(f)
+    recap_str = format_llm_response_json_to_str(doc_dict)
 
-    for i in range(0, len(documents), batch_size):
-        search_client.upload_documents(documents=documents[i : i + batch_size])
-        print(f"Uploaded until {i+batch_size}/{len(documents)}")
+    date = f"{doc_dict['year']}-{doc_dict['month']}-{doc_dict['day']}"
+    content = recap_str + diary_str
+    embedding = generate_embedding(content, model=embd_model)
+
+    document = {
+        DiaryField.diary_id.value: doc_dict[DiaryField.diary_id.value],
+        UserField.user_id.value: user_id,
+        DiaryField.date.value: date,
+        "content": content,
+        "contentVector": embedding,
+    }
+
+    search_client.upload_documents([document])
 
 
 def hybrid_search(
-    client: OpenAI,
-    index_name: str,
     query: str,
-    settings: Settings,
-    vector_content: bool = True,
-    custom_embedding: list[float] | None = None,
-    model: str = "text-embedding-3-large",
-    top: int = 30,
-):
+    user_id: str,
+    top: int = 5,
+    emdb_model: str = ModelNames.text_embedding_3_small.value,
+) -> list[dict[str, Any]]:
     """Azure Hybrid Search
 
     Args:
-        client (OpenAI): OpenAIのクライアント
-        index_name (str): Index名
         query (str): 検索クエリ
-        settings: 設定
-        vector_title (bool, optional): titleをembeddingして検索するか. Defaults to True.
-        vector_summary (bool, optional): summaryをembeddingして検索するか. Defaults to False.
-        model (str, optional): embeddingモデル名. Defaults to "text-embedding-3-large".
+        user_id (str): ユーザーID
         top (int, optional): 結果取得数. Defaults to 10.
+        model (str, optional): embeddingモデル名. Defaults to "text-embedding-3-small".
 
     Returns:
         _type_: 検索結果
     """
-    credential = AzureKeyCredential(settings.azure_ai_search_api_key)
-    search_client = SearchClient(
-        endpoint=settings.azure_ai_search_endpoint,
-        index_name=index_name,
-        credential=credential,
-    )
-
-    vectors = []
-    if vector_content:
-        if not custom_embedding:
-            query_embd = generate_embeddings(client, query, model)
-        else:
-            query_embd = custom_embedding
-    if vector_content:
-        vectors.append(
-            Vector(
-                value=query_embd,
-                k=top,
-                fields="contentVector",
-            )
+    query_embedding = generate_embedding(query, model=emdb_model)
+    vectors = [
+        Vector(
+            value=query_embedding,
+            k=top,
+            fields="contentVector",
         )
+    ]
+
+    filter_condition = f"{UserField.user_id.value} eq '{user_id}'"
 
     results = search_client.search(
         search_text=query,
         vectors=vectors,
+        filter=filter_condition,
         top=top,
     )
-    return results
+
+    results_list = [
+        {
+            DiaryField.diary_id.value: result[DiaryField.diary_id.value],
+            DiaryField.date.value: result[DiaryField.date.value],
+            UserField.user_id.value: result[UserField.user_id.value],
+            "content": result["content"],
+        }
+        for result in results
+    ]
+    return results_list
