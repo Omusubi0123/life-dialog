@@ -1,6 +1,14 @@
 from fastapi import APIRouter, Request
 from linebot import WebhookHandler
 from linebot.exceptions import InvalidSignatureError
+from linebot.models import (
+    AudioMessage,
+    FollowEvent,
+    ImageMessage,
+    MessageEvent,
+    TextMessage,
+    VideoMessage,
+)
 
 from app.settings import settings
 
@@ -20,3 +28,7 @@ async def callback(request: Request):
 
     return {"message": "OK"}
 
+handler.add(MessageEvent, message=TextMessage)(handle_text_message)
+handler.add(MessageEvent, message=ImageMessage)(handle_media_message)
+handler.add(MessageEvent, message=VideoMessage)(handle_media_message)
+handler.add(MessageEvent, message=AudioMessage)(handle_media_message)
