@@ -2,7 +2,7 @@ import json
 
 from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_diary import sort_diary_field_timeorder
+from app.db.get_diary import get_diary_from_db, sort_diary_messages_timeorder
 from app.schemas.diary_schema import FileItem, TextItem
 from app.utils.datetime_format import get_HMS_from_datetime
 from app.utils.llm_response import openai_call
@@ -51,7 +51,8 @@ def summarize_diary_by_llm(
     Returns:
         LLMによる日記の要約
     """
-    sorted_diary_items = sort_diary_field_timeorder(user_id, year, month, day)
+    doc_dict = get_diary_from_db(user_id, year, month, day)
+    sorted_diary_items = sort_diary_messages_timeorder(doc_dict)
     diary_str = format_sorted_diary_to_llm_input(sorted_diary_items, year, month, day)
 
     result = openai_call(

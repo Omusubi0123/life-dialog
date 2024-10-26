@@ -57,14 +57,11 @@ def get_diary_from_db(
     return doc_dict
 
 
-def sort_diary_field_timeorder(
-    user_id: str,
-    year: int,
-    month: int,
-    day: int,
+def sort_diary_messages_timeorder(
+    doc_dict: dict[str, Any],
     print_diary: bool = False,
 ) -> list[TextItem | FileItem]:
-    """日記を取得し、テキストとファイルを時間順に並び替え
+    """日記のメッセージ（テキストとファイル）を時間順に並び替える
 
     Args:
         user_id (str): LINEユーザーID
@@ -77,8 +74,6 @@ def sort_diary_field_timeorder(
         list[TextItem | FileItem]: 日記のアイテム
     """
     """"""
-    doc_dict = get_diary_from_db(user_id, year, month, day)
-
     for item in [DiaryField.files.value, DiaryField.texts.value]:
         if item not in doc_dict:
             doc_dict[item] = {}
