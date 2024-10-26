@@ -165,8 +165,8 @@ def upload_diary(
 
 
 def hybrid_search(
-    query: str,
     user_id: str,
+    query: str,
     top: int = 5,
     emdb_model: str = ModelNames.text_embedding_3_small.value,
 ) -> list[dict[str, Any]]:

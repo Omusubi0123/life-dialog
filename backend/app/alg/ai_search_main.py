@@ -1,26 +1,23 @@
-import os
+import json
+from typing import Any
 
-import fire  # type: ignore
 from openai import OpenAI
 
 from app.alg.ai_search_support import (
     create_index,
-    create_index_documents,
     delete_index,
     hybrid_search,
-    upload_documents,
+    upload_diary,
 )
-from app.settings import settings
+from app.db.get_diary import get_diary_from_db
 
 
-def main(
-    index_name: str,
+def upload_diary_to_ai_search(
+    user_id: str,
+    diary_dict: dict[str, Any],
     create: bool = False,
     delete: bool = False,
     upload: bool = False,
-    search: bool = True,
-    load_path: str = os.path.join("data", "filesearch", "dog_use_100.json"),
-    save_path: str = os.path.join("data", "filesearch", "dog_use_vector_100.json"),
 ):
     """AI Searchのメイン処理
 
@@ -32,45 +29,38 @@ def main(
         load_path (str, optional): ドキュメントのjsonファイルパス. Defaults to os.path.join("ai_search", "data", "filesearch", "filesearch_data.json").
         save_path (str, optional): ベクトル埋め込み付きドキュメントデータのファイルパス. Defaults to os.path.join("ai_search", "data", "filesearch", "filesearch_vector.json").
     """
-    client = OpenAI(api_key=settings.openai_api_key)
-
     if create:
-        create_index(index_name, settings)
+        create_index()
     if delete:
-        delete_index(index_name, settings)
+        delete_index()
     if upload:
-        create_index_documents(
-            client, load_path, save_path, model=settings.azure_embedding_modelname
-        )
-        upload_documents(index_name, save_path, settings)
-    if search:
-        while True:
-            query = input("Q: ")
-            results = hybrid_search(
-                client,
-                index_name,
-                query,
-                settings,
-                model=settings.azure_embedding_modelname,
-            )
+        upload_diary(user_id, diary_dict)
 
-            result_dict: dict[str, list] = {
-                "id": [],
-                "title": [],
-                "search.score": [],
-                "content": [],
-            }
-            for result in results:
-                result_dict["id"].append(result["id"])
-                result_dict["title"].append(result["title"])
-                result_dict["search.score"].append(result["@search.score"])
-                result_dict["content"].append(result["content"])
-            result_str = json.dumps(result_dict, ensure_ascii=False, indent=4)
-            print(result_str)
+
+def search(user_id: str, query: str) -> list[dict[str, Any]]:
+    """AI Searchの検索処理"""
+    while True:
+        query = input("Q: ")
+        results = hybrid_search(
+            user_id,
+            query,
+        )
+        result_str = json.dumps(results, ensure_ascii=False, indent=4)
+        print(result_str)
 
 
 if __name__ == "__main__":
-    import json
+    data = {
+        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
+        "query": "10月26日には何があった?",
+        "year": 2024,
+        "month": 10,
+        "day": 26,
+    }
 
-    fire.Fire(main)
-# poetry run python src/ai_search_main.py --index_name=doc_image_retrieval
+    diary_dict = get_diary_from_db(
+        data["user_id"], data["year"], data["month"], data["day"]
+    )
+    upload_diary_to_ai_search(data["user_id"], diary_dict, create=True, upload=True)
+
+    search(data["user_id"], data["query"])
