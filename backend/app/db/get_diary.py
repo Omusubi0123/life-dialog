@@ -33,13 +33,23 @@ def sort_diary_field_timeorder(
     day: int,
     print_diary: bool = False,
 ) -> list[TextItem | FileItem]:
-    """日記を取得し、テキストとファイルを時間順に並び替え"""
+    """日記を取得し、テキストとファイルを時間順に並び替え
+
+    Args:
+        user_id (str): LINEユーザーID
+        year (int): 日記の年
+        month (int): 日記の月
+        day (int): 日記の日
+        print_diary (bool, optional): 日記を標準出力するかどうか. Defaults to False.
+
+    Returns:
+        list[TextItem | FileItem]: 日記のアイテム
+    """
+    """"""
     day = datetime(year, month, day).strftime("%Y-%m-%d")
-    print(f"あああ: {day}")
     collection_name = os.path.join(
         RootCollection.diary.value, user_id, DiaryCollection.diary.value
     )
-    print(f"いいい: {collection_name}")
     try:
         doc_ref = db.collection(collection_name).document(day)
     except Exception as e:

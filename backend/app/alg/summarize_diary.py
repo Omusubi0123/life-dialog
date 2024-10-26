@@ -56,3 +56,12 @@ def summarize_diary_by_llm(
     )
     return summary
 
+
+if __name__ == '__main__':
+    data = {
+        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
+        "year": 2024,
+        "month": 10,
+        "day": 26
+    }
+    summarize_diary_by_llm(**data)
