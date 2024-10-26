@@ -15,7 +15,7 @@ def rag_answer(
 
     answer = openai_call(
         system_prompt,
-        rag_prompt.format(query, contents_str),
+        rag_prompt.format(query=query, searched_diary=contents_str),
         print_response=True,
     )
 

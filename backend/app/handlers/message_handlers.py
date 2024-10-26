@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from linebot import LineBotApi
 from linebot.models import QuickReply, TextSendMessage
 
@@ -26,10 +28,13 @@ def handle_text_message(event):
 
     # ユーザーのステータスが変更されたらDBに保存
     user_status = get_current_status(event)
-    if text in QuickReplyField.get_values() and text != user_status:
-        update_user_status(user_id, user_status)
 
-    answer, feedback = None, None
+    # TODO: 下のif分岐の条件式がおかしい　これを入れるとエラーになる
+    # if text in QuickReplyField.get_values() and text != user_status:
+    update_user_status(user_id, user_status)
+
+    year, month, day = datetime.now().strftime("%Y-%m-%d").split("-")
+    answer, summary, feedback = None, None, None
     if text not in QuickReplyField.get_values():
         timestamp = event.timestamp
 
@@ -38,7 +43,7 @@ def handle_text_message(event):
             update_doc_field(user_id, message_id, text, MediaType.TEXT.value, timestamp)
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
-            answer = rag_answer(text)
+            answer = rag_answer(user_id, text)
             update_doc_field(
                 user_id,
                 message_id,
@@ -48,7 +53,6 @@ def handle_text_message(event):
             )
     elif text == QuickReplyField.view_diary.value:
         # 日記閲覧の場合は日記の要約・フィードバックを作成しDBに保存
-        year, month, day = get_YMD_from_datetime(timestamp)
         summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
         add_diary_summary(user_id, summary, feedback, year, month, day)
 

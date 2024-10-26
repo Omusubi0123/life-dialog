@@ -41,8 +41,6 @@ def create_quick_reply(
         flex_message = create_flex_message(
             event, user_status, summary, year, month, day
         )
-
-    if flex_message:
         messages.insert(0, flex_message)
 
     return messages
