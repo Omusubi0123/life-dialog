@@ -4,6 +4,7 @@ from typing import Any
 
 from app.gcp_settings import db
 from app.utils.data_enum import DiaryCollection, RootCollection
+from app.alg.format_diary_for_llm import format_sorted_diary_to_llm_input
 
 
 def get_diary_from_db(
@@ -23,14 +24,7 @@ def get_diary_from_db(
     Returns:
         dict[str, Any]: 日記のアイテム
     """
-    collection_name = os.path.join(
-        RootCollection.diary.value, user_id, DiaryCollection.diary.value
-    )
-    diaries = db.collection(collection_name).list_documents()
-    for diary in diaries:
-        print(diary.id)
-        print(diary.get().to_dict())
-    exit()
+
     try:
         doc_ref = db.collection(collection_name).document(day)
     except Exception as e:
@@ -41,11 +35,16 @@ def get_diary_from_db(
     return doc_dict
 
 
-if __name__ == "__main__":
-    data = {
-        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
-        "year": 2024,
-        "month": 10,
-        "day": 26,
-    }
-    get_diary_from_db(**data)
+def get_all_diary_from_db(user_id: str):
+    """DBからユーザーの全日記を取得"""
+    collection_name = os.path.join(
+        RootCollection.diary.value, user_id, DiaryCollection.diary.value
+    )
+    diaries = db.collection(collection_name).list_documents()
+    diary_list = [diary.get().to_dict() for diary in diaries]
+    
+    diaries_str = ""
+    for diary in diary_list:
+        year, month, day = diary["date"].split("-")
+        diaries_str += format_sorted_diary_to_llm_input(diary, year, month, day)
+
