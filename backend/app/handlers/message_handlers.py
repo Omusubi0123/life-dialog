@@ -33,7 +33,8 @@ def handle_text_message(event):
     # if text in QuickReplyField.get_values() and text != user_status:
     update_user_status(user_id, user_status)
 
-    year, month, day = datetime.now().strftime("%Y-%m-%d").split("-")
+    date = datetime.now()
+    year, month, day = get_YMD_from_datetime(date)
     answer, summary, feedback = None, None, None
     if text not in QuickReplyField.get_values():
         timestamp = event.timestamp
