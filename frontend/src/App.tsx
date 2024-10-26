@@ -4,7 +4,7 @@ import { Accordion } from "flowbite-react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import getTimeFromTimestamp from './utils/getTimeFromTimestamp.ts';
+import getTimeFromTimestamp from './utils/getTimeFromTimeStamp.ts';
 
 
 function App() {
