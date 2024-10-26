@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from linebot.models import (
     DatetimePickerTemplateAction,
     FlexSendMessage,
@@ -8,6 +10,7 @@ from linebot.models import (
 )
 
 from app.db.manage_user_status import get_user_status, update_user_status
+from app.db.add_diary_summary import add_diary_summary
 from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
@@ -49,8 +52,9 @@ def create_reply_text(event):
     elif event.message.text == QuickReplyField.interactive_mode.value:
         return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪"
     elif event.message.text == QuickReplyField.view_diary.value:
-        # return "この日は寝坊をしちゃったんだね。でも午後は数学の勉強を頑張れたみたいで良いじゃん！"
-        return "日記に対するLLMのフィードバック"
+        today = datetime.now()
+        _, feedback = add_diary_summary(event.source.user_id, today.year, today.month, today.day)
+        return feedback
     else:
         return "送信ありがとう♪"
 
