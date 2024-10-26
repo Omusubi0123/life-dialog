@@ -34,13 +34,13 @@ client = OpenAI(api_key=settings.openai_api_key)
 
 search_index_client = SearchIndexClient(
     settings.azure_ai_search_endpoint,
-    AzureKeyCredential(settings.azure_ai_search_api_key),
+    AzureKeyCredential(settings.azure_ai_search_admin_key),
 )
 
 search_client = SearchClient(
     endpoint=settings.azure_ai_search_endpoint,
-    index_name=settings.ai_search_index_name,
-    credential=AzureKeyCredential(settings.azure_ai_search_api_key),
+    index_name=settings.azure_ai_search_index_name,
+    credential=AzureKeyCredential(settings.azure_ai_search_admin_key),
 )
 
 
@@ -57,6 +57,7 @@ def create_index(
             type=SearchFieldDataType.String,
             searchable=True,
             retrievable=True,
+            filterable=True,
             analyzer_name="ja.microsoft",
         ),
         SearchableField(
@@ -95,14 +96,16 @@ def create_index(
         prioritized_fields=PrioritizedFields(
             title_field=SemanticField(field_name=DiaryField.date.value),
             prioritized_content_fields=[SemanticField(field_name="content")],
-            prioritized_keywords_fields=[UserField.user_id.value],
+            prioritized_keywords_fields=[
+                SemanticField(field_name=UserField.user_id.value)
+            ],
         ),
     )
 
     semantic_settings = SemanticSettings(configurations=[semantic_config])
 
     index = SearchIndex(
-        name=settings.ai_search_index_name,
+        name=settings.azure_ai_search_index_name,
         fields=fields,
         vector_search=vector_search,
         semantic_settings=semantic_settings,
@@ -144,14 +147,23 @@ def upload_diary(
     embd_model: str = ModelNames.text_embedding_3_small.value,
 ):
     sorted_diary_messages = sort_diary_messages_timeorder(doc_dict)
-    diary_str = format_sorted_diary_to_llm_input(
-        sorted_diary_messages, doc_dict["year"], doc_dict["month"], doc_dict["day"]
-    )
-    recap_str = format_llm_response_json_to_str(doc_dict)
 
-    date = f"{doc_dict['year']}-{doc_dict['month']}-{doc_dict['day']}"
+    date_object = datetime.strptime(doc_dict[DiaryField.date.value], "%Y-%m-%d")
+    year, month, day = date_object.year, date_object.month, date_object.day
+
+    diary_str = format_sorted_diary_to_llm_input(
+        sorted_diary_messages, year, month, day
+    )
+    recap_str = format_llm_response_json_to_str(
+        doc_dict[DiaryField.summary.value], doc_dict[DiaryField.feedback.value]
+    )
+
+    date = f"{year}-{month}-{day}"
     content = recap_str + diary_str
     embedding = generate_embedding(content, model=embd_model)
+
+    print(content)
+    print(embedding)
 
     document = {
         DiaryField.diary_id.value: doc_dict[DiaryField.diary_id.value],
