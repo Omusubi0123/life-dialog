@@ -1,7 +1,7 @@
 import './index.css'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import parseDateString from './utils/parseDateString';
+import parseDateString from './utils/parseDateString.ts';
 import { Link, useLocation } from 'react-router-dom';
 
 function Profile() {
