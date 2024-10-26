@@ -9,4 +9,3 @@ def add_user_document(
     """友達追加したユーザーのユーザードキュメントを作成"""
     db.collection(RootCollection.user.value).document(user_id).set(field)
     print(f"Document created: user: {user_id}, {field}")
-
