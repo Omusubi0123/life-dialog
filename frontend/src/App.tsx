@@ -10,6 +10,7 @@ import getTimeFromTimestamp from './utils/getTimeFromTimeStamp.ts';
 function App() {
   const [items, setItems] = useState<any>(null);
   const [feedback, setFeedback] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);  
@@ -36,7 +37,7 @@ function App() {
       setFeedback(response.data.feedback);
       console.log(response.data);
     } catch (err) {
-      console.log(err);
+      setItems([]);
     }
   };
 
@@ -53,17 +54,42 @@ function App() {
     const fetchData = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const user_id = urlParams.get('user_id');
-      const year = 2024;
-      const month = 10;
-      const day = 26;
-
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth() + 1;
+      const day = selectedDate.getDate();
       if (user_id) {
         await post_fetch_diary(user_id, year, month, day);
       }
     }
 
     fetchData();
-  }, []);
+  }, [selectedDate]);
+
+   const handlePreviousDay = () => {
+    setSelectedDate(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(prevDate.getDate() - 1);
+      return newDate;
+    });
+  };
+
+  const handleNextDay = () => {
+    setSelectedDate(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setDate(prevDate.getDate() + 1);
+      return newDate;
+    });
+    console.log("あいうえお");
+    console.log(items.items.length);
+  };
+
+  const handleDateChange = (newDate: Date | null) => {
+    if (newDate) {
+      setSelectedDate(newDate);
+    }
+    console.log("あいうえお");
+    console.log(items.items.length);
+  };
 
   const option = {
     "root": {
@@ -195,64 +221,70 @@ function App() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-white"> 
       <div className="fixed top-0 left-0 z-50 w-full h-20 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600 space-x-4 flex items-center justify-center">
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+        <button onClick={handlePreviousDay}  className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
           <div className="">
-            <Datepicker theme={option} showClearButton={false}/>
+            <Datepicker
+              theme={option} 
+              showClearButton={false} 
+              onChange={handleDateChange} 
+              value={selectedDate}
+            />
           </div>
-      
-        <button className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
+          
+        <button onClick={handleNextDay} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white">
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </div>
-
-      <div className="mt-24 mb-20 mx-10 bg-white">
-        <div className="mt-20 mb-5 bg-white" id="accordion-open" data-accordion="open">
-          <Accordion>
-            <Accordion.Panel>
-              <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
-              <Accordion.Content>
-                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
-              </Accordion.Content>
-            </Accordion.Panel>
-          </Accordion>
-        </div>
-
-        <ol className="relative border-s border-gray-200 dark:border-gray-700">        
-          {
-            items && items.items && items.items.length > 0 ? (
-              items.items.map((item: TextItem | FileItem, index: number) => (
+      {items && Array.isArray(items.items) && items.items.length > 0 ? (
+        <div className="mt-24 mb-20 mx-10 bg-white">
+            <div className="mt-20 mb-5 bg-white" id="accordion-open" data-accordion="open">
+            <Accordion>
+              <Accordion.Panel>
+                <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
+                <Accordion.Content>
+                  <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
+                </Accordion.Content>
+              </Accordion.Panel>
+            </Accordion>
+          </div>
+          <ol className="relative border-s border-gray-200 dark:border-gray-700">        
+            {items.items.map((item: TextItem | FileItem, index: number) => (
               <li key={index} className="mb-3 ms-4">
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                {"text" in item && "timestamp" in item && (
-                  <>
-                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimestamp(item.timestamp)}</time>
-                    <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
-                      {item.text}
-                    </p>
-                  </>
-                )}
+                  {"text" in item && "timestamp" in item && (
+                    <>
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimestamp(item.timestamp)}</time>
+                        <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                        {item.text}
+                      </p>
+                    </>
+                  )}
                 {"url" in item && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      <div>
-                          <img className="h-auto max-w-full rounded-lg" src={item.url} alt=""></img>
-                      </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <img className="h-auto max-w-full rounded-lg" src={item.url} alt=""></img>
                     </div>
+                  </div>
                 )}
               </li>
-              ))
-            ) : (
-              <p>Loading...</p> 
-          )}
-        </ol>
-      </div>
+            ))}
+          </ol>
+        </div>
+      ) : (
+        <div className="w-screen">
+          <div className="flex items-center justify-center min-h-screen mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+            この日の記録はまだありません
+          </div>
+        </div>
+      )}
       <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600">
         <div className="grid h-full max-w-lg grid-cols-3 mx-auto font-medium">
             <Link to={`https://line.me/R/ti/p/${import.meta.env.VITE_LINE_BOT_ID}`} type="button" className="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 dark:hover:bg-gray-800 group">
