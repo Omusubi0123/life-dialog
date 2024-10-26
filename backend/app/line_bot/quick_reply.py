@@ -4,21 +4,12 @@ from linebot.models import QuickReply, TextSendMessage
 
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
-from app.db.manage_user_status import get_user_status, update_user_status
+from app.db.manage_user_status import update_user_status
+from app.line_bot.user_status import get_current_status
 from app.line_bot.flex_message import create_flex_message
 from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
 from app.line_bot_settings import line_bot_api
 from app.utils.data_enum import QuickReplyField
-
-
-def get_current_status(event):
-    """現在のステータス(記録モード or 対話モード)を取得"""
-    if event.message.text == QuickReplyField.diary_mode.value:
-        return QuickReplyField.diary_mode.value
-    elif event.message.text == QuickReplyField.interactive_mode.value:
-        return QuickReplyField.interactive_mode.value
-    else:
-        return get_user_status(event.source.user_id)
 
 
 def create_summary_feedback(event, year, month, day):
