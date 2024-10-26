@@ -137,8 +137,4 @@ def create_quick_reply(event, reply_text: str):
         messages
     )
 
-    quick_reply = QuickReply(items=quick_reply_buttons)
-    line_bot_api.reply_message(
-        event.reply_token, TextSendMessage(text=reply_text, quick_reply=quick_reply)
-    )
 
