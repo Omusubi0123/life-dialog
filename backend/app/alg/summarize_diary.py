@@ -40,7 +40,7 @@ def summarize_diary_by_llm(
     system_prompt: str = SYSTEM_PROMPT_JSON,
     summarize_diary_prompt: str = SUMMARIZE_DIARY_PROMPT,
     print_response: bool = True,
-):
+) -> tuple[str, str]:
     """日記から1日の出来事の要約をLLMで生成する
 
     Returns:
@@ -49,13 +49,16 @@ def summarize_diary_by_llm(
     sorted_diary_items = sort_diary_field_timeorder(user_id, year, month, day)
     diary_str = format_sorted_diary_to_llm_input(sorted_diary_items, year, month, day)
     print(diary_str)
-    summary = openai_call(
+    result = openai_call(
         system_prompt,
         summarize_diary_prompt.format(diary=diary_str),
         print_response=print_response,
         json_format=True,
     )
-    return summary
+    
+    summary = result.get("summary", "")
+    feedback = result.get("feedback", "")
+    return summary, feedback
 
 
 if __name__ == '__main__':

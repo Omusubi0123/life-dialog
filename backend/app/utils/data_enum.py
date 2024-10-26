@@ -25,6 +25,7 @@ class DiaryCollection(Enum):
 class DiaryField(Enum):
     date = "date"
     summary = "summary"
+    feedback = "feedback"
     texts = "texts"
     files = "files"
 

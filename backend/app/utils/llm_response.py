@@ -28,7 +28,6 @@ def openai_call(
         top_p=0.95,
         timeout=100,
     )
-    print(response)
     
     if print_response:
         print(response.choices[0].message.content)
