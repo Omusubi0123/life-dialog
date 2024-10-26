@@ -1,8 +1,6 @@
 import os
 from datetime import datetime
-from typing import Any
 
-from app.alg.summarize_diary import summarize_diary_by_llm
 from app.gcp_settings import db
 from app.utils.data_enum import DiaryCollection, DiaryField, RootCollection
 

@@ -47,4 +47,3 @@ class User(BaseModel):
 
 class FetchProfile(BaseModel):
     user_id: str
-
