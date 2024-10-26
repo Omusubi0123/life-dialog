@@ -34,12 +34,15 @@ function App() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const user_id = ""; // ユーザーIDをここで指定
+      const urlParams = new URLSearchParams(window.location.search);
+      const user_id = urlParams.get('user_id');
       const year = 2024;
       const month = 10;
       const day = 26;
 
-      await post_fetch_diary(user_id, year, month, day);
+      if (user_id) {
+        await post_fetch_diary(user_id, year, month, day);
+      }
     }
 
     fetchData();
