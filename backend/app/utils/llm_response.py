@@ -6,7 +6,7 @@ from app.settings import settings
 from app.utils.modelname import ModelNames
 
 
-def cotomi_call(
+def openai_call(
     system_prompt: str,
     user_prompt: str,
     modelname: str = ModelNames.gpt_4o_mini.value,
@@ -19,7 +19,7 @@ def cotomi_call(
     ]
 
     response = client.chat.completions.create(
-        model=settings.cotomi_model,
+        model=modelname,
         messages=messages,
         temperature=0.7,
         top_p=0.95,
