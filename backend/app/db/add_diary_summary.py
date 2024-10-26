@@ -12,7 +12,7 @@ def add_diary_summary(
     year: int,
     month: int,
     day: int,
-) -> tuple[str, str]:
+):
     """指定した日付の日記の 要約 + フィードバック をDBに保存"""
     date = datetime(year, month, day).strftime("%Y-%m-%d")
     collection_name = os.path.join(
