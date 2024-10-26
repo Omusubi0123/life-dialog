@@ -1,14 +1,9 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './index.css'
 import { Datepicker } from "flowbite-react";
 import { Accordion } from "flowbite-react";
 
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <div className="bg-white">
       <div className="fixed top-0 left-0 z-50 w-full h-20 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600 space-x-4 flex items-center justify-center">
