@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import Any
 
-from app.alg.summarize_diary import summarize_diary_by_llm
 from app.gcp_settings import db
 from app.utils.data_enum import DiaryCollection, DiaryField, RootCollection
 
@@ -14,7 +13,7 @@ def add_diary_summary(
     year: int,
     month: int,
     day: int,
-) -> tuple[str, str]:
+):
     """指定した日付の日記の 要約 + フィードバック をDBに保存"""
     date = datetime(year, month, day).strftime("%Y-%m-%d")
     collection_name = os.path.join(
