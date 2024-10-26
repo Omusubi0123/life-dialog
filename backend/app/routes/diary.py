@@ -21,7 +21,7 @@ def fetch_diary(fetch_diary: FetchDiary) -> Diary:
         month=fetch_diary.month,
         day=fetch_diary.day,
         items=sorted_diary_items,
-        summary=doc_dict.get(DiaryField.summary.value, None),
-        feedback=doc_dict.get(DiaryField.feedback.value, None),
+        summary=doc_dict.get(DiaryField.summary.value),
+        feedback=doc_dict.get(DiaryField.feedback.value),
     )
     return diary

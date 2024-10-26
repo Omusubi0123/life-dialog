@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Any
 
 from app.gcp_settings import db
 from app.utils.data_enum import DiaryCollection, DiaryField, RootCollection
