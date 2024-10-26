@@ -1,6 +1,4 @@
 import os
-from datetime import datetime
-from typing import Any
 
 from app.db.upload_media import upload_media_to_gcs
 from app.gcp_settings import db
@@ -46,7 +44,7 @@ def update_doc_field(
         }
     else:
         field_type = DiaryField.files.value
-        url = upload_to_gcs(f"{user_id}_{timestamp}", data.content, mediatype)
+        url = upload_media_to_gcs(f"{user_id}_{timestamp}", data.content, mediatype)
         doc_data = {
             DiaryField.files.value: {
                 message_id: {
