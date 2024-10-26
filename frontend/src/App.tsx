@@ -4,12 +4,10 @@ import { Accordion } from "flowbite-react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import getTimeFromTimestamp from './utils/getTimeFromTimeStamp.ts';
 
 
 function App() {
-  const [items, setItems] = useState<any>(null);
-  const [feedback, setFeedback] = useState<string>('');
+  const [data, setData] = useState<any>(null);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);  
@@ -32,9 +30,7 @@ function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      setItems(response.data);
-      setFeedback(response.data.feedback);
-      console.log(response.data);
+      setData(response.data);
     } catch (err) {
       console.log(err);
     }
@@ -42,7 +38,6 @@ function App() {
 
   type TextItem = {
     text: string;
-    timestamp: string;
   };
   
   type FileItem = {
@@ -219,7 +214,7 @@ function App() {
             <Accordion.Panel>
               <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
               <Accordion.Content>
-                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
+                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">日々の生活が忙しくなると、どうしても小さな楽しみやリフレッシュする時間を忘れがち。でも、こうして少し時間を取るだけで心が穏やかになるのを実感した。今後は意識して自分のための時間も大切にしていきたい。</p>
               </Accordion.Content>
             </Accordion.Panel>
           </Accordion>
@@ -227,17 +222,15 @@ function App() {
 
         <ol className="relative border-s border-gray-200 dark:border-gray-700">        
           {
-            items && items.items && items.items.length > 0 ? (
-              items.items.map((item: TextItem | FileItem, index: number) => (
+            data && data.items && data.items.length > 0 ? (
+            data.items.map((item: TextItem | FileItem, index: number) => (
               <li key={index} className="mb-3 ms-4">
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                {"text" in item && "timestamp" in item && (
-                  <>
-                    <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimestamp(item.timestamp)}</time>
-                    <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
-                      {item.text}
-                    </p>
-                  </>
+                <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time>
+                {"text" in item && (
+                  <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                    {item.text}
+                  </p>
                 )}
                 {"url" in item && (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
