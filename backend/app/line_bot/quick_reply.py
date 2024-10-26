@@ -36,7 +36,7 @@ def create_quick_reply_buttons(status):
     quick_reply_buttons = [
         QuickReplyButton(
             action=MessageAction(label=item, text=item),
-            image_url=f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fbook_blue.png?alt=media&token=bc5dd23f-3db0-4e81-aff3-9c60aab75fb3"
+            image_url=image
         )
         for item, image in zip(quick_reply_items, images)
     ]
@@ -55,10 +55,7 @@ def create_reply_text(event):
         return "送信ありがとう♪"
 
 def create_flex_message(event, status):
-    if status == QuickReplyField.interactive_mode.value:
-        # TODO: 日記検索の場合は、探した日記をリンク付きで送信するのでflex_messageを作る必要がある
-        flex_message = None
-    elif event.message.text == QuickReplyField.view_diary.value:
+    if event.message.text == QuickReplyField.view_diary.value:
         # TODO: image urlを日記の画像にする
         flex_message = FlexSendMessage(
             alt_text='複数のカードメッセージ',
@@ -110,6 +107,9 @@ def create_flex_message(event, status):
                 ]
             }
         )
+    elif status == QuickReplyField.interactive_mode.value:
+        # TODO: 日記検索の場合は、探した日記をリンク付きで送信するのでflex_messageを作る必要がある
+        flex_message = None
     else:
         flex_message = None
     return flex_message
