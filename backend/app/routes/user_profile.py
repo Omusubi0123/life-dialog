@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.db.get_user import get_user_from_db
 from app.schemas.user_schema import FetchProfile, User
-from app.utils.data_enum import DiaryField, UserField
+from app.utils.data_enum import UserField
 
 user_router = APIRouter()
 
