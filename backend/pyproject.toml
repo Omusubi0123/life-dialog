@@ -26,6 +26,7 @@ pydantic-settings = "^2.5.2"
 psycopg2-binary = "^2.9.10"
 firebase-admin = "^6.5.0"
 google-cloud-storage = "^2.18.2"
+openai = "^1.52.2"
 
 
 [tool.poetry.group.dev.dependencies]
