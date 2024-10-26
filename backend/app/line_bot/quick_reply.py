@@ -12,8 +12,8 @@ from linebot.models import (
 
 from app.db.get_diary import get_diary_from_db
 from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.add_diary_summary import add_diary_summary
+from app.db.manage_user_status import get_user_status, update_user_status
 from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
@@ -65,6 +65,7 @@ def create_quick_reply_buttons(status):
     ]
 
     return quick_reply_buttons
+
 
 def create_reply_text(event, feedback):
     if event.message.text == QuickReplyField.diary_mode.value:
@@ -155,10 +156,9 @@ def create_flex_message(event, status, summary, year, month, day):
     return flex_message
 
 
-def create_quick_reply(event, reply_text: str):
+def create_quick_reply(event):
     user_id = event.source.user_id
     today = datetime.now()
-    
     status = get_current_status(event)
     update_user_status(user_id, status)
 
@@ -175,9 +175,5 @@ def create_quick_reply(event, reply_text: str):
     flex_message = create_flex_message(event, status, summary, today.year, today.month, today.day)
     if flex_message:
         messages.insert(0, flex_message)
-    
-    line_bot_api.reply_message(
-        event.reply_token,
-        messages
-    )
 
+    line_bot_api.reply_message(event.reply_token, messages)

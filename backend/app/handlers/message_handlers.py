@@ -4,6 +4,7 @@ from linebot.models import TextSendMessage
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
 from app.settings import Settings
+from app.utils.data_enum import QuickReplyField
 from app.utils.media_enum import MediaType
 
 settings = Settings()
@@ -15,11 +16,12 @@ def handle_text_message(event):
     user_id = event.source.user_id
     message_id = event.message.id
     text = event.message.text
-    timestamp = event.timestamp
-    reply_text = update_doc_field(
-        user_id, message_id, text, MediaType.TEXT.value, timestamp
-    )
-    create_quick_reply(event, reply_text)
+
+    if text not in QuickReplyField.get_values():
+        timestamp = event.timestamp
+        update_doc_field(user_id, message_id, text, MediaType.TEXT.value, timestamp)
+
+    create_quick_reply(event)
 
 
 def handle_media_message(event):
