@@ -7,7 +7,8 @@ import { Link } from 'react-router-dom';
 
 
 function App() {
-  const [data, setData] = useState<any>(null);
+  const [items, setItems] = useState<any>(null);
+  const [feedback, setFeedback] = useState<string>('');
 
   const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
     try {
@@ -18,10 +19,10 @@ function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      setData(response.data);
+      setItems(response.data);
+      setFeedback(response.data.feedback);
     } catch (err) {
       console.log(err);
-      return null; // エラー時にはnullを返す
     }
   };
 
@@ -203,7 +204,7 @@ function App() {
             <Accordion.Panel>
               <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
               <Accordion.Content>
-                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">日々の生活が忙しくなると、どうしても小さな楽しみやリフレッシュする時間を忘れがち。でも、こうして少し時間を取るだけで心が穏やかになるのを実感した。今後は意識して自分のための時間も大切にしていきたい。</p>
+                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
               </Accordion.Content>
             </Accordion.Panel>
           </Accordion>
@@ -211,8 +212,8 @@ function App() {
 
         <ol className="relative border-s border-gray-200 dark:border-gray-700">        
           {
-            data && data.items && data.items.length > 0 ? (
-            data.items.map((item: TextItem | FileItem, index: number) => (
+            items && items.items && items.items.length > 0 ? (
+              items.items.map((item: TextItem | FileItem, index: number) => (
               <li key={index} className="mb-3 ms-4">
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                 <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time>
