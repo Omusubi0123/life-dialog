@@ -24,7 +24,8 @@ def firestore_timestamp_to_datetime(timestamp) -> datetime:
     """Firestoreのタイムスタンプをdatetimeオブジェクトに変換する"""
     jst = timezone(timedelta(hours=+9), "JST")
     timestamp = timestamp.astimezone(jst)
-    sandard_datetime = datetime(
+
+    standard_datetime = datetime(
         timestamp.year,
         timestamp.month,
         timestamp.day,
@@ -34,4 +35,4 @@ def firestore_timestamp_to_datetime(timestamp) -> datetime:
         timestamp.microsecond,
         tzinfo=timestamp.tzinfo,
     )
-    return sandard_datetime
+    return standard_datetime
