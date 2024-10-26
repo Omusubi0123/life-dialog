@@ -12,6 +12,7 @@ from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
+
 def get_current_status(event):
     if event.message.text == QuickReplyField.diary_mode.value:
         return QuickReplyField.diary_mode.value
@@ -114,6 +115,7 @@ def create_flex_message(event, status):
         flex_message = None
     return flex_message
 
+
 def create_quick_reply(event, reply_text: str):
     user_id = event.source.user_id
     status = get_current_status(event)
@@ -122,8 +124,7 @@ def create_quick_reply(event, reply_text: str):
     quick_reply_buttons = create_quick_reply_buttons(status)
 
     quick_reply_message = TextSendMessage(
-        text=reply_text,
-        quick_reply=QuickReply(items=quick_reply_buttons)
+        text=reply_text, quick_reply=QuickReply(items=quick_reply_buttons)
     )
 
     messages = [quick_reply_message]

@@ -25,7 +25,7 @@ from app.alg.format_diary_for_llm import (
     format_llm_response_json_to_str,
     format_sorted_diary_to_llm_input,
 )
-from app.db.get_diary import sort_diary_messages_timeorder
+from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.settings import settings
 from app.utils.data_enum import DiaryField, UserField
 from app.utils.modelname import ModelNames
