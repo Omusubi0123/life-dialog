@@ -9,6 +9,7 @@ from linebot.models import (
     TextSendMessage,
 )
 
+from app.db.get_diary import get_diary_from_db
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.add_diary_summary import add_diary_summary
@@ -57,8 +58,15 @@ def create_reply_text(event, feedback):
         return feedback
     else:
         return "送信ありがとう♪"
+    
+def get_diary_random_image(user_id, year, month, day):
+    # doc_dict = get_diary_from_db(
+    #     user_id, year, fetch_diary.month, fetch_diary.day
+    # )
+    pass
 
-def create_flex_message(event, status, summary):
+
+def create_flex_message(event, status, summary, year, month, day):
     if event.message.text == QuickReplyField.view_diary.value:
         flex_message = FlexSendMessage(
             alt_text='複数のカードメッセージ',
@@ -69,7 +77,7 @@ def create_flex_message(event, status, summary):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg", # TODO: image urlを日記の画像にする
+                            "url": get_diary_random_image(event.source.user_id, year, month, day),
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover"
@@ -135,7 +143,7 @@ def create_quick_reply(event, reply_text: str):
     )
 
     messages = [quick_reply_message]
-    flex_message = create_flex_message(event, status, summary)
+    flex_message = create_flex_message(event, status, summary, today.year, today.month, today.day)
     if flex_message:
         messages.insert(0, flex_message)
     
