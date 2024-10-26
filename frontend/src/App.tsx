@@ -1,9 +1,42 @@
 import './index.css'
 import { Datepicker } from "flowbite-react";
 import { Accordion } from "flowbite-react";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 
 function App() {
+  const [data, setData] = useState<any>(null);
+
+  const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
+    try {
+      const requestBody = {
+        user_id: user_id,
+        year: year,
+        month: month,
+        day: day,
+      };
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
+      setData(response.data);
+    } catch (err) {
+      console.log(err);
+      return null; // エラー時にはnullを返す
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const user_id = ""; // ユーザーIDをここで指定
+      const year = 2024;
+      const month = 10;
+      const day = 26;
+
+      await post_fetch_diary(user_id, year, month, day);
+    }
+
+    fetchData();
+  }, []);
+
   const option = {
     "root": {
       "base": "relative",
@@ -163,8 +196,15 @@ function App() {
             </Accordion.Panel>
           </Accordion>
         </div>
-
-
+        <div className="text-gray-500">
+          {data && data.items && data.items.length > 0 ? (
+            data.items.map((item: { text: string }, index: number) => (
+              <p key={index}>{item.text}</p> // すべてのtextを表示
+            ))
+          ) : (
+            <p>Loading...</p> // データがまだない場合の表示
+          )}
+          </div>
         <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
           <li className="mb-3 ms-4">
             <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
