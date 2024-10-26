@@ -51,9 +51,3 @@ def analyze_user_by_llm(
     weekness = result_dict.get(AnalyzeUserField.weakness.value, "")
     return personality, strength, weekness
 
-
-if __name__ == "__main__":
-    data = {
-        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
-    }
-    analyze_user_by_llm(**data)
