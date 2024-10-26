@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from linebot.models import (
     DatetimePickerTemplateAction,
     FlexSendMessage,
@@ -7,7 +9,9 @@ from linebot.models import (
     TextSendMessage,
 )
 
+from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.manage_user_status import get_user_status, update_user_status
+from app.db.add_diary_summary import add_diary_summary
 from app.line_bot_settings import line_bot_api
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
@@ -44,20 +48,18 @@ def create_quick_reply_buttons(status):
 
     return quick_reply_buttons
 
-def create_reply_text(event):
+def create_reply_text(event, feedback):
     if event.message.text == QuickReplyField.diary_mode.value:
         return "【人生を記録】\n日々の生活を記録しよう！\n画像も送信できるよ♪"
     elif event.message.text == QuickReplyField.interactive_mode.value:
         return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪"
     elif event.message.text == QuickReplyField.view_diary.value:
-        # return "この日は寝坊をしちゃったんだね。でも午後は数学の勉強を頑張れたみたいで良いじゃん！"
-        return "日記に対するLLMのフィードバック"
+        return feedback
     else:
         return "送信ありがとう♪"
 
-def create_flex_message(event, status):
+def create_flex_message(event, status, summary):
     if event.message.text == QuickReplyField.view_diary.value:
-        # TODO: image urlを日記の画像にする
         flex_message = FlexSendMessage(
             alt_text='複数のカードメッセージ',
             contents={
@@ -67,7 +69,7 @@ def create_flex_message(event, status):
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg",
+                            "url": "https://page.mkgr.jp/ownedmedia/wordpress/wp-content/uploads/2023/11/image1-1.jpg", # TODO: image urlを日記の画像にする
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover"
@@ -84,7 +86,7 @@ def create_flex_message(event, status):
                                 },
                                 {
                                     "type": "text",
-                                    "text": "この日は図書館で勉強を頑張り、家に帰ってからはドラマを見た。夜ご飯は好物をお母さんが作ってくれて...",
+                                    "text": f"{summary[:47]}...",
                                     "size": "md",
                                     "wrap": True
                                 }
@@ -118,9 +120,14 @@ def create_flex_message(event, status):
 
 def create_quick_reply(event, reply_text: str):
     user_id = event.source.user_id
+    today = datetime.now()
+    
+    summary, feedback = summarize_diary_by_llm(user_id, today.year, today.month, today.day)
+    add_diary_summary(user_id, summary, feedback, today.year, today.month, today.day)
+    
     status = get_current_status(event)
     update_user_status(user_id, status)
-    reply_text = create_reply_text(event)
+    reply_text = create_reply_text(event, feedback)
     quick_reply_buttons = create_quick_reply_buttons(status)
 
     quick_reply_message = TextSendMessage(
@@ -128,7 +135,7 @@ def create_quick_reply(event, reply_text: str):
     )
 
     messages = [quick_reply_message]
-    flex_message = create_flex_message(event, status)
+    flex_message = create_flex_message(event, status, summary)
     if flex_message:
         messages.insert(0, flex_message)
     
@@ -136,5 +143,4 @@ def create_quick_reply(event, reply_text: str):
         event.reply_token,
         messages
     )
-
 
