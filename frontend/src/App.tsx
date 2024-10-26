@@ -1,9 +1,36 @@
 import './index.css'
 import { Datepicker } from "flowbite-react";
 import { Accordion } from "flowbite-react";
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 
 function App() {
+  const [data, setData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const requestBody = {
+          "user_id": "string",
+          "year": 0,
+          "month": 0,
+          "day": 0
+        };
+
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
+        setData(response.data);
+        console.log(data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+
+
   return (
     <div className="bg-white">
       <div className="fixed top-0 left-0 z-50 w-full h-20 bg-white border-t border-gray-200 dark:bg-gray-700 dark:border-gray-600 space-x-4 flex items-center justify-center">
