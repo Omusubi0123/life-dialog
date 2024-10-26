@@ -9,16 +9,13 @@ from app.utils.data_enum import DiaryField
 from app.utils.llm_response import openai_call
 
 
-def summarize_diary_by_llm(
+def analyze_personality_by_llm(
     user_id: str,
-    year: int,
-    month: int,
-    day: int,
     system_prompt: str = SYSTEM_PROMPT_JSON,
     summarize_diary_prompt: str = SUMMARIZE_DIARY_PROMPT,
     print_response: bool = True,
 ) -> tuple[str, str]:
-    """日記から1日の出来事の要約をLLMで生成する
+    """ユーザーの全日記からユーザーの性格・強み・弱みをLLMで生成する
 
     Returns:
         LLMによる日記の要約

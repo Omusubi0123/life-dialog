@@ -23,10 +23,14 @@ def get_diary_from_db(
     Returns:
         dict[str, Any]: 日記のアイテム
     """
-    day = datetime(year, month, day).strftime("%Y-%m-%d")
     collection_name = os.path.join(
         RootCollection.diary.value, user_id, DiaryCollection.diary.value
     )
+    diaries = db.collection(collection_name).list_documents()
+    for diary in diaries:
+        print(diary.id)
+        print(diary.get().to_dict())
+    exit()
     try:
         doc_ref = db.collection(collection_name).document(day)
     except Exception as e:
@@ -35,3 +39,13 @@ def get_diary_from_db(
     doc = doc_ref.get()
     doc_dict = doc.to_dict()
     return doc_dict
+
+
+if __name__ == "__main__":
+    data = {
+        "user_id": "U304753f9739f31a9191e7b4e1543e9e1",
+        "year": 2024,
+        "month": 10,
+        "day": 26,
+    }
+    get_diary_from_db(**data)
