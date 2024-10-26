@@ -22,18 +22,23 @@ def get_current_status(event):
 
 def create_quick_reply_buttons(status):
     quick_reply_items = []
+    images = []
     if status == QuickReplyField.diary_mode.value:
         quick_reply_items.append(QuickReplyField.interactive_mode.value)
+        images.append(f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fdialogue_green.png?alt=media&token=51013bcc-86c8-4bca-9da4-d627e1b6424f")
+        images.append(f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fbook_green.png?alt=media&token=0d17b006-6bf7-4070-8454-ed7c967ef4d9")
     elif status == QuickReplyField.interactive_mode.value:
         quick_reply_items.append(QuickReplyField.diary_mode.value)
+        images.append(f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fpen_blue.png?alt=media&token=0ef43729-b0c8-4c4b-9d9c-7c9371d5b1c6")
+        images.append(f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fbook_blue.png?alt=media&token=bc5dd23f-3db0-4e81-aff3-9c60aab75fb3")
     quick_reply_items.append(QuickReplyField.view_diary.value)
-    
+
     quick_reply_buttons = [
         QuickReplyButton(
             action=MessageAction(label=item, text=item),
-            image_url="https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/image%2Fdiary.png?alt=media&token=267f1791-dbd1-4095-9c1a-e39eb7ade290"
+            image_url=f"https://firebasestorage.googleapis.com/v0/b/{settings.gcs_bucket_name}/o/material%2Fbook_blue.png?alt=media&token=bc5dd23f-3db0-4e81-aff3-9c60aab75fb3"
         )
-        for item in quick_reply_items
+        for item, image in zip(quick_reply_items, images)
     ]
 
     return quick_reply_buttons
