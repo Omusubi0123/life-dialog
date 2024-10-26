@@ -24,6 +24,14 @@ function App() {
     }
   };
 
+  type TextItem = {
+    text: string;
+  };
+  
+  type FileItem = {
+    url: string;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const user_id = ""; // ユーザーIDをここで指定
@@ -196,56 +204,36 @@ function App() {
             </Accordion.Panel>
           </Accordion>
         </div>
-        <div className="text-gray-500">
-          {data && data.items && data.items.length > 0 ? (
-            data.items.map((item: { text: string }, index: number) => (
-              <p key={index}>{item.text}</p> // すべてのtextを表示
-            ))
-          ) : (
-            <p>Loading...</p> // データがまだない場合の表示
+
+        <ol className="relative border-s border-gray-200 dark:border-gray-700">        
+          {
+            data && data.items && data.items.length > 0 ? (
+            data.items.map((item: TextItem | FileItem, index: number) => (
+              <li key={index} className="mb-3 ms-4">
+                <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time>
+                {/* <span className="p-2 text-gray-600"># ご飯</span> */}
+
+                {/* TextItemの場合はtextを表示 */}
+                {"text" in item && (
+                  <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                    {item.text}
+                  </p>
+                )}
+
+                {/* FileItemの場合はurlを表示 */}
+                {"url" in item && (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div>
+                          <img className="h-auto max-w-full rounded-lg" src={item.url} alt=""></img>
+                      </div>
+                    </div>
+                )}
+              </li>
+              ))
+            ) : (
+              <p>Loading...</p> // データがまだない場合の表示
           )}
-          </div>
-        <ol className="relative border-s border-gray-200 dark:border-gray-700">                  
-          <li className="mb-3 ms-4">
-            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:02</time><span className="p-2 text-gray-600"># ご飯</span>
-            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">うどんを食べた</p>
-          </li>
-          <li className="mb-3 ms-4">
-            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:05</time><span className="p-2 text-gray-600"># ご飯</span>
-            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">朝ごはん美味しかった</p>
-            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">朝ごはん食べると、結構仕事が捗る</p>
-          </li>
-          <li className="mb-3 ms-4">
-            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">9:05</time><span className="p-2 text-gray-600"># 学校</span>
-            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">電磁気学の授業を受けた。少し退屈。久しぶりにガウスの発散定理とかをちゃんと勉強した気がする</p>
-          </li>
-          <li className="mb-3 ms-4">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div>
-                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image.jpg" alt=""></img>
-              </div>
-              <div>
-                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-1.jpg" alt=""></img>
-              </div>
-              <div>
-                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-2.jpg" alt=""></img>
-              </div>
-              <div>
-                  <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg" alt=""></img>
-              </div>
-              <div>
-                <img className="h-auto max-w-full rounded-lg" src="https://flowbite.s3.amazonaws.com/docs/gallery/square/image-3.jpg" alt=""></img>
-              </div>
-            </div>
-          </li>
-          <li className="mb-3 ms-4">
-            <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-            <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">12:15</time><span className="p-2 text-gray-600"># 友達</span><span className="p-2 text-gray-600"># 学校</span>
-            <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">あんどぅーと昼ごはん食べに行った。学食500円以下でほっけ定食食べれた。久しぶりに魚食べたかも。美味かった</p>
-          </li>
         </ol>
       </div>
 
