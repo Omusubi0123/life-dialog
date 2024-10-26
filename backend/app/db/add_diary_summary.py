@@ -12,7 +12,7 @@ def add_diary_summary(
     year: int,
     month: int,
     day: int,
-) -> Any:
+) -> tuple[str, str]:
     """指定した日付の日記の 要約 + フィードバック を生成しDBに保存
 
     Args:
@@ -36,6 +36,7 @@ def add_diary_summary(
     doc_dict[DiaryField.feedback.value] = feedback
     doc_ref.set(doc_dict)
     print(f"Summary and feedback added to diary: {day}\nUserID: {user_id}")
+    return summary, feedback
 
 
 if __name__ == "__main__":
