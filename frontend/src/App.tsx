@@ -27,9 +27,9 @@ function App() {
         <div className="mt-20 mb-5 bg-white" id="accordion-open" data-accordion="open">
           <Accordion>
             <Accordion.Panel>
-              <Accordion.Title>この日は何をした日？</Accordion.Title>
+              <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
               <Accordion.Content>
-                <p className="mb-2 text-gray-500 dark:text-gray-400">日々の生活が忙しくなると、どうしても小さな楽しみやリフレッシュする時間を忘れがち。でも、こうして少し時間を取るだけで心が穏やかになるのを実感した。今後は意識して自分のための時間も大切にしていきたい。</p>
+                <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">日々の生活が忙しくなると、どうしても小さな楽しみやリフレッシュする時間を忘れがち。でも、こうして少し時間を取るだけで心が穏やかになるのを実感した。今後は意識して自分のための時間も大切にしていきたい。</p>
               </Accordion.Content>
             </Accordion.Panel>
           </Accordion>
