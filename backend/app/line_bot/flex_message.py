@@ -8,6 +8,7 @@ from app.utils.data_enum import QuickReplyField
 
 
 def get_diary_random_image(user_id, year, month, day):
+    """選択された日記からランダムに画像を取得"""
     doc_dict = get_diary_from_db(user_id, year, month, day)
     if (
         "files" in doc_dict
@@ -30,6 +31,7 @@ def get_diary_random_image(user_id, year, month, day):
 
 
 def create_flex_message(event, status, summary, year, month, day):
+    """日記をLINEで表示するためのflex messageを作成"""
     thumbnail_image_url = get_diary_random_image(event.source.user_id, year, month, day)
     print(thumbnail_image_url)
 

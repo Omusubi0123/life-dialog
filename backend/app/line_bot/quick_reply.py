@@ -12,6 +12,7 @@ from app.utils.data_enum import QuickReplyField
 
 
 def get_current_status(event):
+    """現在のステータス(記録モード or 対話モード)を取得"""
     if event.message.text == QuickReplyField.diary_mode.value:
         return QuickReplyField.diary_mode.value
     elif event.message.text == QuickReplyField.interactive_mode.value:
@@ -21,6 +22,7 @@ def get_current_status(event):
 
 
 def create_summary_feedback(event, year, month, day):
+    """LLMによる日記の要約とフィードバックを作成"""
     user_id = event.source.user_id
 
     if event.message.text == QuickReplyField.view_diary.value:
@@ -32,7 +34,7 @@ def create_summary_feedback(event, year, month, day):
 
 
 def create_quick_reply(event):
-    """"""
+    """返信時に送信するquick replyを作成"""
     user_id = event.source.user_id
     today = datetime.now()
     status = get_current_status(event)
