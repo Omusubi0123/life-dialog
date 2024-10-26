@@ -4,9 +4,9 @@ from enum import Enum
 class QuickReplyField(Enum):
     """LINE botのクイックリプライ"""
 
-    view_diary = "日記閲覧"
-    interactive_mode = "対話モード"
-    diary_mode = "日記モード"
+    view_diary = "今日の日記を見る"
+    interactive_mode = "人生と対話する"
+    diary_mode = "人生を記録する"
     day_choice = "日付選択"
 
 
