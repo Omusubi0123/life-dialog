@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from app.db.upload_media import upload_media_to_gcs
 from app.gcp_settings import db
@@ -66,6 +67,9 @@ def update_doc_field(
         doc_ref.update(doc_dict)
         print(f"Document updated: {doc_dict}")
     else:
+        # 今日の日記が存在しない場合は新規作成
+        random_id = str(uuid.uuid4())
+        doc_data[DiaryField.diary_id.value] = random_id
         doc_data[DiaryField.date.value] = today
         doc_ref.set(doc_data)
         print(f"Document created: {doc_data}")

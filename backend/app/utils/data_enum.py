@@ -23,6 +23,7 @@ class DiaryCollection(Enum):
 
 
 class DiaryField(Enum):
+    diary_id = "diary_id"
     date = "date"
     summary = "summary"
     feedback = "feedback"

@@ -19,8 +19,8 @@ from azure.search.documents.indexes.models import (
 from azure.search.documents.models import Vector
 from openai import OpenAI
 
-from app.utils.modelname import ModelNames
 from app.settings import Settings
+from app.utils.modelname import ModelNames
 
 
 def create_index(
