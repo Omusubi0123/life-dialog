@@ -64,10 +64,9 @@ export default function App() {
       }
     } else {
       const year = selectedDate.getFullYear();
-      const month = selectedDate.getMonth();
+      const month = selectedDate.getMonth() + 1;
       const day = selectedDate.getDate();
       if (userId) {
-        setSelectedDate(new Date(year, month, day));
         post_fetch_diary(userId, year, month, day);
       }
     }
