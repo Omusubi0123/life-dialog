@@ -121,7 +121,9 @@
 * GCP
 * Vercel
 * Firebase
-![alt text](image-1.png)
+
+### システム構成図
+![alt text](image-2.png)
 
 <br />
 
