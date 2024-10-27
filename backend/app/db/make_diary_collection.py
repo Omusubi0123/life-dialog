@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 
 from app.gcp_settings import db
@@ -15,5 +16,11 @@ def add_user_dairy_collection(
         .document(user_id)
         .collection(DiaryCollection.diary.value)
     )
-    diary_collection.document(today).set({DiaryField.date.value: today})
+    
+    random_id = str(uuid.uuid4())
+    doc_data = {
+        DiaryField.date.value: today,
+        DiaryField.diary_id.value: random_id,
+    }
+    diary_collection.document(today).set(doc_data)
     print(f"Collection created: user: {user_id}")

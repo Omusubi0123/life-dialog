@@ -41,7 +41,6 @@ def handle_text_message(event):
     date_list, user_id_list = None, None
     if text not in QuickReplyField.get_values():
         timestamp = event.timestamp
-
         if user_status == QuickReplyField.diary_mode.value:
             # 日記モードの場合はテキストをDBに保存
             update_doc_field(user_id, message_id, text, MediaType.TEXT.value, timestamp)
