@@ -1,6 +1,6 @@
 # 日々を記録し, 人生と対話するアプリ 「Life DiaLog」
 
-[![IMAGE ALT TEXT HERE](https://jphacks.com/wp-content/uploads/2024/07/JPHACKS2024_ogp.jpg)](https://www.youtube.com/watch?v=DZXUkEj-CSI)
+![タイトル画像](./readme_src/title.jpeg)
 
 ## 製品概要
 ### 背景(製品開発のきっかけ、課題等）
@@ -21,23 +21,23 @@
 
 ### 製品説明
 ### 機能一覧
-![特長の画像](./readme_src/function.jpg)
+![機能一覧の画像](./readme_src/function.jpg)
 
 #### 1. 日々の記録: 日常を, いつでもどこでも手軽に記録可能
 
-![特長の画像](./readme_src/function1.jpg)
+![機能1の画像](./readme_src/function1.jpg)
 
 #### 2. 毎日の記録をフィードバックし, 要約
 
-![特長の画像](./readme_src/function2.jpg)
+![機能2の画像](./readme_src/function2.jpg)
 
 #### 3. 蓄積されたデータから, 自己分析
 
-![特長の画像](./readme_src/function3.jpg)
+![機能3の画像](./readme_src/function3.jpg)
 
 #### 4. 人生と対話: 蓄積されたデータから, 自分自身と対話し、人生相談が可能. 検索に最も合った日記の提案も可能.
 
-![特長の画像](./readme_src/function4.jpg)
+![機能4の画像](./readme_src/function4.jpg)
 
 
 
