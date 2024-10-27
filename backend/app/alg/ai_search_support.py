@@ -133,7 +133,6 @@ def generate_embedding(text: str, model: str = ModelNames.text_embedding_3_small
     """embeddingを行う
 
     Args:
-        client (openai.OpenAI): OpenAIのクライアント
         text (str): embeddingしたい文章
         model (str): embeddingモデル名
     """
@@ -147,10 +146,16 @@ def upload_diary(
     doc_dict: dict[str, Any],
     embd_model: str = ModelNames.text_embedding_3_small.value,
 ):
-    # diary_idが存在するか確認
+    """日記をAI search Indexにアップロード
+
+    Args:
+        user_id (str): LINEユーザーID
+        doc_dict (dict[str, Any]): 日記データ
+        embd_model (str, optional): embeddingモデル. Defaults to ModelNames.text_embedding_3_small.value.
+    """
     if DiaryField.diary_id.value not in doc_dict:
         print("Error: 'diary_id' not found in doc_dict.")
-        return  # または適切なエラーハンドリングを行う
+        return
 
     sorted_diary_messages = sort_diary_messages_timeorder(doc_dict)
 
@@ -160,7 +165,9 @@ def upload_diary(
     diary_str = format_sorted_diary_to_llm_input(
         sorted_diary_messages, year, month, day
     )
-    summary, feedback = doc_dict.get(DiaryField.summary.value), doc_dict.get(DiaryField.feedback.value)
+    summary, feedback = doc_dict.get(DiaryField.summary.value), doc_dict.get(
+        DiaryField.feedback.value
+    )
     recap_str = ""
     if summary and feedback:
         recap_str = format_llm_response_json_to_str(summary, feedback)
@@ -206,7 +213,7 @@ def hybrid_search(
         model (str, optional): embeddingモデル名. Defaults to "text-embedding-3-small".
 
     Returns:
-        _type_: 検索結果
+        list[dict[str, Any]]: 検索結果
     """
     query_embedding = generate_embedding(query, model=emdb_model)
     vectors = [

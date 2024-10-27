@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from linebot import LineBotApi
 
@@ -35,7 +35,7 @@ def handle_text_message(event):
     # if text in QuickReplyField.get_values() and text != user_status:
     update_user_status(user_id, user_status)
 
-    date = datetime.now()
+    date = datetime.now(timezone(timedelta(hours=9)))
     year, month, day = get_YMD_from_datetime(date)
     answer, summary, feedback = None, None, None
     date_list, user_id_list = None, None
@@ -83,7 +83,7 @@ def handle_text_message(event):
         feedback,
         answer,
         date_list,
-        user_id_list
+        user_id_list,
     )
     line_bot_api.reply_message(event.reply_token, messages)
 
@@ -97,7 +97,7 @@ def handle_media_message(event):
     message_content = line_bot_api.get_message_content(message_id)
     update_doc_field(user_id, message_id, message_content, media_type, timestamp)
 
-    date = datetime.now()
+    date = datetime.now(timezone(timedelta(hours=9)))
     year, month, day = get_YMD_from_datetime(date)
     user_status = get_user_status(user_id)
     messages = create_quick_reply(

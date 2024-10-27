@@ -16,7 +16,7 @@ def add_user_dairy_collection(
         .document(user_id)
         .collection(DiaryCollection.diary.value)
     )
-    
+
     random_id = str(uuid.uuid4())
     doc_data = {
         DiaryField.date.value: today,

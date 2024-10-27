@@ -24,7 +24,7 @@ def fetch_diary(fetch_diary: FetchDiary) -> Diary:
             summary="",
             feedback="",
         )
-    else:    
+    else:
         sorted_diary_items = sort_diary_messages_timeorder(doc_dict)
         diary = Diary(
             year=fetch_diary.year,
