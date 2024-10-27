@@ -88,7 +88,7 @@ def create_flex_message(event, status, summary, year, month, day, date_list, use
                 ],
             },
         )
-    elif status == QuickReplyField.interactive_mode.value:
+    elif status == QuickReplyField.interactive_mode.value and date_list and user_id_list:
         cards_data = []
         for date, user_id in zip(date_list, user_id_list):
             year, month, day = map(int, date.split("-"))
