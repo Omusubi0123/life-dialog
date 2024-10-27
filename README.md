@@ -80,20 +80,18 @@
 ## 開発技術
 ### 活用した技術
 #### API・データ
-* FastAPI
-* LINE Messaging API
+* LINE Messaging API SDK
 * OpenAI API
 * Azure AI Search
 
 #### フレームワーク・ライブラリ・モジュール
+* Poetry
+* FastAPI
+* Vite
 * React
-* vite
-* gcp
-* docker
-
-#### デバイス
-* 
-* 
+* GCP
+* Vercel
+* Docker
 
 ### 独自技術
 #### ハッカソンで開発した独自機能・技術
