@@ -93,7 +93,7 @@ def create_flex_message(event, status, summary, year, month, day, date_list, use
         for date, user_id in zip(date_list, user_id_list):
             year, month, day = map(int, date.split("-"))
             diary_data = get_diary_from_db(user_id, year, month, day)
-            cards_data.append({"diary_data": diary_data["date"], "summary": diary_data["summary"], "thumbnail_image_url": get_diary_random_image(user_id, year, month, day)},)
+            cards_data.append({"date": diary_data["date"], "summary": diary_data["summary"], "thumbnail_image_url": get_diary_random_image(user_id, year, month, day)},)
 
         bubbles = []
         for card in cards_data:
@@ -112,7 +112,7 @@ def create_flex_message(event, status, summary, year, month, day, date_list, use
                     "contents": [
                         {
                             "type": "text",
-                            "text": card["title"],
+                            "text": card["date"],
                             "weight": "bold",
                             "size": "xl",
                         },
