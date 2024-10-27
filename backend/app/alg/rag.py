@@ -10,13 +10,20 @@ def rag_answer(
     system_prompt: str = SYSTEM_PROMPT,
     rag_prompt: str = RAG_PROMPT,
 ) -> str:
+    """対話モードでの質問に対してRAGで回答を生成する
+
+    Args:
+        user_id (str): LINEのユーザーID
+        query (str): ユーザーの質問
+
+    Returns:
+        str: RAGによる回答
+    """
     search_results = hybrid_search(user_id, query)
-    print("サーチリザルツ！", search_results)
 
     contents_str = "\n\n".join(result["content"] for result in search_results)
 
     date_list = [result["date"] for result in search_results]
-
     user_id_list = [result["user_id"] for result in search_results]
 
     answer = openai_call(
