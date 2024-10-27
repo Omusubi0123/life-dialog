@@ -147,6 +147,11 @@ def upload_diary(
     doc_dict: dict[str, Any],
     embd_model: str = ModelNames.text_embedding_3_small.value,
 ):
+    # diary_idが存在するか確認
+    if DiaryField.diary_id.value not in doc_dict:
+        print("Error: 'diary_id' not found in doc_dict.")
+        return  # または適切なエラーハンドリングを行う
+
     sorted_diary_messages = sort_diary_messages_timeorder(doc_dict)
 
     date_object = datetime.strptime(doc_dict[DiaryField.date.value], "%Y-%m-%d")

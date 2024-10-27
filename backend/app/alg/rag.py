@@ -11,6 +11,8 @@ def rag_answer(
     rag_prompt: str = RAG_PROMPT,
 ) -> str:
     search_results = hybrid_search(user_id, query)
+    print("サーチリザルツ！", search_results)
+
     contents_str = "\n\n".join(result["content"] for result in search_results)
 
 
