@@ -41,10 +41,12 @@ function App() {
 
   type TextItem = {
     text: string;
+    timestamp: string;
   };
   
   type FileItem = {
     url: string;
+    timestamp: string;
   };
 
   useEffect(() => {
