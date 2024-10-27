@@ -80,7 +80,7 @@ def handle_text_message(event):
         feedback,
         answer,
         date_list,
-        user_id_list
+        user_id_list,
     )
     line_bot_api.reply_message(event.reply_token, messages)
 
