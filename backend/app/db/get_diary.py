@@ -2,7 +2,6 @@ import os
 from datetime import datetime
 from typing import Any
 
-from app.alg.format_diary_for_llm import format_sorted_diary_to_llm_input
 from app.gcp_settings import db
 from app.utils.data_enum import DiaryCollection, RootCollection
 
@@ -39,7 +38,15 @@ def get_diary_from_db(
 
 
 def get_all_diary_from_db(user_id: str) -> list[dict[str, Any]]:
-    """DBからユーザーの全日記を取得"""
+    """DBからユーザーの全日記を取得
+
+    Args:
+        user_id (str): LINEユーザーID
+
+    Returns:
+        list[dict[str, Any]]: ユーザーの全日記のリスト
+    """
+    """"""
     collection_name = os.path.join(
         RootCollection.diary.value, user_id, DiaryCollection.diary.value
     )
