@@ -6,6 +6,16 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import getTimeFromTimeStamp from './utils/getTimeFromTimeStamp.ts';
 
+type TextItem = {
+  text: string;
+  timestamp: string;
+};
+
+type FileItem = {
+  url: string;
+  timestamp: string;
+};
+
 function App() {
   const [items, setItems] = useState<any>(null);
   const [feedback, setFeedback] = useState<string>('');
@@ -22,7 +32,6 @@ function App() {
     search: searchParams.toString(),
   };
 
-
   const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
     try {
       const requestBody = {
@@ -37,16 +46,6 @@ function App() {
     } catch (err) {
       setItems([]);
     }
-  };
-
-  type TextItem = {
-    text: string;
-    timestamp: string;
-  };
-  
-  type FileItem = {
-    url: string;
-    timestamp: string;
   };
 
   useEffect(() => {
