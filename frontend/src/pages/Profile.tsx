@@ -1,9 +1,9 @@
-import './index.css'
+import '../index.css'
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import parseDateString from './utils/parseDateString.ts';
+import parseDateString from '../utils/parseDateString.ts';
 import {useLocation } from 'react-router-dom';
-import Footer from './components/Footer.tsx';
+import Footer from '../components/Footer.tsx';
 
 export default function Profile() {
     const [userName, setUserName] = useState<any>(null);
