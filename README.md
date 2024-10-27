@@ -6,13 +6,17 @@
 
 ## サービスのURL
 
-上記画像のQRコードもしくは以下のリンクから, 公式LINEアカウントの友達追加が可能です.
+上記画像のQRコードもしくは以下のリンクから、公式LINEアカウントの友達追加が可能です。
 
 [https://line.me/R/ti/p/@726tsxol](https://line.me/R/ti/p/@726tsxol)
 
 <br />
 
-## [デモ動画](https://youtu。be/cn8Ny18-8VE)
+## デモ動画
+
+デモ動画は以下のリンクから閲覧可能です。
+
+[https://youtu.be/cn8Ny18-8VE](https://youtu.be/cn8Ny18-8VE)
 
 <br />
 
@@ -140,6 +144,8 @@
 - これにより、質問に自分自身の過去の履歴から答えることができ、さらには、根拠となった日記を表示することも可能となりました。
 
 
-- [独自機能のソースコードはこちらから](https://github.com/jphacks/tk_2411/blob/main/backend/app/alg/ai_search_support.py)
+- [ハイブリッド検索のソースコードはこちらから](https://github.com/jphacks/tk_2411/blob/main/backend/app/alg/ai_search_support.py)
+
+- [RAGのソースコードはこちらから](https://github.com/jphacks/tk_2411/blob/main/backend/app/alg/rag.py)
 
 ![ハイブリッド検索+RAGの画像](./readme_src/ai_search.jpg)
