@@ -158,7 +158,7 @@ def create_flex_message(
                             "action": {
                                 "type": "uri",
                                 "label": "この日記を見る",
-                                "uri": f"https://your-frontend-url.com?user_id=sample_user_id",
+                                "uri": f"{settings.frontend_url}?date={card['date'][:4]}{card['date'][5:7]}{card['date'][8:]}&user_id={event.source.user_id}&",
                             },
                         }
                     ],
