@@ -30,6 +30,8 @@ def create_quick_reply(
     summary: str = "",
     feedback: str = "",
     answer: str = "",
+    date_list: list = [],
+    user_id_list: list = []
 ):
     """返信時に送信するquick replyを作成"""
     reply_text = create_reply_text(event, user_status, answer, feedback)
@@ -45,12 +47,16 @@ def create_quick_reply(
     else:
         sent_text = None
     if sent_text == QuickReplyField.view_diary.value:
-        flex_message = create_flex_message(
-            event, user_status, summary, year, month, day
-        )
+        flex_message = create_flex_message(event, user_status, summary, year, month, day, date_list, user_id_list)
         messages.insert(0, flex_message)
         
         personality, strength, weakness = analyze_user_by_llm(event.source.user_id)
         add_user_analization(event.source.user_id, personality, strength, weakness)
+    if user_status == QuickReplyField.interactive_mode.value and answer != "":
+        print("アンサー!")
+        print(answer)
+        print("アンサー終了!")
+        # flex_message = None
+        # messages.insert(0, flex_message)
 
     return messages

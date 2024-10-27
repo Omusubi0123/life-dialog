@@ -12,6 +12,9 @@ def rag_answer(
 ) -> str:
     search_results = hybrid_search(user_id, query)
     contents_str = "\n\n".join(result["content"] for result in search_results)
+    
+    date_list = [result["date"] for result in search_results]
+    user_id_list = [search_results["user_id"]]
 
     answer = openai_call(
         system_prompt,
@@ -19,4 +22,4 @@ def rag_answer(
         print_response=True,
     )
 
-    return answer
+    return answer, date_list, user_id_list
