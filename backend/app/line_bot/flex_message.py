@@ -150,4 +150,30 @@ def create_flex_message(event, status, summary, year, month, day, date_list, use
         )
     else:
         flex_message = None
+    
+    if flex_message is None or (flex_message.contents.contents == []):
+        flex_message = FlexSendMessage(
+            alt_text="日記がない通知",
+            contents={
+                "type": "bubble",
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": "日記がないよ！",
+                            "weight": "bold",
+                            "size": "xl",
+                        },
+                        {
+                            "type": "text",
+                            "text": "「今日の日記」を押して日記を確認しよう",
+                            "size": "md",
+                            "wrap": True,
+                        },
+                    ],
+                },
+            },
+        )
     return flex_message
