@@ -1,9 +1,9 @@
 import '../index.css'
 import { Datepicker } from "flowbite-react";
 import { Accordion } from "flowbite-react";
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 import getTimeFromTimeStamp from '../utils/getTimeFromTimeStamp.ts';
 import createDatePickerOption from '../utils/createDatePickerOption.ts';
 import Footer from '../components/Footer.tsx';

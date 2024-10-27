@@ -1,8 +1,8 @@
 import '../index.css'
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import parseDateString from '../utils/parseDateString.ts';
 import {useLocation } from 'react-router-dom';
+import axios from 'axios';
+import parseDateString from '../utils/parseDateString.ts';
 import Footer from '../components/Footer.tsx';
 
 export default function Profile() {
