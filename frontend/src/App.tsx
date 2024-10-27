@@ -78,16 +78,12 @@ function App() {
       newDate.setDate(prevDate.getDate() + 1);
       return newDate;
     });
-    console.log("あいうえお");
-    console.log(items.items.length);
   };
 
   const handleDateChange = (newDate: Date | null) => {
     if (newDate) {
       setSelectedDate(newDate);
     }
-    console.log("あいうえお");
-    console.log(items.items.length);
   };
 
   const option = {
