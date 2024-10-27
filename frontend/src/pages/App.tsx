@@ -74,33 +74,34 @@ export default function App() {
         post_fetch_diary(userId, year, month, day);
       }
     }
+    console.log(selectedDate);
   }, []);
 
    const handlePreviousDay = () => {
     setSelectedDate(prevDate => {
       const newDate = new Date(prevDate);
       newDate.setDate(prevDate.getDate() - 1);
+      const queryParams = new URLSearchParams(window.location.search);
+      const userId = queryParams.get("user_id");
+      if (userId) {
+        post_fetch_diary(userId, newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate());
+      }
       return newDate;
     });
-    const queryParams = new URLSearchParams(window.location.search);
-    const userId = queryParams.get("user_id");
-    if (userId) {
-      post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth() + 1, selectedDate.getDate());
-    }
   };
 
   const handleNextDay = () => {
     setSelectedDate(prevDate => {
       const newDate = new Date(prevDate);
       newDate.setDate(prevDate.getDate() + 1);
+      const queryParams = new URLSearchParams(window.location.search);
+      const userId = queryParams.get("user_id");
+      if (userId) {
+        post_fetch_diary(userId, newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate());
+      }
       return newDate;
     });
-    const queryParams = new URLSearchParams(window.location.search);
-    const userId = queryParams.get("user_id");
-    if (userId) {
-      post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth() + 1, selectedDate.getDate());
-    }
-  };
+};
 
   const handleDateChange = (newDate: Date | null) => {
     if (newDate) {
