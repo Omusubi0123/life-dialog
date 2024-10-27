@@ -1,4 +1,4 @@
-from linebot.models import QuickReply, TextSendMessage
+from linebot.models import QuickReply, TextMessage, TextSendMessage
 
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.alg.analyze_user import analyze_user_by_llm
@@ -24,12 +24,12 @@ def create_summary_feedback(event, year, month, day):
 def create_quick_reply(
     event,
     user_status: str,
-    summary: str,
-    feedback: str,
-    answer: str,
     year: int,
     month: int,
     day: int,
+    summary: str = "",
+    feedback: str = "",
+    answer: str = "",
 ):
     """返信時に送信するquick replyを作成"""
     reply_text = create_reply_text(event, user_status, answer, feedback)
@@ -40,7 +40,11 @@ def create_quick_reply(
 
     messages = [quick_reply_message]
     # 日記閲覧はstatusに保存されないので、user_statusではなくevent.message.textで判定
-    if event.message.text == QuickReplyField.view_diary.value:
+    if isinstance(event.message, TextMessage):
+        sent_text = event.message.text
+    else:
+        sent_text = None
+    if sent_text == QuickReplyField.view_diary.value:
         flex_message = create_flex_message(
             event, user_status, summary, year, month, day
         )

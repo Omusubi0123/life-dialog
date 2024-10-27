@@ -11,10 +11,8 @@ channel_access_token = settings.channel_access_token
 
 
 def get_user_profile(user_id):
-    url = f'https://api.line.me/v2/bot/profile/{user_id}'
-    headers = {
-        'Authorization': f'Bearer {settings.channel_access_token}'
-    }
+    url = f"https://api.line.me/v2/bot/profile/{user_id}"
+    headers = {"Authorization": f"Bearer {settings.channel_access_token}"}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -22,6 +20,7 @@ def get_user_profile(user_id):
         return response.json()
     else:
         return None
+
 
 def get_user_link_token(user_id):
     url = f"https://api.line.me/v2/bot/user/{user_id}/linkToken"
@@ -37,11 +36,12 @@ def get_user_link_token(user_id):
     else:
         return None
 
+
 def handle_follow_event(event):
     """公式アカウントに登録された時、ユーザードキュメントと日記コレクションを作成"""
     user_id = event.source.user_id
     timestamp = timestamp_md_to_datetime(event.timestamp)
-    
+
     link_token = get_user_link_token(user_id)
     user_profile = get_user_profile(user_id)
 
@@ -49,8 +49,12 @@ def handle_follow_event(event):
         user_doc_field = {
             UserField.user_id.value: user_id,
             UserField.user_name.value: user_profile["displayName"],
-            UserField.icon_url.value: user_profile["pictureUrl"] if "pictureUrl" in user_profile else "",
-            UserField.status_message.value: user_profile["statusMessage"] if "statusMessage" in user_profile else "",
+            UserField.icon_url.value: user_profile["pictureUrl"]
+            if "pictureUrl" in user_profile
+            else "",
+            UserField.status_message.value: user_profile["statusMessage"]
+            if "statusMessage" in user_profile
+            else "",
             UserField.created_at.value: timestamp,
             UserField.linkToken.value: link_token,
         }
