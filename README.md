@@ -123,7 +123,7 @@
 * Firebase
 
 ### システム構成図
-![alt text](image-2.png)
+![システム構成図](./readme_src/system_configuration_diagram.png)
 
 <br />
 
