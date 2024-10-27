@@ -25,7 +25,7 @@ export default function App() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);  
+  const searchParams = new URLSearchParams(location.search);
   const diaryLink = {
     pathname: "/",
     search: searchParams.toString(),
