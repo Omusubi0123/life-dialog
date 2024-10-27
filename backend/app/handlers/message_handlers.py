@@ -26,9 +26,9 @@ def handle_text_message(event):
     message_id = event.message.id
     text = event.message.text
 
-    # ユーザーのステータスが変更されたらDBに保存
     user_status = get_current_status(event)
 
+    # ユーザーのステータスが変更されたらDBに保存
     # TODO: 下のif分岐の条件式がおかしい　これを入れるとエラーになる
     # if text in QuickReplyField.get_values() and text != user_status:
     update_user_status(user_id, user_status)
@@ -61,12 +61,12 @@ def handle_text_message(event):
     messages = create_quick_reply(
         event,
         user_status,
-        summary,
-        feedback,
-        answer,
         year,
         month,
         day,
+        summary,
+        feedback,
+        answer,
     )
     line_bot_api.reply_message(event.reply_token, messages)
 
@@ -78,7 +78,18 @@ def handle_media_message(event):
     media_type = event.message.type
     timestamp = event.timestamp
     message_content = line_bot_api.get_message_content(message_id)
-    reply_url = update_doc_field(
+    update_doc_field(
         user_id, message_id, message_content, media_type, timestamp
     )
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_url))
+    
+    date = datetime.now()
+    year, month, day = get_YMD_from_datetime(date)
+    user_status = get_current_status(event)
+    messages = create_quick_reply(
+        event,
+        user_status,
+        year,
+        month,
+        day,
+    )
+    line_bot_api.reply_message(event.reply_token, messages)

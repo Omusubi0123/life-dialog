@@ -22,12 +22,12 @@ def create_summary_feedback(event, year, month, day):
 def create_quick_reply(
     event,
     user_status: str,
-    summary: str,
-    feedback: str,
-    answer: str,
     year: int,
     month: int,
     day: int,
+    summary: str = "",
+    feedback: str = "",
+    answer: str = "",
 ):
     """返信時に送信するquick replyを作成"""
     reply_text = create_reply_text(event, user_status, answer, feedback)
