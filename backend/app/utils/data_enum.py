@@ -4,9 +4,9 @@ from enum import Enum
 class QuickReplyField(Enum):
     """LINE botのクイックリプライ"""
 
-    view_diary = "今日の日記を見る"
-    interactive_mode = "人生と対話する"
-    diary_mode = "人生を記録する"
+    view_diary = "今日の日記"
+    interactive_mode = "対話する"
+    diary_mode = "記録する"
     day_choice = "日付選択"
 
     @classmethod
@@ -37,9 +37,12 @@ class UserField(Enum):
     """DBのユーザードキュメントフィールド"""
 
     user_id = "user_id"
+        
     user_name = "user_name"
     icon_url = "icon_url"
     status_message = "status_message"
+
+    status = "status"
     created_at = "created_at"
     updated_at = "updated_at"
     linkToken = "linkToken"
