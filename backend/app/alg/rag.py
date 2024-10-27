@@ -15,9 +15,7 @@ def rag_answer(
 
     contents_str = "\n\n".join(result["content"] for result in search_results)
 
-
     date_list = [result["date"] for result in search_results]
-
 
     user_id_list = [result["user_id"] for result in search_results]
 
