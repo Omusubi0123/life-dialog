@@ -22,6 +22,7 @@ export default function App() {
   const [items, setItems] = useState<any>(null);
   const [feedback, setFeedback] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);  
@@ -36,6 +37,8 @@ export default function App() {
 
   const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
     try {
+      setItems([]);
+      setLoading(true);
       const requestBody = {
         user_id: user_id,
         year: year,
@@ -44,6 +47,7 @@ export default function App() {
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
       setItems(response.data);
+      setLoading(false);
       setFeedback(response.data.feedback);
     } catch (err) {
       setItems([]);
@@ -78,6 +82,11 @@ export default function App() {
       newDate.setDate(prevDate.getDate() - 1);
       return newDate;
     });
+    const queryParams = new URLSearchParams(window.location.search);
+    const userId = queryParams.get("user_id");
+    if (userId) {
+      post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth() + 1, selectedDate.getDate());
+    }
   };
 
   const handleNextDay = () => {
@@ -86,6 +95,11 @@ export default function App() {
       newDate.setDate(prevDate.getDate() + 1);
       return newDate;
     });
+    const queryParams = new URLSearchParams(window.location.search);
+    const userId = queryParams.get("user_id");
+    if (userId) {
+      post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth() + 1, selectedDate.getDate());
+    }
   };
 
   const handleDateChange = (newDate: Date | null) => {
@@ -154,7 +168,7 @@ export default function App() {
       ) : (
         <div className="w-screen">
           <div className="flex items-center justify-center min-h-screen mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
-            この日の記録はまだありません
+            {loading ? "読み込み中です..." : "この日の記録はまだありません"}
           </div>
         </div>
       )}
