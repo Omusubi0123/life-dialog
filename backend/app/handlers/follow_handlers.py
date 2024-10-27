@@ -3,9 +3,8 @@ import requests
 from app.db.add_user import add_user_document
 from app.db.make_diary_collection import add_user_dairy_collection
 from app.settings import Settings
-from app.utils.data_enum import UserField
+from app.utils.data_enum import QuickReplyField, UserField
 from app.utils.timestamp_format import timestamp_md_to_datetime
-from app.utils.data_enum import QuickReplyField
 
 settings = Settings()
 channel_access_token = settings.channel_access_token
@@ -59,8 +58,6 @@ def handle_follow_event(event):
             if "statusMessage" in user_profile
             else "",
             UserField.created_at.value: timestamp,
-            
-            
         }
         add_user_document(user_id, user_doc_field)
         add_user_dairy_collection(user_id, timestamp)
