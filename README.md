@@ -149,3 +149,9 @@
 - [RAGのソースコードはこちらから](https://github.com/jphacks/tk_2411/blob/main/backend/app/alg/rag.py)
 
 ![ハイブリッド検索+RAGの画像](./readme_src/ai_search.jpg)
+
+
+### 事前開発事項
+- テーマ・技術選定
+- 環境構築
+
