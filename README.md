@@ -106,6 +106,4 @@
 
 - これにより, 質問に自分自身の過去の履歴から答えることができ, さらには, 根拠となった日記を表示することも可能となりました.
 
-- [ファイルリンク](https://github.com/jphacks/tk_2411/blob/main/backend/app/alg/ai_search_support.py)
-
 ![ハイブリッド検索+RAGの画像](./readme_src/ai_search.jpg)
