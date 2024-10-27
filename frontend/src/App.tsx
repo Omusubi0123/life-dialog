@@ -4,7 +4,7 @@ import { Accordion } from "flowbite-react";
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
+import getTimeFromTimeStamp from './utils/getTimeFromTimeStamp.ts';
 
 function App() {
   const [items, setItems] = useState<any>(null);
@@ -32,7 +32,8 @@ function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      setData(response.data);
+      setItems(response.data);
+      setFeedback(response.data.feedback);
     } catch (err) {
       setItems([]);
     }
@@ -257,7 +258,7 @@ function App() {
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
                   {"text" in item && "timestamp" in item && (
                     <>
-                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimestamp(item.timestamp)}</time>
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimeStamp(item.timestamp)}</time>
                         <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
                         {item.text}
                       </p>
