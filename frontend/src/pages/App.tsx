@@ -21,7 +21,7 @@ type FileItem = {
 export default function App() {
   const [items, setItems] = useState<any>(null);
   const [feedback, setFeedback] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);  
@@ -51,19 +51,17 @@ export default function App() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const user_id = urlParams.get('user_id');
-      const year = selectedDate.getFullYear();
-      const month = selectedDate.getMonth() + 1;
-      const day = selectedDate.getDate();
-      if (user_id) {
-        await post_fetch_diary(user_id, year, month, day);
-      }
+    const queryParams = new URLSearchParams(window.location.search);
+    const userId = queryParams.get("user_id");
+    const date = queryParams.get("date");
+    if (date && userId) {
+      const year = parseInt(date.substring(0, 4), 10);
+      const month = parseInt(date.substring(4, 6), 10);
+      const day = parseInt(date.substring(6, 8), 10);
+      setSelectedDate(new Date(year, month, day));
+      post_fetch_diary(userId, year, month, day);
     }
-
-    fetchData();
-  }, [selectedDate]);
+  }, []);
 
    const handlePreviousDay = () => {
     setSelectedDate(prevDate => {
