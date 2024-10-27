@@ -42,10 +42,11 @@ export default function App() {
       const requestBody = {
         user_id: user_id,
         year: year,
-        month: month,
+        month: month+1,
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
+      console.log(response.data);
       setItems(response.data);
       setLoading(false);
       setFeedback(response.data.feedback);
@@ -63,12 +64,12 @@ export default function App() {
       const month = parseInt(date.substring(4, 6), 10);
       const day = parseInt(date.substring(6, 8), 10);
       if (userId) {
-        setSelectedDate(new Date(year, month, day));
+        setSelectedDate(new Date(year, month-1, day));
         post_fetch_diary(userId, year, month, day);
       }
     } else {
       const year = selectedDate.getFullYear();
-      const month = selectedDate.getMonth() + 1;
+      const month = selectedDate.getMonth();
       const day = selectedDate.getDate();
       if (userId) {
         post_fetch_diary(userId, year, month, day);
@@ -77,7 +78,15 @@ export default function App() {
     console.log(selectedDate);
   }, []);
 
-   const handlePreviousDay = () => {
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const userId = queryParams.get("user_id");
+    if (userId) {
+      post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
+    }
+  }, [selectedDate]);
+
+  const handlePreviousDay = () => {
     setSelectedDate(prevDate => {
       const newDate = new Date(prevDate);
       newDate.setDate(prevDate.getDate() - 1);
@@ -101,7 +110,7 @@ export default function App() {
       }
       return newDate;
     });
-};
+  };
 
   const handleDateChange = (newDate: Date | null) => {
     if (newDate) {
@@ -117,7 +126,7 @@ export default function App() {
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-          <div className="">
+          <div className="text-gray-500">
             <Datepicker
               theme={createDatePickerOption()} 
               showClearButton={false} 
