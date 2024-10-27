@@ -33,7 +33,7 @@ function Profile() {
             setUserStrength(response.data.strength);
             setUserWeakness(response.data.weakness);
             setUserCreatedAt(parseDateString(response.data.created_at));
-            setUserUpdatedAt(parseDateString(response.data.updated_at));
+            setUserUpdatedAt(parseDateString(new Date().toISOString()));
             console.log(parseDateString(response.data.created_at));
             console.log(parseDateString(response.data.updated_at));
             console.log()
@@ -65,13 +65,12 @@ function Profile() {
                 <div className="font-semibold dark:text-white">
                     <div className="text-lg text-gray-800 dark:text-white">{userName}</div>
                     {userCreatedAt && userUpdatedAt && (
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {userCreatedAt} to {userUpdatedAt}
+                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                {userCreatedAt} to {userUpdatedAt}
                             </div>
                         )}
                     </div>
-            </div>
-
+                </div>
             <div className="mb-8">
             <div className="flex items-center mb-4">
                 <h3 className="text-xl font-semibold text-gray-800 dark:text-white">あなたは...</h3>
