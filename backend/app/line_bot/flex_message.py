@@ -7,8 +7,19 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
 
-def get_diary_random_image(user_id, year, month, day):
-    """選択された日記からランダムに画像を取得"""
+def get_diary_random_image(user_id: str, year: int, month: int, day: int) -> str | None:
+    """選択された日記からランダムに画像を取得
+
+    Args:
+        user_id (str): LINEユーザーID
+        year (int): 日記の年
+        month (int): 日記の月
+        day (int): 日記の日
+
+    Returns:
+        str | None: 画像URL
+    """
+    """"""
     doc_dict = get_diary_from_db(user_id, year, month, day)
     if (
         "files" in doc_dict

@@ -4,7 +4,18 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
 
-def create_reply_text(event, user_status: str, answer: str, feedback: str):
+def create_reply_text(event, user_status: str, answer: str, feedback: str) -> str:
+    """quick replyのボタンに対応したテキストを返す
+
+    Args:
+        event (_type_): LINEイベント
+        user_status (str): 現在のユーザーステータス
+        answer (str): LLMによる日記の要約
+        feedback (str): LLMによる日記のフィードバック
+
+    Returns:
+        str: quick replyのボタンに対応したテキスト
+    """
     if isinstance(event.message, TextMessage):
         sent_text = event.message.text
     else:
@@ -25,7 +36,15 @@ def create_reply_text(event, user_status: str, answer: str, feedback: str):
         return "送信ありがとう♪"
 
 
-def create_quick_reply_buttons(status):
+def create_quick_reply_buttons(status: str) -> list:
+    """quick replyのボタンを作成
+
+    Args:
+        status (str): 現在のユーザーステータス
+
+    Returns:
+        list: quick replyのボタン
+    """
     quick_reply_items = []
     images = []
     if status == QuickReplyField.diary_mode.value:
