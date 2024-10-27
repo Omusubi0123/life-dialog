@@ -1,15 +1,17 @@
 from datetime import datetime
 
 from linebot import LineBotApi
-from linebot.models import QuickReply, TextSendMessage
 
+from app.alg.ai_search_support import upload_diary
+from app.alg.analyze_user import analyze_user_by_llm
 from app.alg.rag import rag_answer
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
+from app.db.add_user_analization import add_user_analization
+from app.db.get_diary import get_diary_from_db
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
-from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
 from app.line_bot.user_status import get_current_status
 from app.settings import Settings
 from app.utils.data_enum import QuickReplyField
@@ -53,9 +55,18 @@ def handle_text_message(event):
                 timestamp,
             )
     elif text == QuickReplyField.view_diary.value:
+        # TODO: 要約生成、AI searchへアップロードの両方で今日の日記を読み込んでいる
         # 日記閲覧の場合は日記の要約・フィードバックを作成しDBに保存
         summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
         add_diary_summary(user_id, summary, feedback, year, month, day)
+
+        # 日記をembeddingしてAI searchのIndexに保存
+        diary_dict = get_diary_from_db(user_id, year, month, day)
+        upload_diary(user_id, diary_dict)
+
+        # これまでの全日記からユーザーの特徴を分析
+        personality, strength, weakness = analyze_user_by_llm(event.source.user_id)
+        add_user_analization(event.source.user_id, personality, strength, weakness)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(
