@@ -160,9 +160,10 @@ def upload_diary(
     diary_str = format_sorted_diary_to_llm_input(
         sorted_diary_messages, year, month, day
     )
-    recap_str = format_llm_response_json_to_str(
-        doc_dict[DiaryField.summary.value], doc_dict[DiaryField.feedback.value]
-    )
+    summary, feedback = doc_dict.get(DiaryField.summary.value), doc_dict.get(DiaryField.feedback.value)
+    recap_str = ""
+    if summary and feedback:
+        recap_str = format_llm_response_json_to_str(summary, feedback)
 
     date = f"{year}-{month}-{day}"
     content = recap_str + diary_str

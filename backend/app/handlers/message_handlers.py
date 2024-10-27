@@ -67,6 +67,10 @@ def handle_text_message(event):
         # これまでの全日記からユーザーの特徴を分析
         personality, strength, weakness = analyze_user_by_llm(event.source.user_id)
         add_user_analization(event.source.user_id, personality, strength, weakness)
+    if text == QuickReplyField.interactive_mode.value:
+        # 日記をembeddingしてAI searchのIndexに保存
+        diary_dict = get_diary_from_db(user_id, year, month, day)
+        upload_diary(user_id, diary_dict)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(
