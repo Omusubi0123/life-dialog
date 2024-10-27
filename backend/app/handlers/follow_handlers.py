@@ -10,7 +10,15 @@ settings = Settings()
 channel_access_token = settings.channel_access_token
 
 
-def get_user_profile(user_id):
+def get_user_profile(user_id: str) -> dict | None:
+    """ユーザーのプロフィール情報を取得
+
+    Args:
+        user_id (str): LINEユーザーID
+
+    Returns:
+        dict | None: ユーザーのプロフィール情報
+    """
     url = f"https://api.line.me/v2/bot/profile/{user_id}"
     headers = {"Authorization": f"Bearer {settings.channel_access_token}"}
     response = requests.get(url, headers=headers)
@@ -22,7 +30,15 @@ def get_user_profile(user_id):
         return None
 
 
-def get_user_link_token(user_id):
+def get_user_link_token(user_id: str) -> str | None:
+    """LINEユーザーIDからlinkTokenを取得
+
+    Args:
+        user_id (str): LINEユーザーID
+
+    Returns:
+        str | None: linkToken
+    """
     url = f"https://api.line.me/v2/bot/user/{user_id}/linkToken"
     headers = {
         "Authorization": f"Bearer {channel_access_token}",
@@ -38,7 +54,11 @@ def get_user_link_token(user_id):
 
 
 def handle_follow_event(event):
-    """公式アカウントに登録された時、ユーザードキュメントと日記コレクションを作成"""
+    """公式アカウントに登録された時、ユーザードキュメントと日記コレクションを作成
+
+    Args:
+        event (_type_): LINEイベント
+    """
     user_id = event.source.user_id
     timestamp = timestamp_md_to_datetime(event.timestamp)
 
