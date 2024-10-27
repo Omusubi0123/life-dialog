@@ -100,6 +100,7 @@ def handle_media_message(event):
     Args:
         event (_type_): LINEイベント
     """
+    start_loading(event.source.user_id, 60)
     user_id = event.source.user_id
     message_id = event.message.id
     media_type = event.message.type
