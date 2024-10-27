@@ -9,7 +9,12 @@ def add_user_dairy_collection(
     user_id: str,
     timestamp: datetime,
 ):
-    """ユーザーの日記コレクション(diary)を作成し、初日の日記ドキュメントを作成"""
+    """ユーザーの日記コレクション(diary)を作成し、初日の日記ドキュメントを作成
+
+    Args:
+        user_id (str): LINEユーザーID
+        timestamp (datetime): 日記を書いた日時
+    """
     today = timestamp.strftime("%Y-%m-%d")
     diary_collection = (
         db.collection(RootCollection.diary.value)

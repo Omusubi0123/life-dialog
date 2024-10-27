@@ -7,8 +7,15 @@ def add_user_analization(
     personality: str,
     strength: str,
     weakness: str,
-) -> tuple[str, str]:
-    """ユーザーの性格・強み・弱みをDBに保存"""
+):
+    """ユーザーの性格・強み・弱みをDBに保存
+
+    Args:
+        user_id (str): LINEユーザーID
+        personality (str): LLMが分析したユーザーの性格
+        strength (str): LLMが分析したユーザーの強み
+        weakness (str): LLMが分析したユーザーの弱み
+    """
     user_ref = db.collection(RootCollection.user.value).document(user_id)
     user_dict = user_ref.get().to_dict()
 

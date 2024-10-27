@@ -21,7 +21,19 @@ def update_doc_field(
     mediatype: MediaType,
     timestamp: str,
 ) -> str:
-    """日記ドキュメントにテキストまたはファイルURLを追加"""
+    """日記ドキュメントにテキストまたはファイルURLを追加
+
+    Args:
+        user_id (str): LINEユーザーID
+        message_id (str): 送信されたLINEメッセージのID
+        data (str): テキストまたはファイルURL
+        mediatype (MediaType): メディアの種類
+        timestamp (str): 送信されたLINEメッセージのタイムスタンプ
+
+    Returns:
+        str: テキストまたはファイルURL
+    """
+    """"""
     timestamp = timestamp_md_to_datetime(timestamp)
     today = timestamp.strftime("%Y-%m-%d")
 

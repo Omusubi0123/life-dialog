@@ -13,7 +13,13 @@ def add_diary_summary(
     month: int,
     day: int,
 ):
-    """指定した日付の日記の 要約 + フィードバック をDBに保存"""
+    """指定した日付の日記の 要約 + フィードバック をDBに保存
+
+    Args:
+        user_id (str): LINEユーザーID
+        summary (str): LLMによる日記の要約
+        feedback (str): LLMによる日記のフィードバック
+    """
     date = datetime(year, month, day).strftime("%Y-%m-%d")
     collection_name = os.path.join(
         RootCollection.diary.value, user_id, DiaryCollection.diary.value

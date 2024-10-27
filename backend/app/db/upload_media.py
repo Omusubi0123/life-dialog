@@ -10,7 +10,17 @@ def upload_media_to_gcs(
     file_data,
     media_type: str,
 ):
-    """Google Cloud StorageにファイルをアップロードしてURLを返す"""
+    """Google Cloud StorageにファイルをアップロードしてURLを返す
+
+    Args:
+        file_name (str): 保存先のファイル名
+        file_data (_type_): LINEから送信されたファイルデータ
+        media_type (str): 送信されたファイルのメディアタイプ
+
+    Returns:
+        _type_: アップロードされたファイルのURL
+    """
+    """"""
     extension = MediaExtension[MediaType(media_type).name].value
 
     bucket = storage_client.bucket(settings.gcs_bucket_name)

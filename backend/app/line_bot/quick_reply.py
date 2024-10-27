@@ -30,8 +30,24 @@ def create_quick_reply(
     answer: str = "",
     date_list: list = [],
     user_id_list: list = [],
-):
-    """返信時に送信するquick replyを作成"""
+) -> list:
+    """返信時に送信するquick replyを作成
+
+    Args:
+        event (_type_): LINEイベント
+        user_status (str): 現在のユーザーステータス
+        year (int): 今日の年
+        month (int): 今日の月
+        day (int): 今日の日
+        summary (str, optional): LLMによる日記の要約. Defaults to "".
+        feedback (str, optional): LLMによる日記のフィードバック. Defaults to "".
+        answer (str, optional): LLMによる対話の質問への回答. Defaults to "".
+        date_list (list, optional): RAGにより取得した日揮のdateのリスト. Defaults to [].
+        user_id_list (list, optional) RAGにより取得した日記のユーザーID. Defaults to [].
+
+    Returns:
+        list: 送信するメッセージ
+    """
     reply_text = create_reply_text(event, user_status, answer, feedback)
     quick_reply_buttons = create_quick_reply_buttons(user_status)
     quick_reply_message = TextSendMessage(
