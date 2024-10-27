@@ -1,8 +1,6 @@
 from linebot.models import QuickReply, TextMessage, TextSendMessage
 
 from app.alg.summarize_diary import summarize_diary_by_llm
-from app.alg.analyze_user import analyze_user_by_llm
-from app.db.add_user_analization import add_user_analization
 from app.db.add_diary_summary import add_diary_summary
 from app.line_bot.flex_message import create_flex_message
 from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
@@ -49,14 +47,5 @@ def create_quick_reply(
     if sent_text == QuickReplyField.view_diary.value:
         flex_message = create_flex_message(event, user_status, summary, year, month, day, date_list, user_id_list)
         messages.insert(0, flex_message)
-        
-        personality, strength, weakness = analyze_user_by_llm(event.source.user_id)
-        add_user_analization(event.source.user_id, personality, strength, weakness)
-    if user_status == QuickReplyField.interactive_mode.value and answer != "":
-        print("アンサー!")
-        print(answer)
-        print("アンサー終了!")
-        # flex_message = None
-        # messages.insert(0, flex_message)
 
     return messages

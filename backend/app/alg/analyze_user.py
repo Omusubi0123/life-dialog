@@ -12,7 +12,6 @@ from app.utils.data_enum import AnalyzeUserField, DiaryField
 from app.utils.llm_response import openai_call
 
 
-
 def analyze_user_by_llm(
     user_id: str,
     system_prompt: str = SYSTEM_PROMPT_JSON,

@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any
 
 from azure.core.credentials import AzureKeyCredential
+from azure.core.exceptions import ResourceNotFoundError
 from azure.search.documents import SearchClient
 from azure.search.documents.indexes import SearchIndexClient
 from azure.search.documents.indexes.models import (
@@ -162,9 +163,6 @@ def upload_diary(
     content = recap_str + diary_str
     embedding = generate_embedding(content, model=embd_model)
 
-    print(content)
-    print(embedding)
-
     document = {
         DiaryField.diary_id.value: doc_dict[DiaryField.diary_id.value],
         UserField.user_id.value: user_id,
@@ -173,13 +171,24 @@ def upload_diary(
         "contentVector": embedding,
     }
 
-    search_client.upload_documents([document])
+    try:
+        existing_doc = search_client.get_document(
+            key=doc_dict[DiaryField.diary_id.value],
+            selected_fields=[DiaryField.diary_id.value],
+        )
+        search_client.merge_or_upload_documents([document])
+        print(f"Document with diary_id {doc_dict[DiaryField.diary_id.value]} updated.")
+    except ResourceNotFoundError:
+        search_client.upload_documents([document])
+        print(
+            f"New document with diary_id {doc_dict[DiaryField.diary_id.value]} uploaded."
+        )
 
 
 def hybrid_search(
     user_id: str,
     query: str,
-    top: int = 5,
+    top: int = 4,
     emdb_model: str = ModelNames.text_embedding_3_small.value,
 ) -> list[dict[str, Any]]:
     """Azure Hybrid Search

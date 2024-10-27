@@ -37,7 +37,7 @@ class UserField(Enum):
     """DBのユーザードキュメントフィールド"""
 
     user_id = "user_id"
-        
+
     user_name = "user_name"
     icon_url = "icon_url"
     status_message = "status_message"
