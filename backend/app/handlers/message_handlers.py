@@ -17,6 +17,7 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.datetime_format import get_YMD_from_datetime
 from app.utils.media_enum import MediaType
+from app.line_bot.start_loading import start_loading
 
 line_bot_api = LineBotApi(settings.channel_access_token)
 
@@ -27,6 +28,8 @@ def handle_text_message(event):
     Args:
         event (_type_): LINEイベント
     """
+    start_loading(event.source.user_id, 60)
+
     user_id = event.source.user_id
     message_id = event.message.id
     text = event.message.text
@@ -97,6 +100,7 @@ def handle_media_message(event):
     Args:
         event (_type_): LINEイベント
     """
+    start_loading(event.source.user_id, 60)
     user_id = event.source.user_id
     message_id = event.message.id
     media_type = event.message.type
