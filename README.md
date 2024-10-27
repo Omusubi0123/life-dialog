@@ -84,7 +84,7 @@
 
 - 様々な媒体をアップロードできるようにする。
   - 音声、webリンク、位置情報を日記に登録可能
-  - 現時点で動画をアップロードすることは可能である
+  - 動画再生のユーザ体験の向上
   - ![alt text](readme_src/movie_approad.gif)
 - TwitterやInstagramなどの投稿内容を日記に登録可能
 - SpotifyやApple Musicなど、聞いた音楽を日記に登録可能
@@ -107,6 +107,7 @@
     - UIを洗練
     - LINEとwebを適切に使い分け
     - LINEのクイックリプライ機能を使用して、LINE上でモード切り替えを容易に
+    - LLMの生成時に、LINE上でローディングを表示
 - LLM(大規模言語モデル)とAzure AI Searchを用いたハイブリッド検索とRAG(Retrieval Augumented Generation)によって、テキストから思い出自体の検索が可能に。
 
 <br />
