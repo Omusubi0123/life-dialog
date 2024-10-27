@@ -32,8 +32,10 @@ def get_diary_random_image(user_id, year, month, day):
 
 def create_flex_message(event, status, summary, year, month, day):
     """日記をLINEで表示するためのflex messageを作成"""
+    print(f"えええ")
     thumbnail_image_url = get_diary_random_image(event.source.user_id, year, month, day)
     print(thumbnail_image_url)
+    print(f"ううう")
 
     if event.message.text == QuickReplyField.view_diary.value:
         flex_message = FlexSendMessage(

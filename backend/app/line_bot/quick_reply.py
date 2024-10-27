@@ -37,7 +37,8 @@ def create_quick_reply(
     )
 
     messages = [quick_reply_message]
-    if user_status == QuickReplyField.view_diary.value:
+    # 日記閲覧はstatusに保存されないので、user_statusではなくevent.message.textで判定
+    if event.message.text == QuickReplyField.view_diary.value:
         flex_message = create_flex_message(
             event, user_status, summary, year, month, day
         )
