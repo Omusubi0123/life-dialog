@@ -30,7 +30,7 @@ def get_diary_random_image(user_id, year, month, day):
         return None
 
 
-def create_flex_message(event, status, summary, year, month, day):
+def create_flex_message(event, status, summary, year, month, day, date_list, user_id_list):
     """日記をLINEで表示するためのflex messageを作成"""
     thumbnail_image_url = get_diary_random_image(event.source.user_id, year, month, day)
     print(thumbnail_image_url)
@@ -89,8 +89,64 @@ def create_flex_message(event, status, summary, year, month, day):
             },
         )
     elif status == QuickReplyField.interactive_mode.value:
-        # TODO: 日記検索の場合は、探した日記をリンク付きで送信するのでflex_messageを作る必要がある
-        flex_message = None
+        cards_data = []
+        for date, user_id in zip(date_list, user_id_list):
+            year, month, day = map(int, date.split("-"))
+            diary_data = get_diary_from_db(user_id, year, month, day)
+            cards_data.append({"diary_data": diary_data["date"], "summary": diary_data["summary"], "thumbnail_image_url": get_diary_random_image(user_id, year, month, day)},)
+
+        bubbles = []
+        for card in cards_data:
+            bubble = {
+                "type": "bubble",
+                "hero": {
+                    "type": "image",
+                    "url": card["thumbnail_image_url"] or "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
+                    "size": "full",
+                    "aspectRatio": "20:13",
+                    "aspectMode": "cover",
+                },
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "text",
+                            "text": card["title"],
+                            "weight": "bold",
+                            "size": "xl",
+                        },
+                        {
+                            "type": "text",
+                            "text": f"{card['summary'][:47]}...",
+                            "size": "md",
+                            "wrap": True,
+                        },
+                    ],
+                },
+                "footer": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                        {
+                            "type": "button",
+                            "action": {
+                                "type": "uri",
+                                "label": "この日記を見る",
+                                "uri": f"https://your-frontend-url.com?user_id=sample_user_id",
+                            },
+                        }
+                    ],
+                },
+            }
+            bubbles.append(bubble)
+        flex_message = FlexSendMessage(
+            alt_text="複数のカードメッセージ",
+            contents={
+                "type": "carousel",
+                "contents": bubbles,
+            },
+        )
     else:
         flex_message = None
     return flex_message

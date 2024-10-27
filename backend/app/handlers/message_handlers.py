@@ -38,6 +38,7 @@ def handle_text_message(event):
     date = datetime.now()
     year, month, day = get_YMD_from_datetime(date)
     answer, summary, feedback = None, None, None
+    date_list, user_id_list = None, None
     if text not in QuickReplyField.get_values():
         timestamp = event.timestamp
 
@@ -46,7 +47,7 @@ def handle_text_message(event):
             update_doc_field(user_id, message_id, text, MediaType.TEXT.value, timestamp)
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
-            answer = rag_answer(user_id, text)
+            answer, date_list, user_id_list = rag_answer(user_id, text)
             update_doc_field(
                 user_id,
                 message_id,
@@ -78,6 +79,8 @@ def handle_text_message(event):
         summary,
         feedback,
         answer,
+        date_list,
+        user_id_list
     )
     line_bot_api.reply_message(event.reply_token, messages)
 
