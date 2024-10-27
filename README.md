@@ -16,7 +16,7 @@
 
 デモ動画は以下のリンクから閲覧可能です。
 
-[https://youtu.be/cn8Ny18-8VE](https://youtu.be/cn8Ny18-8VE)
+[https://youtu.be/vytlwU0EFy4](https://youtu.be/vytlwU0EFy4)
 
 <br />
 
