@@ -54,12 +54,22 @@ export default function App() {
     const queryParams = new URLSearchParams(window.location.search);
     const userId = queryParams.get("user_id");
     const date = queryParams.get("date");
-    if (date && userId) {
+    if (date) {
       const year = parseInt(date.substring(0, 4), 10);
       const month = parseInt(date.substring(4, 6), 10);
       const day = parseInt(date.substring(6, 8), 10);
-      setSelectedDate(new Date(year, month, day));
-      post_fetch_diary(userId, year, month, day);
+      if (userId) {
+        setSelectedDate(new Date(year, month, day));
+        post_fetch_diary(userId, year, month, day);
+      }
+    } else {
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+      const day = selectedDate.getDate();
+      if (userId) {
+        setSelectedDate(new Date(year, month, day));
+        post_fetch_diary(userId, year, month, day);
+      }
     }
   }, []);
 
