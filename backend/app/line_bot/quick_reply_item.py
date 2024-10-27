@@ -1,18 +1,26 @@
-from linebot.models import MessageAction, QuickReplyButton
+from linebot.models import MessageAction, QuickReplyButton, TextMessage
 
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
 
 def create_reply_text(event, user_status: str, answer: str, feedback: str):
-    if event.message.text == QuickReplyField.diary_mode.value:
+    if isinstance(event.message, TextMessage):
+        sent_text = event.message.text
+    else:
+        sent_text = None
+
+    if sent_text == QuickReplyField.diary_mode.value:
         return "【人生を記録】\n日々の生活を記録しよう！\n画像も送信できるよ♪"
-    elif event.message.text == QuickReplyField.interactive_mode.value:
-        return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪"
-    elif event.message.text == QuickReplyField.view_diary.value:
+    elif sent_text == QuickReplyField.interactive_mode.value:
+        return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪\n対話のやり取りは保存されないから注意してね(^^♪"
+    elif sent_text == QuickReplyField.view_diary.value:
         return feedback
     elif user_status == QuickReplyField.interactive_mode.value:
-        return answer
+        if sent_text:
+            return answer
+        else:
+            return "素敵な写真だね♪"
     else:
         return "送信ありがとう♪"
 

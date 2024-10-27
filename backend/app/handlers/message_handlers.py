@@ -6,7 +6,7 @@ from linebot.models import QuickReply, TextSendMessage
 from app.alg.rag import rag_answer
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
-from app.db.manage_user_status import update_user_status
+from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
@@ -78,13 +78,11 @@ def handle_media_message(event):
     media_type = event.message.type
     timestamp = event.timestamp
     message_content = line_bot_api.get_message_content(message_id)
-    update_doc_field(
-        user_id, message_id, message_content, media_type, timestamp
-    )
-    
+    update_doc_field(user_id, message_id, message_content, media_type, timestamp)
+
     date = datetime.now()
     year, month, day = get_YMD_from_datetime(date)
-    user_status = get_current_status(event)
+    user_status = get_user_status(user_id)
     messages = create_quick_reply(
         event,
         user_status,
