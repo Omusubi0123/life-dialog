@@ -23,8 +23,8 @@ def fetch_profile(fetch_diary: FetchProfile) -> User:
         user_name=user_dict.get('user_name', ''),
         icon_url=user_dict.get('icon_url', ''),
         status_message=user_dict.get('status_message', ''),
-        created_at=datetime.fromisoformat(user_dict.get('created_at', '2024-01-01')),
-        updated_at=datetime.fromisoformat(user_dict.get('updated_at', '2024-01-01')),
+        created_at=user_dict.get('created_at', '2024-01-01'),
+        updated_at=user_dict.get('updated_at', '2024-01-01'),
         personality=user_dict.get('personality', ''),
         strength=user_dict.get('strength', ''),
         weakness=user_dict.get('weakness', '')

@@ -28,7 +28,7 @@ function Profile() {
         try {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/fetch_profile`, {user_id: user_id});
             setUserName(response.data.user_name);
-            setUserIconURL(response.data.user_icon_url);
+            setUserIconURL(response.data.icon_url);
             setUserPersonality(response.data.personality);
             setUserStrength(response.data.strength);
             setUserWeakness(response.data.weakness);
