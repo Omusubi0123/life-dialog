@@ -1,4 +1,4 @@
-# jphacks-prep Backend
+# jphacks Backend
 
 LINE-bot, FastAPI, Firebase, Azure AI Searchを使ったbackend
 LINEアプリのチャットから送信したメッセージをDBに保存し、LLMで分析、AI searchで検索しつつRAGする
