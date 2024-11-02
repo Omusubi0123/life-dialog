@@ -1,5 +1,7 @@
 __pycache__
 data
+files/*
+!files/.gitkeep
 .env
 .venv
 
