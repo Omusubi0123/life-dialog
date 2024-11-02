@@ -12,12 +12,12 @@ from app.db.get_diary import get_diary_from_db
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
+from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.datetime_format import get_YMD_from_datetime
 from app.utils.media_enum import MediaType
-from app.line_bot.start_loading import start_loading
 
 line_bot_api = LineBotApi(settings.channel_access_token)
 

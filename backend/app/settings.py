@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     azure_ai_search_admin_key: str
     azure_ai_search_index_name: str
 
+    database_url: str
+
     deployment_url: str
     frontend_url: str
 

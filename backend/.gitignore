@@ -2,6 +2,8 @@ __pycache__
 data
 files/*
 !files/.gitkeep
+postgres_data/*
+!postgres_data/.gitkeep
 .env
 .venv
 
