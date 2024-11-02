@@ -1,17 +1,19 @@
-version: "3..8"
+version: "3.8"
 
 services:
   backend:
-    image: python:3.10
+    build:
+      context: .
+      dockerfile: Dockerfile.local
     container_name: backend
-    working_dir: /app
+    working_dir: /backend
     volumes:
-      - ./app:/app
+      - ./app:/backend/app
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://user:password@postgres:5432/db
-    command: poetry run uvicorn main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     depends_on:
       - postgres
 
