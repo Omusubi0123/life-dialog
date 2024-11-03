@@ -1,8 +1,10 @@
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE users (
-    user_id SERIAL PRIMARY KEY,
-    name VARCHAR(50),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id VARCHAR(40) PRIMARY KEY,
+    name VARCHAR(40),
+    created_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
     mode VARCHAR(10),
     icon_url TEXT,
     status_message TEXT,
@@ -11,7 +13,7 @@ CREATE TABLE users (
 
 CREATE TABLE analysis (
     analysis_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(user_id),
+    user_id VARCHAR(40) REFERENCES users(user_id),
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     personality TEXT,
     strength TEXT,
@@ -20,8 +22,8 @@ CREATE TABLE analysis (
 
 CREATE TABLE diary (
     diary_id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(user_id),
-    date DATE,
+    user_id VARCHAR(40) REFERENCES users(user_id),
+    date DATE DEFAULT (CURRENT_DATE),
     title TEXT,
     summary TEXT,
     feedback TEXT
@@ -30,28 +32,18 @@ CREATE TABLE diary (
 CREATE TABLE message (
     message_id SERIAL PRIMARY KEY,
     diary_id INTEGER REFERENCES diary(diary_id),
-    user_id INTEGER REFERENCES users(user_id),
+    user_id VARCHAR(40) REFERENCES users(user_id),
     media_type VARCHAR(10),
     content TEXT,
-    sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    sent_at TIME DEFAULT (CURRENT_TIME)
 );
 
-CREATE INDEX idx_analysis_user_id ON analysis(user_id);
-CREATE INDEX idx_diary_user_id ON diary(user_id);
-CREATE INDEX idx_message_diary_id ON message(diary_id);
-CREATE INDEX idx_message_user_id ON message(user_id);
-
-CREATE OR REPLACE FUNCTION update_modified_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$$
- language 'plpgsql';
-
-CREATE TRIGGER update_user_modtime
-    BEFORE UPDATE ON users
-    FOR EACH ROW
-    EXECUTE FUNCTION update_modified_column();
-
+CREATE TABLE diary_vector (
+    vector_id SERIAL PRIMARY KEY,
+    user_id VARCHAR(40) REFERENCES users(user_id),
+    diary_id INTEGER REFERENCES diary(diary_id),
+    diary_content TEXT,
+    diary_vector vector(1536),
+    FOREIGN KEY(user_id) REFERENCES users (user_id),
+    FOREIGN KEY(diary_id) REFERENCES diary (diary_id)
+);

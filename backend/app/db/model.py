@@ -1,3 +1,4 @@
+from pgvector.sqlalchemy import Vector
 from sqlalchemy import DATE, TIME, TIMESTAMP, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -44,9 +45,7 @@ class Analysis(BaseClass):
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(40), ForeignKey("users.user_id"))
-    uploaded_at = Column(
-        TIMESTAMP(timezone=True), default=lambda: get_japan_timestamp()
-    )
+    uploaded_at = Column(TIMESTAMP, default=lambda: get_japan_timestamp())
     personality = Column(Text)
     strength = Column(Text)
     weakness = Column(Text)
@@ -66,6 +65,7 @@ class Diary(BaseClass):
 
     user = relationship("User", back_populates="diaries")
     messages = relationship("Message", back_populates="diary")
+    diary_vector = relationship("DiaryVector", back_populates="diary")
 
 
 class Message(BaseClass):
@@ -79,3 +79,15 @@ class Message(BaseClass):
     sent_at = Column(TIME, default=lambda: get_japan_time())
 
     diary = relationship("Diary", back_populates="messages")
+
+
+class DiaryVector(BaseClass):
+    __tablename__ = "diary_vector"
+
+    vector_id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String(40), ForeignKey("users.user_id"))
+    diary_id = Column(Integer, ForeignKey("diary.diary_id"))
+    diary_content = Column(Text)
+    diary_vector = Column(Vector(1536))
+
+    diary = relationship("Diary", back_populates="diary_vector")

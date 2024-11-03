@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from sqlalchemy import update
+
 from app.db.model import Analysis, Diary, Message, User
 
 
@@ -12,17 +14,36 @@ def add_user(
     status_message: str = None,
     link_token: str = None,
 ) -> User:
-    new_user = User(
-        user_id=user_id,
-        name=name,
-        mode=mode,
-        icon_url=icon_url,
-        status_message=status_message,
-        link_token=link_token,
+    stmt = (
+        update(User)
+        .where(User.user_id == user_id)
+        .values(
+            name=name,
+            mode=mode,
+            icon_url=icon_url,
+            status_message=status_message,
+            link_token=link_token,
+        )
     )
-    session.add(new_user)
-    session.flush()
-    return new_user
+    result = session.execute(stmt)
+
+    if result.rowcount == 0:
+        # 更新された行がない場合は新規ユーザーを作成
+        new_user = User(
+            user_id=user_id,
+            name=name,
+            mode=mode,
+            icon_url=icon_url,
+            status_message=status_message,
+            link_token=link_token,
+        )
+        session.add(new_user)
+        session.flush()
+        return new_user
+    else:
+        # 更新が成功した場合は更新されたユーザーを取得して返す
+        session.flush()
+        return session.query(User).filter(User.user_id == user_id).first()
 
 
 def add_analysis(
