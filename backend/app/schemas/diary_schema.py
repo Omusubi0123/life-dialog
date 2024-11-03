@@ -25,3 +25,10 @@ class FetchDiary(BaseModel):
     year: int
     month: int
     day: int
+
+
+class DiaryVector(BaseModel):
+    user_id: str
+    diary_id: int
+    diary_content: str
+    diary_vector: list[float]

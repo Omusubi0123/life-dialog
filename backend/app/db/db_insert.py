@@ -2,12 +2,12 @@ from datetime import datetime
 
 from sqlalchemy import update
 
-from app.db.model import Analysis, Diary, Message, User
+from app.db.model import Analysis, Diary, DiaryVector, Message, User
 
 
 def add_user(
     session,
-    user_id: int,
+    user_id: str,
     name: str,
     mode: str = None,
     icon_url: str = None,
@@ -49,7 +49,7 @@ def add_user(
 
 def add_analysis(
     session,
-    user_id: int,
+    user_id: str,
     personality: str,
     strength: str,
     weakness: str,
@@ -67,7 +67,7 @@ def add_analysis(
 
 def add_diary(
     session,
-    user_id: int,
+    user_id: str,
     date: datetime,
     title: str = None,
     summary: str = None,
@@ -88,7 +88,7 @@ def add_diary(
 def add_message(
     session,
     diary_id: int,
-    user_id: int,
+    user_id: str,
     media_type: str,
     content: str,
 ) -> Message:
@@ -101,3 +101,40 @@ def add_message(
     session.add(new_message)
     session.flush()
     return new_message
+
+
+def add_diary_vector(
+    session,
+    user_id: str,
+    diary_id: int,
+    diary_content: str,
+    diary_vector: list[float],
+) -> DiaryVector:
+    """日記のベクトルを追加・既に存在する場合は更新する"""
+    stmt = (
+        update(DiaryVector)
+        .where(DiaryVector.diary_id == diary_id)
+        .values(
+            diary_content=diary_content,
+            diary_vector=diary_vector,
+        )
+    )
+    result = session.execute(stmt)
+
+    if result.rowcount == 0:
+        # 更新された行がない場合は新規ユーザーを作成
+        new_diary_vector = DiaryVector(
+            user_id=user_id,
+            diary_id=diary_id,
+            diary_content=diary_content,
+            diary_vector=diary_vector,
+        )
+        session.add(new_diary_vector)
+        session.flush()
+        return new_diary_vector
+    else:
+        # 更新が成功した場合は更新されたユーザーを取得して返す
+        session.flush()
+        return (
+            session.query(DiaryVector).filter(DiaryVector.diary_id == diary_id).first()
+        )

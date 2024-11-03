@@ -1,9 +1,9 @@
-from typing import Generator
-
 from openai import OpenAI
 
 from app.settings import settings
 from app.utils.modelname import ModelNames
+
+client = OpenAI(api_key=settings.openai_api_key)
 
 
 def openai_call(
@@ -13,7 +13,6 @@ def openai_call(
     json_format: bool = False,
     print_response: bool = False,
 ) -> str:
-    client = OpenAI(api_key=settings.openai_api_key)
 
     messages = [
         {"role": "system", "content": system_prompt},
@@ -33,3 +32,15 @@ def openai_call(
         print(response.choices[0].message.content)
 
     return response.choices[0].message.content
+
+
+def get_embedding(text: str, model: str = ModelNames.text_embedding_3_small.value):
+    """embeddingを行う
+
+    Args:
+        text (str): embeddingしたい文章
+        model (str): embeddingモデル名
+    """
+    text = text.replace("\n", " ")
+    response = client.embeddings.create(input=text, model=model)
+    return response.data[0].embedding
