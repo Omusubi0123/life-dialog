@@ -3,8 +3,8 @@ from datetime import date
 
 from linebot.models import FlexSendMessage
 
+from app.db.get_diary import get_date_diary
 from app.db.get_diary_firebase import get_diary_from_db
-from app.db.get_diary_id import get_date_diary
 from app.db.get_message import get_date_message
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField

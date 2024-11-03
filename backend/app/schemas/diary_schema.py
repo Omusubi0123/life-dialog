@@ -1,25 +1,20 @@
-from datetime import datetime
+from datetime import time
 from typing import Optional
 
 from pydantic import BaseModel
 
 
-class TextItem(BaseModel):
-    text: str
-    timestamp: datetime
-
-
-class FileItem(BaseModel):
-    url: str
-    mediatype: str
-    timestamp: datetime
+class MessageItem(BaseModel):
+    media_type: str
+    content: str
+    time: time
 
 
 class Diary(BaseModel):
     year: int
     month: int
     day: int
-    items: list[TextItem | FileItem]
+    items: list[MessageItem]
     summary: Optional[str] = None
     feedback: Optional[str] = None
 

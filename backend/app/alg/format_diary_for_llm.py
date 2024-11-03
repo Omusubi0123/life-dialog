@@ -1,8 +1,6 @@
 from datetime import date
 
 from app.db.model import Message
-from app.schemas.diary_schema import FileItem, TextItem
-from app.utils.datetime_format import get_HMS_from_datetime
 
 
 def format_messages_to_llm_input(

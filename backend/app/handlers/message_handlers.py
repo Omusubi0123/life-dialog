@@ -6,7 +6,7 @@ from app.alg.rag import rag_answer
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
-from app.db.get_diary_id import get_or_create_diary_id
+from app.db.get_diary import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.model import Diary
 from app.line_bot.quick_reply import create_quick_reply
