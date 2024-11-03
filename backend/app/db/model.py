@@ -1,6 +1,8 @@
-from sqlalchemy import DATE, TIMESTAMP, Column, ForeignKey, Integer, String, Text, func
+from sqlalchemy import DATE, TIMESTAMP, Column, ForeignKey, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+
+from app.utils.get_japan_time import get_japan_time
 
 Base = declarative_base()
 
@@ -10,8 +12,10 @@ class User(Base):
 
     user_id = Column(String(40), primary_key=True)
     name = Column(String(40))
-    created_at = Column(TIMESTAMP, server_default=func.now())
-    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+    created_at = Column(TIMESTAMP(timezone=True), server_default=get_japan_time)
+    updated_at = Column(
+        TIMESTAMP(timezone=True), server_default=get_japan_time, onupdate=get_japan_time
+    )
     mode = Column(String(10))
     icon_url = Column(Text)
     status_message = Column(Text)
@@ -26,7 +30,7 @@ class Analysis(Base):
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(40), ForeignKey("users.user_id"))
-    uploaded_at = Column(TIMESTAMP, server_default=func.now())
+    uploaded_at = Column(TIMESTAMP(timezone=True), server_default=get_japan_time)
     personality = Column(Text)
     strength = Column(Text)
     weakness = Column(Text)
@@ -56,6 +60,6 @@ class Message(Base):
     user_id = Column(String(40), ForeignKey("users.user_id"))
     media_type = Column(String(10))
     content = Column(Text)
-    sent_at = Column(TIMESTAMP, server_default=func.now())
+    sent_at = Column(TIMESTAMP(timezone=True), server_default=get_japan_time)
 
     diary = relationship("Diary", back_populates="messages")

@@ -158,15 +158,3 @@ def handle_media_message(event):
         )
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=url))
-
-    # date = datetime.now(timezone(timedelta(hours=9)))
-    # year, month, day = get_YMD_from_datetime(date)
-    # user_status = get_user_status(user_id)
-    # messages = create_quick_reply(
-    #     event,
-    #     user_status,
-    #     year,
-    #     month,
-    #     day,
-    # )
-    # line_bot_api.reply_message(event.reply_token, messages)

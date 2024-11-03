@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from app.db.model import Analysis, Diary, Message, User
-from app.utils.session_scope import get_session
 
 
 def add_user(
