@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     database_url: str
 
-    deployment_url: str
+    nginx_file_url: str
     frontend_url: str
 
     model_config = {"env_file": ".env"}

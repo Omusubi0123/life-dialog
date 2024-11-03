@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 from linebot import LineBotApi
+from linebot.models import TextSendMessage
 
 from app.alg.ai_search_support import upload_diary
 from app.alg.analyze_user import analyze_user_by_llm
@@ -20,6 +21,7 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.datetime_format import get_YMD_from_datetime
 from app.utils.media_enum import MediaType
+from app.utils.media_service import save_media
 from app.utils.session_scope import get_session
 
 line_bot_api = LineBotApi(settings.channel_access_token)
@@ -34,26 +36,46 @@ def handle_text_message(event):
     user_id = event.source.user_id
     text = event.message.text
 
-    diary_id = get_or_create_today_diary(user_id)
-    print(f"あああ: {diary_id}")
-    with get_session() as session:
-        add_message(
-            session,
-            diary_id,
-            user_id,
-            MediaType.TEXT.value,
-            text,
-        )
-    # start_loading(event.source.user_id, 60)
+    start_loading(user_id, 60)
+
+    user_status = get_current_status(user_id, event)
+    update_user_status(user_id, user_status)
+
+    if text not in QuickReplyField.get_values():
+        if user_status == QuickReplyField.diary_mode.value:
+            # 日記モードの場合はテキストをDBに保存
+            diary_id = get_or_create_today_diary(user_id)
+            with get_session() as session:
+                add_message(
+                    session,
+                    diary_id,
+                    user_id,
+                    MediaType.TEXT.value,
+                    text,
+                )
+        elif user_status == QuickReplyField.interactive_mode.value:
+            # 対話モードの場合はRAGで質問に回答
+            answer, date_list, user_id_list = rag_answer(user_id, text)
+            diary_id = get_or_create_today_diary(user_id)
+            with get_session() as session:
+                message_id = add_message(
+                    session,
+                    diary_id,
+                    user_id,
+                    MediaType.TEXT.value,
+                    f"Q: {text}\nA: {answer}",
+                )
+    elif text == QuickReplyField.view_diary.value:
+        summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
+        add_diary_summary(user_id, summary, feedback, year, month, day)
+
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
 
     # message_id = event.message.id
-
-    # user_status = get_current_status(event)
 
     # # ユーザーのステータスが変更されたらDBに保存
     # # TODO: 下のif分岐の条件式がおかしい　これを入れるとエラーになる
     # # if text in QuickReplyField.get_values() and text != user_status:
-    # update_user_status(user_id, user_status)
 
     # date = datetime.now(timezone(timedelta(hours=9)))
     # year, month, day = get_YMD_from_datetime(date)
@@ -115,22 +137,36 @@ def handle_media_message(event):
     Args:
         event (_type_): LINEイベント
     """
-    start_loading(event.source.user_id, 60)
     user_id = event.source.user_id
-    message_id = event.message.id
     media_type = event.message.type
-    timestamp = event.timestamp
-    message_content = line_bot_api.get_message_content(message_id)
-    update_doc_field(user_id, message_id, message_content, media_type, timestamp)
 
-    date = datetime.now(timezone(timedelta(hours=9)))
-    year, month, day = get_YMD_from_datetime(date)
-    user_status = get_user_status(user_id)
-    messages = create_quick_reply(
-        event,
-        user_status,
-        year,
-        month,
-        day,
-    )
-    line_bot_api.reply_message(event.reply_token, messages)
+    start_loading(user_id, 60)
+
+    message_id = event.message.id
+    message_content = line_bot_api.get_message_content(message_id)
+
+    url = save_media(user_id, message_id, message_content, media_type)
+
+    diary_id = get_or_create_today_diary(user_id)
+    with get_session() as session:
+        add_message(
+            session,
+            diary_id,
+            user_id,
+            media_type,
+            url,
+        )
+
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=url))
+
+    # date = datetime.now(timezone(timedelta(hours=9)))
+    # year, month, day = get_YMD_from_datetime(date)
+    # user_status = get_user_status(user_id)
+    # messages = create_quick_reply(
+    #     event,
+    #     user_status,
+    #     year,
+    #     month,
+    #     day,
+    # )
+    # line_bot_api.reply_message(event.reply_token, messages)

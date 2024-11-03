@@ -1,20 +1,16 @@
-from app.gcp_settings import db
-from app.utils.data_enum import RootCollection
+from app.db.model import User
+from app.utils.session_scope import get_session
 
 
 def update_user_status(user_id: str, status: str):
     """DBのユーザーステータス(記録モード or 対話モード)を更新"""
-    db.collection(RootCollection.user.value).document(user_id).update(
-        {"status": status}
-    )
+    with get_session() as session:
+        user = session.query(User).filter(User.user_id == user_id).first()
+        user.mode = status
 
 
 def get_user_status(user_id: str):
     """DBのユーザーステータス(記録モード or 対話モード)を取得"""
-    return (
-        db.collection(RootCollection.user.value)
-        .document(user_id)
-        .get()
-        .to_dict()
-        .get("status")
-    )
+    with get_session() as session:
+        user = session.query(User).filter(User.user_id == user_id).first()
+        return user.mode

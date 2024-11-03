@@ -9,6 +9,7 @@ services:
     working_dir: /backend
     volumes:
       - ./app:/backend/app
+      - ./files:/usr/share/nginx/html/files
     ports:
       - "8000:8000"
     environment:
