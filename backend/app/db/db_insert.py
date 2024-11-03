@@ -48,9 +48,9 @@ def add_diary(
     session,
     user_id: int,
     date: datetime,
-    title: str,
-    summary: str,
-    feedback: str,
+    title: str = None,
+    summary: str = None,
+    feedback: str = None,
 ) -> Diary:
     new_diary = Diary(
         user_id=user_id,
@@ -66,14 +66,12 @@ def add_diary(
 
 def add_message(
     session,
-    message_id: int,
     diary_id: int,
     user_id: int,
     media_type: str,
     content: str,
 ) -> Message:
     new_message = Message(
-        message_id=message_id,
         diary_id=diary_id,
         user_id=user_id,
         media_type=media_type,
