@@ -63,6 +63,8 @@ class DiaryField(Enum):
 
     diary_id = "diary_id"
     date = "date"
+    title = "title"
+    content = "content"
     summary = "summary"
     feedback = "feedback"
     texts = "texts"

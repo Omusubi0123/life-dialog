@@ -22,5 +22,7 @@ COPY ./app /backend/app
 COPY firebase_credential.json ./
 ENV GOOGLE_APPLICATION_CREDENTIALS="firebase_credential.json"
 COPY .env ./
+COPY alembic.ini ./
+COPY migrations /backend/migrations
 
 # 起動コマンドは docker-compose.ymlで指定

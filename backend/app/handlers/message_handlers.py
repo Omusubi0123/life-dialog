@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
+from sqlalchemy import update
 
 from app.alg.ai_search_support import upload_diary
 from app.alg.analyze_user import analyze_user_by_llm
@@ -13,6 +14,7 @@ from app.db.db_insert import add_message
 from app.db.get_diary import get_or_create_diary
 from app.db.get_diary_firebase import get_diary_from_db
 from app.db.manage_user_status import get_user_status, update_user_status
+from app.db.model import Diary
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
@@ -20,6 +22,7 @@ from app.line_bot.user_status import get_current_status
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.datetime_format import get_YMD_from_datetime
+from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
 from app.utils.media_service import save_media
 from app.utils.session_scope import get_session
@@ -41,10 +44,10 @@ def handle_text_message(event):
     user_status = get_current_status(user_id, event)
     update_user_status(user_id, user_status)
 
+    diary_id = get_or_create_diary(user_id, get_japan_date())
     if text not in QuickReplyField.get_values():
         if user_status == QuickReplyField.diary_mode.value:
             # 日記モードの場合はテキストをDBに保存
-            diary_id = get_or_create_diary(user_id, date.today())
             with get_session() as session:
                 add_message(
                     session,
@@ -56,7 +59,6 @@ def handle_text_message(event):
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
-            diary_id = get_or_create_diary(user_id, date.today())
             with get_session() as session:
                 message_id = add_message(
                     session,
@@ -66,8 +68,17 @@ def handle_text_message(event):
                     f"Q: {text}\nA: {answer}",
                 )
     elif text == QuickReplyField.view_diary.value:
-        summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
-        add_diary_summary(user_id, summary, feedback, year, month, day)
+        title, summary, feedback = summarize_diary_by_llm(user_id, get_japan_date())
+        content = f"Title: {title}\n\nSummary: {summary}\n\nFeedback: {feedback}\n\nMessage:\n{diary_id}"
+        with get_session() as session:
+            stmt = (
+                update(Diary)
+                .where(Diary.diary_id == diary_id)
+                .values(
+                    title=title, content=content, summary=summary, feedback=feedback
+                )
+            )
+            session.execute(stmt)
 
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
 

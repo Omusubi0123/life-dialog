@@ -53,6 +53,7 @@ class Diary(Base):
     user_id = Column(String(40), ForeignKey("users.user_id"))
     date = Column(DATE, default=lambda: get_japan_date())
     title = Column(Text)
+    content = Column(Text)
     summary = Column(Text)
     feedback = Column(Text)
 
