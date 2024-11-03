@@ -7,7 +7,7 @@ from app.db.model import Message
 from app.utils.session_scope import get_session
 
 
-def get_date_message(user_id: str, date: date) -> list[Message]:
+def get_date_message(user_id: str, date: date) -> list[dict]:
     """指定したユーザー・日付のメッセージをすべて取得
 
     Args:

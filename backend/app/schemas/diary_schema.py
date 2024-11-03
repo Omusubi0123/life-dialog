@@ -15,6 +15,7 @@ class Diary(BaseModel):
     month: int
     day: int
     items: list[MessageItem]
+    title: Optional[str] = None
     summary: Optional[str] = None
     feedback: Optional[str] = None
 

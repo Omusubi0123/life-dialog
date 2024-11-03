@@ -2,7 +2,7 @@ from app.db.model import Analysis
 from app.utils.session_scope import get_session
 
 
-def get_user_analysis(user_id: str) -> Analysis:
+def get_user_analysis(user_id: str) -> dict:
     """DBからユーザーの分析情報を取得
 
     Args:
@@ -12,5 +12,5 @@ def get_user_analysis(user_id: str) -> Analysis:
         User: ユーザーのプロフィール
     """
     with get_session() as session:
-        user = session.query(Analysis).filter(Analysis.user_id == user_id).first()
-    return user
+        analysis = session.query(Analysis).filter(Analysis.user_id == user_id).first()
+        return analysis.to_dict() if analysis else None

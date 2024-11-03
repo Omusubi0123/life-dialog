@@ -25,7 +25,7 @@ def get_or_create_diary_id(user_id: str, date: date) -> int:
         return new_diary.diary_id
 
 
-def get_date_diary(user_id: str, date: date) -> Diary:
+def get_date_diary(user_id: str, date: date) -> dict:
     """指定したユーザー・日付の日記を取得"""
     with get_session() as session:
         stmt = select(Diary).where(Diary.user_id == user_id, Diary.date == date)
