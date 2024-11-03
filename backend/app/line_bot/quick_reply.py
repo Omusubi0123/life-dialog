@@ -1,3 +1,5 @@
+from datetime import date
+
 from linebot.models import QuickReply, TextMessage, TextSendMessage
 
 from app.alg.summarize_diary import summarize_diary_by_llm
@@ -22,9 +24,7 @@ def create_summary_feedback(event, year, month, day):
 def create_quick_reply(
     event,
     user_status: str,
-    year: int,
-    month: int,
-    day: int,
+    date: date,
     summary: str = "",
     feedback: str = "",
     answer: str = "",
@@ -66,7 +66,7 @@ def create_quick_reply(
         and user_id_list
     ):
         flex_message = create_flex_message(
-            event, user_status, summary, year, month, day, date_list, user_id_list
+            event, user_status, summary, date, date_list, user_id_list
         )
         if sent_text == QuickReplyField.view_diary.value or (
             user_status == QuickReplyField.interactive_mode.value

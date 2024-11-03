@@ -11,8 +11,8 @@ from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
 from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
-from app.db.get_diary import get_or_create_diary
 from app.db.get_diary_firebase import get_diary_from_db
+from app.db.get_diary_id import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.model import Diary
 from app.db.write_diary import update_doc_field
@@ -44,7 +44,9 @@ def handle_text_message(event):
     user_status = get_current_status(user_id, event)
     update_user_status(user_id, user_status)
 
-    diary_id = get_or_create_diary(user_id, get_japan_date())
+    diary_id = get_or_create_diary_id(user_id, get_japan_date())
+    answer, summary, feedback = "", "", ""
+    date_list, user_id_list = [], []
     if text not in QuickReplyField.get_values():
         if user_status == QuickReplyField.diary_mode.value:
             # 日記モードの場合はテキストをDBに保存
@@ -77,7 +79,18 @@ def handle_text_message(event):
             )
             session.execute(stmt)
 
-    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=text))
+    # quick replyを作成してline botで返信
+    messages = create_quick_reply(
+        event,
+        user_status,
+        get_japan_date(),
+        summary,
+        feedback,
+        answer,
+        date_list,
+        user_id_list,
+    )
+    line_bot_api.reply_message(event.reply_token, messages)
 
     # message_id = event.message.id
 
@@ -155,7 +168,7 @@ def handle_media_message(event):
 
     url = save_media(user_id, message_id, message_content, media_type)
 
-    diary_id = get_or_create_diary(user_id, date.today())
+    diary_id = get_or_create_diary_id(user_id, date.today())
     with get_session() as session:
         add_message(
             session,

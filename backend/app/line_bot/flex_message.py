@@ -1,13 +1,16 @@
 import random
+from datetime import date
 
 from linebot.models import FlexSendMessage
 
 from app.db.get_diary_firebase import get_diary_from_db
+from app.db.get_diary_id import get_date_diary
+from app.db.get_message import get_date_message
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 
 
-def get_diary_random_image(user_id: str, year: int, month: int, day: int) -> str | None:
+def get_diary_random_image(user_id: str, date: date) -> str | None:
     """選択された日記からランダムに画像を取得
 
     Args:
@@ -20,17 +23,14 @@ def get_diary_random_image(user_id: str, year: int, month: int, day: int) -> str
         str | None: 画像URL
     """
     """"""
-    doc_dict = get_diary_from_db(user_id, year, month, day)
-    if (
-        "files" in doc_dict
-        and isinstance(doc_dict["files"], dict)
-        and len(doc_dict["files"]) > 0
-    ):
+    messages = get_date_message(user_id, date)
+
+    if any([message["media_type"] == "image" for message in messages]):
         # 'mediatype'が'image'のものだけを抽出
         image_files = [
-            file_data["url"]
-            for file_data in doc_dict["files"].values()
-            if file_data["mediatype"] == "image"
+            message["content"]
+            for message in messages
+            if message["media_type"] == "image"
         ]
 
         if image_files:
@@ -42,10 +42,10 @@ def get_diary_random_image(user_id: str, year: int, month: int, day: int) -> str
 
 
 def create_flex_message(
-    event, status, summary, year, month, day, date_list, user_id_list
+    event, status: str, summary: str, date: date, date_list, user_id_list
 ):
     """日記をLINEで表示するためのflex messageを作成"""
-    thumbnail_image_url = get_diary_random_image(event.source.user_id, year, month, day)
+    thumbnail_image_url = get_diary_random_image(event.source.user_id, date)
     print(thumbnail_image_url)
 
     if event.message.text == QuickReplyField.view_diary.value:
@@ -60,7 +60,8 @@ def create_flex_message(
                             "type": "image",
                             "url": thumbnail_image_url
                             if thumbnail_image_url
-                            else "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
+                            else f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
+                            # else "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
@@ -107,16 +108,14 @@ def create_flex_message(
         cards_data = []
         for date, user_id in zip(date_list, user_id_list):
             year, month, day = map(int, date.split("-"))
-            diary_data = get_diary_from_db(user_id, year, month, day)
+            diary = get_date_diary(user_id, date)
 
-            if diary_data and "summary" in diary_data and "date" in diary_data:
+            if diary and diary["summary"]:
                 cards_data.append(
                     {
-                        "date": diary_data["date"],
-                        "summary": diary_data["summary"],
-                        "thumbnail_image_url": get_diary_random_image(
-                            user_id, year, month, day
-                        ),
+                        "date": diary["date"],
+                        "summary": diary["summary"],
+                        "thumbnail_image_url": get_diary_random_image(user_id, date),
                     },
                 )
 
@@ -127,7 +126,8 @@ def create_flex_message(
                 "hero": {
                     "type": "image",
                     "url": card["thumbnail_image_url"]
-                    or "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
+                    or f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
+                    # or "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
                     "size": "full",
                     "aspectRatio": "20:13",
                     "aspectMode": "cover",

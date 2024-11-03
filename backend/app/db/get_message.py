@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy import select
 
-from app.db.get_diary import get_or_create_diary
+from app.db.get_diary_id import get_or_create_diary_id
 from app.db.model import Message
 from app.utils.session_scope import get_session
 
@@ -17,7 +17,7 @@ def get_date_message(user_id: str, date: date) -> list[Message]:
     Returns:
         list[Message]: 指定したユーザー・日付のメッセージ
     """
-    diary_id = get_or_create_diary(user_id, date)
+    diary_id = get_or_create_diary_id(user_id, date)
     with get_session() as session:
         stmt = (
             select(Message)

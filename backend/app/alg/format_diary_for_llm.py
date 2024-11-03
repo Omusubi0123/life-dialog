@@ -28,16 +28,18 @@ def format_messages_to_llm_input(
 
 
 def format_llm_response_json_to_str(
+    title: str,
     summary: str,
     feedback: str,
 ) -> str:
     """LLMの出力を可読性の高い形式に変換する
 
     Args:
+        title (str): 日記のタイトル
         summary (str): 日記の要約
         feedback (str): フィードバック
 
     Returns:
         str: 可読性の高い形式の文字列
     """
-    return f"Summary: {summary}\nFeedback: {feedback}\n"
+    return f"Title: {title}\nSummary: {summary}\nFeedback: {feedback}\n"
