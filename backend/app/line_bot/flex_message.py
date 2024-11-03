@@ -4,7 +4,6 @@ from datetime import date
 from linebot.models import FlexSendMessage
 
 from app.db.get_diary import get_date_diary
-from app.db.get_diary_firebase import get_diary_from_db
 from app.db.get_message import get_date_message
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
@@ -61,7 +60,6 @@ def create_flex_message(
                             "url": thumbnail_image_url
                             if thumbnail_image_url
                             else f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
-                            # else "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
@@ -127,7 +125,6 @@ def create_flex_message(
                     "type": "image",
                     "url": card["thumbnail_image_url"]
                     or f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
-                    # or "https://firebasestorage.googleapis.com/v0/b/jp-hacks-77212.appspot.com/o/material%2Fdefault_diary_thumbnail.jpg?alt=media&token=9aad0b1e-04e4-4727-97a6-2668de248d02",
                     "size": "full",
                     "aspectRatio": "20:13",
                     "aspectMode": "cover",

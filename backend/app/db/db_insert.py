@@ -14,6 +14,7 @@ def add_user(
     status_message: str = None,
     link_token: str = None,
 ) -> User:
+    """ユーザーを追加・既に存在する場合は更新する"""
     stmt = (
         update(User)
         .where(User.user_id == user_id)
