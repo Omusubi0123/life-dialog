@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
@@ -11,7 +11,7 @@ from app.db.add_diary_summary import add_diary_summary
 from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
 from app.db.get_diary import get_diary_from_db
-from app.db.get_today_diary import get_or_create_today_diary
+from app.db.get_today_diary import get_or_create_diary
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
@@ -44,7 +44,7 @@ def handle_text_message(event):
     if text not in QuickReplyField.get_values():
         if user_status == QuickReplyField.diary_mode.value:
             # 日記モードの場合はテキストをDBに保存
-            diary_id = get_or_create_today_diary(user_id)
+            diary_id = get_or_create_diary(user_id, date.today())
             with get_session() as session:
                 add_message(
                     session,
@@ -56,7 +56,7 @@ def handle_text_message(event):
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
-            diary_id = get_or_create_today_diary(user_id)
+            diary_id = get_or_create_diary(user_id, date.today())
             with get_session() as session:
                 message_id = add_message(
                     session,

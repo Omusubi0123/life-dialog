@@ -9,7 +9,7 @@ def get_user_from_db(user_id: str) -> User:
         user_id (str): LINEユーザーID
 
     Returns:
-        dict[str, Any]: ユーザーのプロフィール
+        User: ユーザーのプロフィール
     """
     with get_session() as session:
         user = session.query(User).filter(User.user_id == user_id).first()
