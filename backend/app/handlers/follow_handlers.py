@@ -1,7 +1,7 @@
 import requests
 from sqlalchemy.orm import Session
 
-from app.db.add_user import add_user_document
+from app.db.add_user_firebase import add_user_document
 from app.db.db_insert import add_user
 from app.db.make_diary_collection import add_user_dairy_collection
 from app.settings import Settings

@@ -10,8 +10,8 @@ from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.add_diary_summary import add_diary_summary
 from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
-from app.db.get_diary import get_diary_from_db
-from app.db.get_today_diary import get_or_create_diary
+from app.db.get_diary import get_or_create_diary
+from app.db.get_diary_firebase import get_diary_from_db
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.write_diary import update_doc_field
 from app.line_bot.quick_reply import create_quick_reply
@@ -147,7 +147,7 @@ def handle_media_message(event):
 
     url = save_media(user_id, message_id, message_content, media_type)
 
-    diary_id = get_or_create_today_diary(user_id)
+    diary_id = get_or_create_diary(user_id, date.today())
     with get_session() as session:
         add_message(
             session,

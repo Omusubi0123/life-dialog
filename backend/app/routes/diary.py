@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.db.get_diary import get_diary_from_db
+from app.db.get_diary_firebase import get_diary_from_db
 from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.schemas.diary_schema import Diary, FetchDiary
 from app.utils.data_enum import DiaryField

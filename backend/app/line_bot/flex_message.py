@@ -2,7 +2,7 @@ import random
 
 from linebot.models import FlexSendMessage
 
-from app.db.get_diary import get_diary_from_db
+from app.db.get_diary_firebase import get_diary_from_db
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 

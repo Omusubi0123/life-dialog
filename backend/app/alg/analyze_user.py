@@ -6,7 +6,7 @@ from app.alg.format_diary_for_llm import (
 )
 from app.alg.prompt.analyze_user_prompt import ANALYZE_USER_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_diary import get_all_diary_from_db
+from app.db.get_diary_firebase import get_all_diary_from_db
 from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.utils.data_enum import AnalyzeUserField, DiaryField
 from app.utils.llm_response import openai_call

@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy import select
 
-from app.db.get_today_diary import get_or_create_diary
+from app.db.get_diary import get_or_create_diary
 from app.db.model import Message
 from app.utils.session_scope import get_session
 
