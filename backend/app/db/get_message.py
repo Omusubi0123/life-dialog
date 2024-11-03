@@ -25,4 +25,4 @@ def get_date_message(user_id: str, date: date) -> list[Message]:
             .order_by(Message.sent_at)
         )
         messages = session.execute(stmt).scalars().all()
-        return messages
+        return [message.to_dict() for message in messages]

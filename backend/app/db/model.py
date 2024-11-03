@@ -11,7 +11,15 @@ from app.utils.get_japan_datetime import (
 Base = declarative_base()
 
 
-class User(Base):
+class BaseClass(Base):
+    __abstract__ = True
+
+    def to_dict(self) -> dict:
+        """SQLAlchemyのモデルをdictに変換する"""
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class User(BaseClass):
     __tablename__ = "users"
 
     user_id = Column(String(40), primary_key=True)
@@ -31,7 +39,7 @@ class User(Base):
     diaries = relationship("Diary", back_populates="user")
 
 
-class Analysis(Base):
+class Analysis(BaseClass):
     __tablename__ = "analysis"
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
@@ -46,14 +54,13 @@ class Analysis(Base):
     user = relationship("User", back_populates="analyses")
 
 
-class Diary(Base):
+class Diary(BaseClass):
     __tablename__ = "diary"
 
     diary_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(40), ForeignKey("users.user_id"))
     date = Column(DATE, default=lambda: get_japan_date())
     title = Column(Text)
-    content = Column(Text)
     summary = Column(Text)
     feedback = Column(Text)
 
@@ -61,7 +68,7 @@ class Diary(Base):
     messages = relationship("Message", back_populates="diary")
 
 
-class Message(Base):
+class Message(BaseClass):
     __tablename__ = "message"
 
     message_id = Column(Integer, primary_key=True, autoincrement=True)

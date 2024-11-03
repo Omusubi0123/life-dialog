@@ -69,14 +69,11 @@ def handle_text_message(event):
                 )
     elif text == QuickReplyField.view_diary.value:
         title, summary, feedback = summarize_diary_by_llm(user_id, get_japan_date())
-        content = f"Title: {title}\n\nSummary: {summary}\n\nFeedback: {feedback}\n\nMessage:\n{diary_id}"
         with get_session() as session:
             stmt = (
                 update(Diary)
                 .where(Diary.diary_id == diary_id)
-                .values(
-                    title=title, content=content, summary=summary, feedback=feedback
-                )
+                .values(title=title, summary=summary, feedback=feedback)
             )
             session.execute(stmt)
 

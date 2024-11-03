@@ -15,7 +15,7 @@ def summarize_diary_by_llm(
     system_prompt: str = SYSTEM_PROMPT_JSON,
     summarize_diary_prompt: str = SUMMARIZE_DIARY_PROMPT,
     print_response: bool = True,
-) -> tuple[str, str]:
+) -> tuple[str, str, str, str]:
     """日記から1日の出来事の要約をLLMで生成する
 
     Returns:

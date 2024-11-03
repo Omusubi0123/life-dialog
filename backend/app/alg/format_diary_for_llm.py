@@ -20,9 +20,9 @@ def format_messages_to_llm_input(
     date = f"Day: {date.year}年{date.month}月{date.day}日\n"
     message_entries = []
     for message in messages:
-        entry_lines = [f"- {message.sent_at}"]
-        entry_lines.append([f"  media_type: {message.media_type}"])
-        entry_lines.append([f"  content: {message.content}"])
+        entry_lines = [f"- {message['sent_at']}"]
+        entry_lines.append(f"  media_type: {message['media_type']}")
+        entry_lines.append(f"  content: {message['content']}")
         message_entries.append("\n".join(entry_lines))
     return date + "\n".join(message_entries)
 
