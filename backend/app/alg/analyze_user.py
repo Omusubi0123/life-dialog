@@ -2,13 +2,14 @@ import json
 
 from app.alg.format_diary_for_llm import (
     format_llm_response_json_to_str,
-    format_sorted_diary_to_llm_input,
+    format_messages_to_llm_input,
 )
 from app.alg.prompt.analyze_user_prompt import ANALYZE_USER_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_diary import get_all_diary_from_db
+from app.db.get_diary_firebase import get_all_diary_from_db
 from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.utils.data_enum import AnalyzeUserField, DiaryField
+from app.utils.get_japan_datetime import get_japan_date
 from app.utils.llm_response import openai_call
 
 
@@ -29,7 +30,7 @@ def analyze_user_by_llm(
         year, month, day = diary[DiaryField.date.value].split("-")
         sorted_diary_messages = sort_diary_messages_timeorder(diary)
         diaries_str += (
-            format_sorted_diary_to_llm_input(sorted_diary_messages, year, month, day)
+            format_messages_to_llm_input(sorted_diary_messages, get_japan_date())
             + "\n\n"
         )
         if (DiaryField.summary.value in diary) and (DiaryField.feedback.value in diary):

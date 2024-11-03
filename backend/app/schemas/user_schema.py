@@ -3,18 +3,19 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
-class User(BaseModel):
+class UserProfile(BaseModel):
     user_id: str
-    user_name: str
-    icon_url: str
-    status_message: str
+    name: str
     created_at: datetime
     updated_at: datetime
-    linkToken: str
+    mode: str
+    icon_url: str
+    status_message: str
+    link_token: str
 
-    personality: str
-    strength: str
-    weakness: str
+    personality: str | None = None
+    strength: str | None = None
+    weakness: str | None = None
 
 
 class FetchProfile(BaseModel):

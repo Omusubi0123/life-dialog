@@ -1,20 +1,16 @@
-from typing import Any
-
-from app.gcp_settings import db
-from app.utils.data_enum import RootCollection
+from app.db.model import User
+from app.utils.session_scope import get_session
 
 
-def get_user_from_db(user_id: str) -> dict[str, Any]:
+def get_user_from_db(user_id: str) -> dict:
     """DBからユーザーのプロフィールを取得
 
     Args:
         user_id (str): LINEユーザーID
 
     Returns:
-        dict[str, Any]: ユーザーのプロフィール
+        User: ユーザーのプロフィール
     """
-    user_ref = db.collection(RootCollection.user.value).document(user_id)
-
-    user = user_ref.get()
-    user_dict = user.to_dict()
-    return user_dict
+    with get_session() as session:
+        user = session.query(User).filter(User.user_id == user_id).first()
+        return user.to_dict() if user else None

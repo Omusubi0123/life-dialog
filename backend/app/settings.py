@@ -15,7 +15,9 @@ class Settings(BaseSettings):
     azure_ai_search_admin_key: str
     azure_ai_search_index_name: str
 
-    deployment_url: str
+    database_url: str
+
+    nginx_file_url: str
     frontend_url: str
 
     model_config = {"env_file": ".env"}

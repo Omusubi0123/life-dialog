@@ -1,23 +1,23 @@
-from datetime import datetime, timedelta, timezone
-
 from linebot import LineBotApi
+from sqlalchemy import update
 
-from app.alg.ai_search_support import upload_diary
 from app.alg.analyze_user import analyze_user_by_llm
 from app.alg.rag import rag_answer
 from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.add_diary_summary import add_diary_summary
 from app.db.add_user_analization import add_user_analization
-from app.db.get_diary import get_diary_from_db
+from app.db.db_insert import add_message
+from app.db.get_diary import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
-from app.db.write_diary import update_doc_field
+from app.db.model import Diary
 from app.line_bot.quick_reply import create_quick_reply
+from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
-from app.utils.datetime_format import get_YMD_from_datetime
+from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
-from app.line_bot.start_loading import start_loading
+from app.utils.media_service import save_media
+from app.utils.session_scope import get_session
 
 line_bot_api = LineBotApi(settings.channel_access_token)
 
@@ -28,63 +28,54 @@ def handle_text_message(event):
     Args:
         event (_type_): LINEイベント
     """
-    start_loading(event.source.user_id, 60)
-
     user_id = event.source.user_id
-    message_id = event.message.id
     text = event.message.text
 
-    user_status = get_current_status(event)
+    start_loading(user_id, 60)
 
-    # ユーザーのステータスが変更されたらDBに保存
-    # TODO: 下のif分岐の条件式がおかしい　これを入れるとエラーになる
-    # if text in QuickReplyField.get_values() and text != user_status:
+    user_status = get_current_status(user_id, event)
     update_user_status(user_id, user_status)
 
-    date = datetime.now(timezone(timedelta(hours=9)))
-    year, month, day = get_YMD_from_datetime(date)
-    answer, summary, feedback = None, None, None
-    date_list, user_id_list = None, None
+    diary_id = get_or_create_diary_id(user_id, get_japan_date())
+    answer, summary, feedback = "", "", ""
+    date_list, user_id_list = [], []
     if text not in QuickReplyField.get_values():
-        timestamp = event.timestamp
         if user_status == QuickReplyField.diary_mode.value:
             # 日記モードの場合はテキストをDBに保存
-            update_doc_field(user_id, message_id, text, MediaType.TEXT.value, timestamp)
+            with get_session() as session:
+                add_message(
+                    session,
+                    diary_id,
+                    user_id,
+                    MediaType.TEXT.value,
+                    text,
+                )
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
-            update_doc_field(
-                user_id,
-                message_id,
-                f"Q: {text}\nA: {answer}",
-                MediaType.TEXT.value,
-                timestamp,
-            )
+            with get_session() as session:
+                message_id = add_message(
+                    session,
+                    diary_id,
+                    user_id,
+                    MediaType.TEXT.value,
+                    f"Q: {text}\nA: {answer}",
+                )
     elif text == QuickReplyField.view_diary.value:
-        # TODO: 要約生成、AI searchへアップロードの両方で今日の日記を読み込んでいる
-        # 日記閲覧の場合は日記の要約・フィードバックを作成しDBに保存
-        summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
-        add_diary_summary(user_id, summary, feedback, year, month, day)
-
-        # 日記をembeddingしてAI searchのIndexに保存
-        diary_dict = get_diary_from_db(user_id, year, month, day)
-        upload_diary(user_id, diary_dict)
-
-        # これまでの全日記からユーザーの特徴を分析
-        personality, strength, weakness = analyze_user_by_llm(event.source.user_id)
-        add_user_analization(event.source.user_id, personality, strength, weakness)
-    if text == QuickReplyField.interactive_mode.value:
-        # 日記をembeddingしてAI searchのIndexに保存
-        diary_dict = get_diary_from_db(user_id, year, month, day)
-        upload_diary(user_id, diary_dict)
+        title, summary, feedback = summarize_diary_by_llm(user_id, get_japan_date())
+        with get_session() as session:
+            stmt = (
+                update(Diary)
+                .where(Diary.diary_id == diary_id)
+                .values(title=title, summary=summary, feedback=feedback)
+            )
+            session.execute(stmt)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(
         event,
         user_status,
-        year,
-        month,
-        day,
+        get_japan_date(),
         summary,
         feedback,
         answer,
@@ -100,22 +91,33 @@ def handle_media_message(event):
     Args:
         event (_type_): LINEイベント
     """
-    start_loading(event.source.user_id, 60)
     user_id = event.source.user_id
-    message_id = event.message.id
     media_type = event.message.type
-    timestamp = event.timestamp
-    message_content = line_bot_api.get_message_content(message_id)
-    update_doc_field(user_id, message_id, message_content, media_type, timestamp)
 
-    date = datetime.now(timezone(timedelta(hours=9)))
-    year, month, day = get_YMD_from_datetime(date)
+    start_loading(user_id, 60)
+
+    message_id = event.message.id
+    message_content = line_bot_api.get_message_content(message_id)
+
+    # メディアをnginxに保存
+    url = save_media(user_id, message_id, message_content, media_type)
+
+    # メディアのURLをMessage DBに保存
+    diary_id = get_or_create_diary_id(user_id, get_japan_date())
+    with get_session() as session:
+        add_message(
+            session,
+            diary_id,
+            user_id,
+            media_type,
+            url,
+        )
+
+    # quick replyを作成してline botで返信
     user_status = get_user_status(user_id)
     messages = create_quick_reply(
         event,
         user_status,
-        year,
-        month,
-        day,
+        get_japan_date(),
     )
     line_bot_api.reply_message(event.reply_token, messages)

@@ -1,56 +1,33 @@
-import os
-from datetime import datetime
-from typing import Any
+from datetime import date
 
-from app.gcp_settings import db
-from app.utils.data_enum import DiaryCollection, RootCollection
+from sqlalchemy import select
 
-
-def get_diary_from_db(
-    user_id: str,
-    year: int,
-    month: int,
-    day: int,
-) -> dict[str, Any]:
-    """DBからユーザーの指定した日記を取得
-
-    Args:
-        user_id (str): LINEユーザーID
-        year (int): 日記の年
-        month (int): 日記の月
-        day (int): 日記の日
-
-    Returns:
-        dict[str, Any]: 日記のアイテム
-    """
-    day = datetime(year, month, day).strftime("%Y-%m-%d")
-    collection_name = os.path.join(
-        RootCollection.diary.value, user_id, DiaryCollection.diary.value
-    )
-    try:
-        doc_ref = db.collection(collection_name).document(day)
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
-    doc = doc_ref.get()
-    doc_dict = doc.to_dict()
-    return doc_dict
+from app.db.db_insert import add_diary
+from app.db.model import Diary
+from app.utils.session_scope import get_session
 
 
-def get_all_diary_from_db(user_id: str) -> list[dict[str, Any]]:
-    """DBからユーザーの全日記を取得
+def get_or_create_diary_id(user_id: str, date: date) -> int:
+    """指定した日のユーザーの日記を取得または作成し、日記IDを返す"""
+    with get_session() as session:
+        stmt = select(Diary).where(Diary.user_id == user_id, Diary.date == date)
+        existing_diary = session.scalar(stmt)
 
-    Args:
-        user_id (str): LINEユーザーID
+        if existing_diary:
+            return existing_diary.diary_id
 
-    Returns:
-        list[dict[str, Any]]: ユーザーの全日記のリスト
-    """
-    """"""
-    collection_name = os.path.join(
-        RootCollection.diary.value, user_id, DiaryCollection.diary.value
-    )
-    diaries = db.collection(collection_name).list_documents()
-    diary_list = [diary.get().to_dict() for diary in diaries]
+        new_diary = add_diary(
+            session,
+            user_id=user_id,
+            date=date,
+        )
 
-    return diary_list
+        return new_diary.diary_id
+
+
+def get_date_diary(user_id: str, date: date) -> dict:
+    """指定したユーザー・日付の日記を取得"""
+    with get_session() as session:
+        stmt = select(Diary).where(Diary.user_id == user_id, Diary.date == date)
+        diary = session.scalar(stmt)
+        return diary.to_dict() if diary else None

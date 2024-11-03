@@ -11,10 +11,10 @@ lint:
 	make -j _isort_check _black_check _mypy
 
 _isort_apply:
-	poetry run isort ./
+	poetry run isort ./app/
 
 _black_apply:
-	poetry run black ./
+	poetry run black ./app/
 
 fmt:
 	make _isort_apply _black_apply

@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from azure.core.credentials import AzureKeyCredential
@@ -24,7 +24,7 @@ from openai import OpenAI
 
 from app.alg.format_diary_for_llm import (
     format_llm_response_json_to_str,
-    format_sorted_diary_to_llm_input,
+    format_messages_to_llm_input,
 )
 from app.db.sort_diary_messages import sort_diary_messages_timeorder
 from app.settings import settings
@@ -162,9 +162,7 @@ def upload_diary(
     date_object = datetime.strptime(doc_dict[DiaryField.date.value], "%Y-%m-%d")
     year, month, day = date_object.year, date_object.month, date_object.day
 
-    diary_str = format_sorted_diary_to_llm_input(
-        sorted_diary_messages, year, month, day
-    )
+    diary_str = format_messages_to_llm_input(sorted_diary_messages, date.today())
     summary, feedback = doc_dict.get(DiaryField.summary.value), doc_dict.get(
         DiaryField.feedback.value
     )

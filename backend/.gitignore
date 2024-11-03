@@ -1,5 +1,7 @@
 __pycache__
 data
+files/
+postgres_data/
 .env
 .venv
 

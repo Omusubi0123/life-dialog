@@ -1,0 +1,28 @@
+# ベースイメージ
+FROM python:3.10-slim
+
+# Poetryインストール
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
+
+# 作業ディレクトリ設定
+WORKDIR /backend
+
+# Poetry のインストール
+RUN pip install --no-cache-dir poetry
+
+# pyproject.tomlとpoetry.lockをコピーし、依存関係をインストール
+COPY pyproject.toml poetry.lock ./
+
+# 依存関係インストール（仮想環境を無効化）
+RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction --no-ansi
+
+# アプリケーションコードとFirebase認証情報をコピー
+COPY ./app /backend/app
+COPY firebase_credential.json ./
+ENV GOOGLE_APPLICATION_CREDENTIALS="firebase_credential.json"
+COPY .env ./
+COPY alembic.ini ./
+COPY migrations /backend/migrations
+
+# 起動コマンドは docker-compose.ymlで指定
