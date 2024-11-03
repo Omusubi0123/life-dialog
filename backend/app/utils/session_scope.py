@@ -1,11 +1,15 @@
 from contextlib import contextmanager
 
+from app.db.config import SessionLocal
+
 
 @contextmanager
-def session_scope(session):
+def get_session():
+    session = SessionLocal()
     try:
+        yield session
         session.commit()
-    except:
+    except Exception:
         session.rollback()
         raise
     finally:

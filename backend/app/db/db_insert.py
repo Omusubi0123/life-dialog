@@ -1,22 +1,17 @@
 from datetime import datetime
 
 from app.db.model import Analysis, Diary, Message, User
-from app.utils.session_scope import session_scope
-
-
-def add_entity(session, entity):
-    with session_scope(session):
-        session.add(entity)
+from app.utils.session_scope import get_session
 
 
 def add_user(
-    session, 
+    session,
     user_id: int,
-    name: str, 
-    mode: str = None, 
-    icon_url: str = None, 
+    name: str,
+    mode: str = None,
+    icon_url: str = None,
     status_message: str = None,
-    link_token: str = None, 
+    link_token: str = None,
 ) -> User:
     new_user = User(
         user_id=user_id,
@@ -26,15 +21,16 @@ def add_user(
         status_message=status_message,
         link_token=link_token,
     )
-    add_entity(session, new_user)
+    session.add(new_user)
+    session.flush()
     return new_user
 
 
 def add_analysis(
-    session, 
-    user_id: int, 
-    personality: str, 
-    strength: str, 
+    session,
+    user_id: int,
+    personality: str,
+    strength: str,
     weakness: str,
 ) -> Analysis:
     new_analysis = Analysis(
@@ -43,16 +39,17 @@ def add_analysis(
         strength=strength,
         weakness=weakness,
     )
-    add_entity(session, new_analysis)
+    session.add(new_analysis)
+    session.flush()
     return new_analysis
 
 
 def add_diary(
-    session, 
-    user_id: int, 
+    session,
+    user_id: int,
     date: datetime,
-    title: str, 
-    summary: str, 
+    title: str,
+    summary: str,
     feedback: str,
 ) -> Diary:
     new_diary = Diary(
@@ -62,7 +59,8 @@ def add_diary(
         summary=summary,
         feedback=feedback,
     )
-    add_entity(session, new_diary)
+    session.add(new_diary)
+    session.flush()
     return new_diary
 
 
@@ -81,5 +79,6 @@ def add_message(
         media_type=media_type,
         content=content,
     )
-    add_entity(session, new_message)
+    session.add(new_message)
+    session.flush()
     return new_message

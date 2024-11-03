@@ -1,9 +1,12 @@
 import requests
+from sqlalchemy.orm import Session
 
 from app.db.add_user import add_user_document
+from app.db.db_insert import add_user
 from app.db.make_diary_collection import add_user_dairy_collection
 from app.settings import Settings
 from app.utils.data_enum import QuickReplyField, UserField
+from app.utils.session_scope import get_session
 from app.utils.timestamp_format import timestamp_md_to_datetime
 
 settings = Settings()
@@ -54,7 +57,7 @@ def get_user_link_token(user_id: str) -> str | None:
 
 
 def handle_follow_event(event):
-    """公式アカウントに登録された時、ユーザードキュメントと日記コレクションを作成
+    """公式アカウントに登録された時、ユーザーテーブルにユーザー情報を追加
 
     Args:
         event (_type_): LINEイベント
@@ -66,19 +69,19 @@ def handle_follow_event(event):
     user_profile = get_user_profile(user_id)
 
     if link_token and user_profile:
-        user_doc_field = {
-            UserField.user_id.value: user_id,
-            UserField.linkToken.value: link_token,
-            UserField.status.value: QuickReplyField.diary_mode.value,
-            UserField.user_name.value: user_profile["displayName"],
-            UserField.icon_url.value: user_profile["pictureUrl"]
-            if "pictureUrl" in user_profile
-            else "",
-            UserField.status_message.value: user_profile["statusMessage"]
-            if "statusMessage" in user_profile
-            else "",
-            UserField.created_at.value: timestamp,
-        }
-        add_user_document(user_id, user_doc_field)
-        add_user_dairy_collection(user_id, timestamp)
+        with get_session() as session:
+            add_user(
+                session,
+                user_id=user_id,
+                name=user_profile["displayName"],
+                mode=QuickReplyField.diary_mode.value,
+                icon_url=user_profile["pictureUrl"]
+                if "pictureUrl" in user_profile
+                else "",
+                status_message=user_profile["statusMessage"]
+                if "statusMessage" in user_profile
+                else "",
+                link_token=link_token,
+            )
+
         print(f"Follow Event: user_id: {user_id}, timestamp: {timestamp}")

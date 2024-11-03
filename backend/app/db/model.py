@@ -8,8 +8,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "users"
 
-    user_id = Column(Integer, primary_key=True)
-    name = Column(String(50))
+    user_id = Column(String(40), primary_key=True)
+    name = Column(String(40))
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
     mode = Column(String(10))
@@ -25,7 +25,7 @@ class Analysis(Base):
     __tablename__ = "analysis"
 
     analysis_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
+    user_id = Column(String(40), ForeignKey("users.user_id"))
     uploaded_at = Column(TIMESTAMP, server_default=func.now())
     personality = Column(Text)
     strength = Column(Text)
@@ -38,7 +38,7 @@ class Diary(Base):
     __tablename__ = "diary"
 
     diary_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.user_id"))
+    user_id = Column(String(40), ForeignKey("users.user_id"))
     date = Column(DATE)
     title = Column(Text)
     summary = Column(Text)
@@ -53,7 +53,7 @@ class Message(Base):
 
     message_id = Column(Integer, primary_key=True, autoincrement=True)
     diary_id = Column(Integer, ForeignKey("diary.diary_id"))
-    user_id = Column(Integer, ForeignKey("users.user_id"))
+    user_id = Column(String(40), ForeignKey("users.user_id"))
     media_type = Column(String(10))
     content = Column(Text)
     sent_at = Column(TIMESTAMP, server_default=func.now())
