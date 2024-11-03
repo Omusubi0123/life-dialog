@@ -1,15 +1,11 @@
 import requests
-from sqlalchemy.orm import Session
 
-from app.db.add_user_firebase import add_user_document
 from app.db.db_insert import add_user
-from app.db.make_diary_collection import add_user_dairy_collection
-from app.settings import Settings
-from app.utils.data_enum import QuickReplyField, UserField
+from app.settings import settings
+from app.utils.data_enum import QuickReplyField
 from app.utils.session_scope import get_session
 from app.utils.timestamp_format import timestamp_md_to_datetime
 
-settings = Settings()
 channel_access_token = settings.channel_access_token
 
 
