@@ -15,6 +15,8 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - postgres
+    networks:
+      - cloudflared_network
 
   postgres:
     image: ankane/pgvector
@@ -29,6 +31,8 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
+    networks:
+      - cloudflared_network
   
   nginx:
     image: nginx:latest
@@ -40,7 +44,13 @@ services:
       - "80:8000"
     depends_on:
       - backend
+    networks:
+      - cloudflared_network
 
 volumes:
   postgres_data:
   files:
+
+networks:
+  cloudflared_network:
+    driver: bridge
