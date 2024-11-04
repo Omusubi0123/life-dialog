@@ -4,7 +4,6 @@ from app.db.db_insert import add_user
 from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.session_scope import get_session
-from app.utils.timestamp_format import timestamp_md_to_datetime
 
 channel_access_token = settings.channel_access_token
 
@@ -59,7 +58,6 @@ def handle_follow_event(event):
         event (_type_): LINEイベント
     """
     user_id = event.source.user_id
-    timestamp = timestamp_md_to_datetime(event.timestamp)
 
     link_token = get_user_link_token(user_id)
     user_profile = get_user_profile(user_id)
@@ -80,4 +78,4 @@ def handle_follow_event(event):
                 link_token=link_token,
             )
 
-        print(f"Follow Event: user_id: {user_id}, timestamp: {timestamp}")
+        print(f"Follow Event: user_id: {user_id}")

@@ -1,14 +1,10 @@
 from linebot import LineBotApi
-from sqlalchemy import update
 
-from app.alg.analyze_user import analyze_user_by_llm
 from app.alg.rag import rag_answer
-from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
 from app.db.get_diary import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
-from app.db.model import Diary
+from app.db.set_diary_summary import set_diary_summary
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
@@ -16,7 +12,7 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
-from app.utils.media_service import save_media
+from app.utils.save_media import save_media
 from app.utils.session_scope import get_session
 
 line_bot_api = LineBotApi(settings.channel_access_token)
@@ -53,23 +49,17 @@ def handle_text_message(event):
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
-            with get_session() as session:
-                message_id = add_message(
-                    session,
-                    diary_id,
-                    user_id,
-                    MediaType.TEXT.value,
-                    f"Q: {text}\nA: {answer}",
-                )
+            # TODO: RAGの質問に対する回答を新しいmedia_typeとしてDBに保存
+            # with get_session() as session:
+            #     add_message(
+            #         session,
+            #         diary_id,
+            #         user_id,
+            #         MediaType.TEXT.value,
+            #         f"Q: {text}\nA: {answer}",
+            #     )
     elif text == QuickReplyField.view_diary.value:
-        title, summary, feedback = summarize_diary_by_llm(user_id, get_japan_date())
-        with get_session() as session:
-            stmt = (
-                update(Diary)
-                .where(Diary.diary_id == diary_id)
-                .values(title=title, summary=summary, feedback=feedback)
-            )
-            session.execute(stmt)
+        _, summary, feedback = set_diary_summary(user_id, diary_id)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(

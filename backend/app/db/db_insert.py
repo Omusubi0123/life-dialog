@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from sqlalchemy import update
 
@@ -54,21 +54,37 @@ def add_analysis(
     strength: str,
     weakness: str,
 ) -> Analysis:
-    new_analysis = Analysis(
-        user_id=user_id,
-        personality=personality,
-        strength=strength,
-        weakness=weakness,
+    stmt = (
+        update(Analysis)
+        .where(Analysis.user_id == user_id)
+        .values(
+            personality=personality,
+            strength=strength,
+            weakness=weakness,
+        )
     )
-    session.add(new_analysis)
-    session.flush()
-    return new_analysis
+    result = session.execute(stmt)
+    if result.rowcount == 0:
+        # 更新された行がない場合は新規分析を作成
+        new_analysis = Analysis(
+            user_id=user_id,
+            personality=personality,
+            strength=strength,
+            weakness=weakness,
+        )
+        session.add(new_analysis)
+        session.flush()
+        return new_analysis
+    else:
+        # 更新が成功した場合は更新された分析を取得して返す
+        session.flush()
+        return session.query(Analysis).filter(Analysis.user_id == user_id).first()
 
 
 def add_diary(
     session,
     user_id: str,
-    date: datetime,
+    date: date,
     title: str = None,
     summary: str = None,
     feedback: str = None,
@@ -107,6 +123,7 @@ def add_diary_vector(
     session,
     user_id: str,
     diary_id: int,
+    date: date,
     diary_content: str,
     diary_vector: list[float],
 ) -> DiaryVector:
@@ -126,6 +143,7 @@ def add_diary_vector(
         new_diary_vector = DiaryVector(
             user_id=user_id,
             diary_id=diary_id,
+            date=date,
             diary_content=diary_content,
             diary_vector=diary_vector,
         )

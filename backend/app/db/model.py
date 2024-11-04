@@ -87,6 +87,7 @@ class DiaryVector(BaseClass):
     vector_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String(40), ForeignKey("users.user_id"))
     diary_id = Column(Integer, ForeignKey("diary.diary_id"))
+    date = Column(DATE)
     diary_content = Column(Text)
     diary_vector = Column(Vector(1536))
 

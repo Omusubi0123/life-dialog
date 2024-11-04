@@ -2,23 +2,9 @@ from datetime import date
 
 from linebot.models import QuickReply, TextMessage, TextSendMessage
 
-from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.add_diary_summary import add_diary_summary
 from app.line_bot.flex_message import create_flex_message
 from app.line_bot.quick_reply_item import create_quick_reply_buttons, create_reply_text
 from app.utils.data_enum import QuickReplyField
-
-
-def create_summary_feedback(event, year, month, day):
-    """LLMによる日記の要約とフィードバックを作成"""
-    user_id = event.source.user_id
-
-    if event.message.text == QuickReplyField.view_diary.value:
-        summary, feedback = summarize_diary_by_llm(user_id, year, month, day)
-        add_diary_summary(user_id, summary, feedback, year, month, day)
-        return summary, feedback
-    else:
-        return None, None
 
 
 def create_quick_reply(
@@ -68,10 +54,5 @@ def create_quick_reply(
         flex_message = create_flex_message(
             event, user_status, summary, date, date_list, user_id_list
         )
-        if sent_text == QuickReplyField.view_diary.value or (
-            user_status == QuickReplyField.interactive_mode.value
-            and date_list
-            and user_id_list
-        ):
-            messages.insert(0, flex_message)
+        messages.insert(0, flex_message)
     return messages

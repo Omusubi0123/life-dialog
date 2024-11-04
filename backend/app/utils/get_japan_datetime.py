@@ -5,7 +5,8 @@ import pytz
 
 def get_japan_timestamp() -> datetime:
     """日本時間の現在時刻を取得する"""
-    return datetime.now(pytz.timezone("Asia/Tokyo"))
+    timezone = pytz.timezone("Asia/Tokyo")
+    return datetime.now(timezone)
 
 
 def get_japan_date() -> datetime:

@@ -1,6 +1,6 @@
-from app.alg.ai_search_support import hybrid_search
 from app.alg.prompt.rag_prompt import RAG_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT
+from app.alg.search_cosine_sim import cosine_similar_diary
 from app.utils.llm_response import openai_call
 
 
@@ -19,12 +19,11 @@ def rag_answer(
     Returns:
         str: RAGによる回答
     """
-    search_results = hybrid_search(user_id, query)
+    results = cosine_similar_diary(user_id, query)
 
-    contents_str = "\n\n".join(result["content"] for result in search_results)
-
-    date_list = [result["date"] for result in search_results]
-    user_id_list = [result["user_id"] for result in search_results]
+    contents_str = "\n\n".join(result["diary_content"] for result in results)
+    date_list = [result["date"] for result in results]
+    user_id_list = [result["user_id"] for result in results]
 
     answer = openai_call(
         system_prompt,
