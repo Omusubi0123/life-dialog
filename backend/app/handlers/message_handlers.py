@@ -9,6 +9,7 @@ from app.db.db_insert import add_message
 from app.db.get_diary import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
 from app.db.model import Diary
+from app.db.set_diary_summary import set_diary_summary
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
@@ -62,14 +63,7 @@ def handle_text_message(event):
                     f"Q: {text}\nA: {answer}",
                 )
     elif text == QuickReplyField.view_diary.value:
-        title, summary, feedback = summarize_diary_by_llm(user_id, get_japan_date())
-        with get_session() as session:
-            stmt = (
-                update(Diary)
-                .where(Diary.diary_id == diary_id)
-                .values(title=title, summary=summary, feedback=feedback)
-            )
-            session.execute(stmt)
+        set_diary_summary(user_id, diary_id)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(
