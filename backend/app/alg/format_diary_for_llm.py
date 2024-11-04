@@ -1,7 +1,5 @@
 from datetime import date
 
-from app.db.model import Message
-
 
 def format_messages_to_llm_input(
     messages: list[dict],
