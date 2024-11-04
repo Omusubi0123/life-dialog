@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile.backend
     container_name: backend
     working_dir: /backend
     volumes:
@@ -33,7 +33,7 @@ services:
       - "5432:5432"
     networks:
       - cloudflared_network
-  
+
   nginx:
     image: nginx:latest
     container_name: nginx
@@ -47,6 +47,17 @@ services:
     networks:
       - cloudflared_network
 
+  cloudflared:
+    build:
+      context: .
+      dockerfile: Dockerfile.cloudflared
+    container_name: cloudflared
+    depends_on:
+      - backend
+    networks:
+      - cloudflared_network
+
+
 volumes:
   postgres_data:
   files:
@@ -54,3 +65,4 @@ volumes:
 networks:
   cloudflared_network:
     driver: bridge
+
