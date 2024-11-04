@@ -123,6 +123,7 @@ def add_diary_vector(
     session,
     user_id: str,
     diary_id: int,
+    date: date,
     diary_content: str,
     diary_vector: list[float],
 ) -> DiaryVector:
@@ -142,6 +143,7 @@ def add_diary_vector(
         new_diary_vector = DiaryVector(
             user_id=user_id,
             diary_id=diary_id,
+            date=date,
             diary_content=diary_content,
             diary_vector=diary_vector,
         )

@@ -1,5 +1,6 @@
 from app.alg.analyze_user import analyze_user_by_llm
 from app.db.db_insert import add_analysis
+from app.utils.get_japan_datetime import get_japan_time
 from app.utils.session_scope import get_session
 
 
@@ -8,4 +9,5 @@ def set_user_analysis(user_id: str) -> dict:
     personality, strength, weakness = analyze_user_by_llm(user_id)
     with get_session() as session:
         new_analysis = add_analysis(session, user_id, personality, strength, weakness)
+        print(f"User analysis added!! Time:", get_japan_time(), flush=True)
         return new_analysis.to_dict()

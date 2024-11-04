@@ -7,6 +7,7 @@ from app.alg.format_diary_for_llm import (
 from app.db.db_insert import add_diary_vector
 from app.db.get_diary import get_date_diary
 from app.db.get_message import get_date_message
+from app.utils.get_japan_datetime import get_japan_time
 from app.utils.llm_response import get_embedding
 from app.utils.session_scope import get_session
 
@@ -33,4 +34,5 @@ def set_diary_vector(user_id: str, date: date) -> dict:
         new_diary_vector = add_diary_vector(
             session, user_id, diary.get("diary_id"), diary.get("date"), content, vector
         )
+        print(f"Diary vector added!! Time:", get_japan_time(), flush=True)
         return new_diary_vector.to_dict()

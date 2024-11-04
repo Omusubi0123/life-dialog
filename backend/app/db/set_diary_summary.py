@@ -2,7 +2,7 @@ from sqlalchemy import update
 
 from app.alg.summarize_diary import summarize_diary_by_llm
 from app.db.model import Diary
-from app.utils.get_japan_datetime import get_japan_date
+from app.utils.get_japan_datetime import get_japan_date, get_japan_time
 from app.utils.session_scope import get_session
 
 
@@ -16,4 +16,5 @@ def set_diary_summary(user_id: str, diary_id: int) -> tuple[str, str, str]:
             .values(title=title, summary=summary, feedback=feedback)
         )
         session.execute(stmt)
+    print(f"Diary summary updated!! Time:", get_japan_time(), flush=True)
     return title, summary, feedback

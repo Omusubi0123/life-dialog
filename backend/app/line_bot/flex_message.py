@@ -45,7 +45,6 @@ def create_flex_message(
 ):
     """日記をLINEで表示するためのflex messageを作成"""
     thumbnail_image_url = get_diary_random_image(event.source.user_id, date)
-    print(thumbnail_image_url)
 
     if event.message.text == QuickReplyField.view_diary.value:
         flex_message = FlexSendMessage(
@@ -110,7 +109,7 @@ def create_flex_message(
             if diary and diary["summary"]:
                 cards_data.append(
                     {
-                        "date": diary["date"],
+                        "date": diary["date"].strftime("%Y%m%d"),
                         "summary": diary["summary"],
                         "thumbnail_image_url": get_diary_random_image(user_id, date),
                     },
@@ -155,7 +154,7 @@ def create_flex_message(
                             "action": {
                                 "type": "uri",
                                 "label": "この日記を見る",
-                                "uri": f"{settings.frontend_url}?date={card['date'][:4]}{card['date'][5:7]}{card['date'][8:]}&user_id={event.source.user_id}&",
+                                "uri": f"{settings.frontend_url}?date={card['date']}&user_id={event.source.user_id}&",
                             },
                         }
                     ],

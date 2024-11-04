@@ -37,5 +37,5 @@ def get_user_all_diary(user_id: str) -> list[dict]:
     """指定したユーザーの全日記を時系列順にして取得"""
     with get_session() as session:
         stmt = select(Diary).where(Diary.user_id == user_id).order_by(Diary.date)
-        diaries = session.execute(stmt)
+        diaries = session.execute(stmt).scalars().all()
         return [diary.to_dict() for diary in diaries]

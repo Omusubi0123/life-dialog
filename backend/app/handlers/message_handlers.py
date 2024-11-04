@@ -49,14 +49,15 @@ def handle_text_message(event):
         elif user_status == QuickReplyField.interactive_mode.value:
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
-            with get_session() as session:
-                add_message(
-                    session,
-                    diary_id,
-                    user_id,
-                    MediaType.TEXT.value,
-                    f"Q: {text}\nA: {answer}",
-                )
+            # TODO: RAGの質問に対する回答を新しいmedia_typeとしてDBに保存
+            # with get_session() as session:
+            #     add_message(
+            #         session,
+            #         diary_id,
+            #         user_id,
+            #         MediaType.TEXT.value,
+            #         f"Q: {text}\nA: {answer}",
+            #     )
     elif text == QuickReplyField.view_diary.value:
         _, summary, feedback = set_diary_summary(user_id, diary_id)
 
