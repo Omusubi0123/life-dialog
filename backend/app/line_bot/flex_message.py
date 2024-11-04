@@ -105,7 +105,6 @@ def create_flex_message(
     ):
         cards_data = []
         for date, user_id in zip(date_list, user_id_list):
-            year, month, day = map(int, date.split("-"))
             diary = get_date_diary(user_id, date)
 
             if diary and diary["summary"]:

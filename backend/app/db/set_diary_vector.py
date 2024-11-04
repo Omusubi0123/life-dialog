@@ -31,6 +31,6 @@ def set_diary_vector(user_id: str, date: date) -> dict:
         vector = get_embedding(content)
 
         new_diary_vector = add_diary_vector(
-            session, user_id, diary.get("diary_id"), content, vector
+            session, user_id, diary.get("diary_id"), diary.get("date"), content, vector
         )
         return new_diary_vector.to_dict()
