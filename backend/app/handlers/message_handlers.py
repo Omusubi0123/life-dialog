@@ -12,7 +12,7 @@ from app.settings import settings
 from app.utils.data_enum import QuickReplyField
 from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
-from app.utils.media_service import save_media
+from app.utils.save_media import save_media
 from app.utils.session_scope import get_session
 
 line_bot_api = LineBotApi(settings.channel_access_token)
@@ -58,7 +58,7 @@ def handle_text_message(event):
                     f"Q: {text}\nA: {answer}",
                 )
     elif text == QuickReplyField.view_diary.value:
-        set_diary_summary(user_id, diary_id)
+        _, summary, feedback = set_diary_summary(user_id, diary_id)
 
     # quick replyを作成してline botで返信
     messages = create_quick_reply(

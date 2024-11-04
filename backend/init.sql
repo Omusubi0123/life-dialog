@@ -42,6 +42,7 @@ CREATE TABLE diary_vector (
     vector_id SERIAL PRIMARY KEY,
     user_id VARCHAR(40) REFERENCES users(user_id),
     diary_id INTEGER REFERENCES diary(diary_id),
+    date DATE,
     diary_content TEXT,
     diary_vector vector(1536),
     FOREIGN KEY(user_id) REFERENCES users (user_id),
