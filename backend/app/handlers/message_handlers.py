@@ -1,14 +1,9 @@
 from linebot import LineBotApi
-from sqlalchemy import update
 
-from app.alg.analyze_user import analyze_user_by_llm
 from app.alg.rag import rag_answer
-from app.alg.summarize_diary import summarize_diary_by_llm
-from app.db.add_user_analization import add_user_analization
 from app.db.db_insert import add_message
 from app.db.get_diary import get_or_create_diary_id
 from app.db.manage_user_status import get_user_status, update_user_status
-from app.db.model import Diary
 from app.db.set_diary_summary import set_diary_summary
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
@@ -55,7 +50,7 @@ def handle_text_message(event):
             # 対話モードの場合はRAGで質問に回答
             answer, date_list, user_id_list = rag_answer(user_id, text)
             with get_session() as session:
-                message_id = add_message(
+                add_message(
                     session,
                     diary_id,
                     user_id,

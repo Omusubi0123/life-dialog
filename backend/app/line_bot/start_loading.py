@@ -4,6 +4,7 @@ from app.settings import settings
 
 
 def start_loading(chat_id, loading_seconds=5):
+    """メッセージ応答までのローディングアニメーションを開始する"""
     url = "https://api.line.me/v2/bot/chat/loading/start"
     headers = {
         "Content-Type": "application/json",

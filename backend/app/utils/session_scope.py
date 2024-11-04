@@ -1,3 +1,4 @@
+# postgresアクセスのためのセッション管理を行う
 from contextlib import contextmanager
 
 from app.db.config import SessionLocal
