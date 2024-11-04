@@ -4,24 +4,22 @@ from app.db.model import Message
 
 
 def format_messages_to_llm_input(
-    messages: list[Message],
+    messages: list[dict],
     date: date,
 ) -> str:
     """DBから取得したメッセージをLLMに入力する可読性の高い形式に変換する
 
     Args:
-        messages (list[Message]): メッセージ
+        messages (list[dict]): メッセージ
 
     Returns:
         str: LLMに入力する形式の文字列
     """
     date = f"Day: {date.year}年{date.month}月{date.day}日\n"
-    message_entries = []
-    for message in messages:
-        entry_lines = [f"- {message['sent_at']}"]
-        entry_lines.append(f"  media_type: {message['media_type']}")
-        entry_lines.append(f"  content: {message['content']}")
-        message_entries.append("\n".join(entry_lines))
+    message_entries = [
+        f"- {message['sent_at']}\n  {message['media_type']}: {message['content']}"
+        for message in messages
+    ]
     return date + "\n".join(message_entries)
 
 

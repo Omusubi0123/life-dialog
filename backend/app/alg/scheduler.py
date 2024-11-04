@@ -5,25 +5,19 @@ from datetime import date
 import schedule
 
 from app.db.get_diary import get_date_diary
-from app.db.model import User
+from app.db.get_user import get_user_names
 from app.db.set_diary_summary import set_diary_summary
 from app.db.set_diary_vector import set_diary_vector
-from app.utils.session_scope import get_session
-
-
-def get_user_names():
-    """DBに登録された全ユーザーのユーザーIDを取得する"""
-    with get_session() as session:
-        user_names = session.query(User.user_id).all()
-        return [user_name[0] for user_name in user_names]
+from app.db.set_user_analysis import set_user_analysis
 
 
 def register_diary(user_id: str, date: date):
     """dateの日記が空でなければ日記のベクトルと要約を生成する"""
     diary = get_date_diary(user_id, date)
     if diary:
-        set_diary_vector(user_id, date)
         set_diary_summary(user_id, diary["diary_id"])
+        set_diary_vector(user_id, date)
+        set_user_analysis(user_id)
 
 
 def scheduler_func():

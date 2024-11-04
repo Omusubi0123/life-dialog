@@ -31,3 +31,11 @@ def get_date_diary(user_id: str, date: date) -> dict:
         stmt = select(Diary).where(Diary.user_id == user_id, Diary.date == date)
         diary = session.scalar(stmt)
         return diary.to_dict() if diary else None
+
+
+def get_user_all_diary(user_id: str) -> list[dict]:
+    """指定したユーザーの全日記を時系列順にして取得"""
+    with get_session() as session:
+        stmt = select(Diary).where(Diary.user_id == user_id).order_by(Diary.date)
+        diaries = session.execute(stmt)
+        return [diary.to_dict() for diary in diaries]
