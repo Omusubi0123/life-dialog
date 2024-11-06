@@ -1,7 +1,7 @@
 import '../index.css'
 import { Datepicker } from "flowbite-react";
 import { Accordion } from "flowbite-react";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import createDatePickerOption from '../utils/createDatePickerOption.ts';
@@ -16,11 +16,10 @@ type MessageItem = {
 
 
 export default function App() {
-  // const isInitialRender = useRef(true);
   const [items, setItems] = useState<any>(null);
   const [summary, setSummary] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date(1800, 0, 1));
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(false);
 
   const location = useLocation();
@@ -35,7 +34,6 @@ export default function App() {
   };
 
   const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
-    console.log(`おおお${year}, ${month}, ${day}`);
     try {
       setItems([]);
       setLoading(true);
@@ -46,7 +44,6 @@ export default function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      // console.log(response.data);
       setItems(response.data);
       setLoading(false);
       setSummary(response.data.summary);
@@ -60,12 +57,10 @@ export default function App() {
     const queryParams = new URLSearchParams(window.location.search);
     const userId = queryParams.get("user_id");
     const date = queryParams.get("date");
-    console.log(`あああ${date}`);
     if (date) {
       const year = parseInt(date.substring(0, 4), 10);
       const month = parseInt(date.substring(4, 6), 10);
       const day = parseInt(date.substring(6, 8), 10);
-      console.log(`いいい${year}, ${month}, ${day}`);
       if (userId) {
         setSelectedDate(new Date(year, month-1, day));
         post_fetch_diary(userId, year, month, day);
@@ -78,14 +73,12 @@ export default function App() {
         post_fetch_diary(userId, year, month, day);
       }
     }
-    // console.log(selectedDate);
   }, []);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const userId = queryParams.get("user_id");
     if (userId) {
-      console.log(`ううう${selectedDate.getFullYear()}, ${selectedDate.getMonth()}, ${selectedDate.getDate()}`);
       post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
     }
   }, [selectedDate]);
