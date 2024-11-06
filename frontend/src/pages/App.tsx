@@ -141,12 +141,19 @@ export default function App() {
       </div>
       {items && Array.isArray(items.items) && items.items.length > 0 ? (
         <div className="mt-24 mb-20 mx-10 bg-white">
-            <div className="mt-20 mb-5 bg-white" id="accordion-open" data-accordion="open">
+          <div className="mt-20 mb-5 bg-white space-y-4" id="accordion-open" data-accordion="open">
             <Accordion>
               <Accordion.Panel>
                 <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
                 <Accordion.Content>
                   <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{summary}</p>
+                </Accordion.Content>
+              </Accordion.Panel>
+            </Accordion>
+            <Accordion>
+              <Accordion.Panel>
+                <Accordion.Title className="bg-gray-200 text-gray-800">AIによる感想</Accordion.Title>
+                <Accordion.Content>
                   <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
                 </Accordion.Content>
               </Accordion.Panel>
@@ -167,13 +174,13 @@ export default function App() {
                   {item.media_type == "image" && "content" in item && "time" in item && (
                     <>
                       <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
-                      <img className="h-auto max-w-full rounded-lg" src={item.content} alt=""></img>
+                      <img className="h-auto w-2/3 max-w-full rounded-lg" src={item.content} alt=""></img>
                     </>
                   )}
                   {item.media_type == "video" && "content" in item && "time" in item && (
                     <>
                       <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
-                      <video className="h-auto max-w-full rounded-lg" controls>
+                      <video className="h-auto w-2/3 max-w-full rounded-lg" controls>
                         <source src={item.content} type="video/mp4"></source>
                       </video>
                     </>
@@ -181,7 +188,7 @@ export default function App() {
                   {item.media_type == "audio" && "content" in item && "time" in item && (
                     <>
                       <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
-                      <audio className="w-full" controls>
+                      <audio className="w-2/3 max-w-full" controls>
                         <source src={item.content} type="audio/mp3"></source>
                       </audio>
                     </>
