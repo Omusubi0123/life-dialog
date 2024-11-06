@@ -16,10 +16,11 @@ type MessageItem = {
 
 
 export default function App() {
+  // const isInitialRender = useRef(true);
   const [items, setItems] = useState<any>(null);
   const [summary, setSummary] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date(1800, 0, 1));
   const [loading, setLoading] = useState<boolean>(false);
 
   const location = useLocation();
@@ -34,6 +35,7 @@ export default function App() {
   };
 
   const post_fetch_diary = async (user_id: string, year: number, month: number, day: number) => {
+    console.log(`おおお${year}, ${month}, ${day}`);
     try {
       setItems([]);
       setLoading(true);
@@ -44,7 +46,7 @@ export default function App() {
         day: day,
       };
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`, requestBody);
-      console.log(response.data);
+      // console.log(response.data);
       setItems(response.data);
       setLoading(false);
       setSummary(response.data.summary);
@@ -58,10 +60,12 @@ export default function App() {
     const queryParams = new URLSearchParams(window.location.search);
     const userId = queryParams.get("user_id");
     const date = queryParams.get("date");
+    console.log(`あああ${date}`);
     if (date) {
       const year = parseInt(date.substring(0, 4), 10);
       const month = parseInt(date.substring(4, 6), 10);
       const day = parseInt(date.substring(6, 8), 10);
+      console.log(`いいい${year}, ${month}, ${day}`);
       if (userId) {
         setSelectedDate(new Date(year, month-1, day));
         post_fetch_diary(userId, year, month, day);
@@ -74,13 +78,14 @@ export default function App() {
         post_fetch_diary(userId, year, month, day);
       }
     }
-    console.log(selectedDate);
+    // console.log(selectedDate);
   }, []);
 
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const userId = queryParams.get("user_id");
     if (userId) {
+      console.log(`ううう${selectedDate.getFullYear()}, ${selectedDate.getMonth()}, ${selectedDate.getDate()}`);
       post_fetch_diary(userId, selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
     }
   }, [selectedDate]);
@@ -89,11 +94,6 @@ export default function App() {
     setSelectedDate(prevDate => {
       const newDate = new Date(prevDate);
       newDate.setDate(prevDate.getDate() - 1);
-      const queryParams = new URLSearchParams(window.location.search);
-      const userId = queryParams.get("user_id");
-      if (userId) {
-        post_fetch_diary(userId, newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate());
-      }
       return newDate;
     });
   };
@@ -102,11 +102,6 @@ export default function App() {
     setSelectedDate(prevDate => {
       const newDate = new Date(prevDate);
       newDate.setDate(prevDate.getDate() + 1);
-      const queryParams = new URLSearchParams(window.location.search);
-      const userId = queryParams.get("user_id");
-      if (userId) {
-        post_fetch_diary(userId, newDate.getFullYear(), newDate.getMonth() + 1, newDate.getDate());
-      }
       return newDate;
     });
   };
