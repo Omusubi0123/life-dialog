@@ -4,22 +4,20 @@ import { Accordion } from "flowbite-react";
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import getTimeFromTimeStamp from '../utils/getTimeFromTimeStamp.ts';
 import createDatePickerOption from '../utils/createDatePickerOption.ts';
 import Footer from '../components/Footer.tsx';
 
-type TextItem = {
-  text: string;
-  timestamp: string;
-};
 
-type FileItem = {
-  url: string;
-  timestamp: string;
-};
+type MessageItem = {
+  media_type: string;
+  content: string;
+  time: string;
+}
+
 
 export default function App() {
   const [items, setItems] = useState<any>(null);
+  const [summary, setSummary] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [loading, setLoading] = useState<boolean>(false);
@@ -49,6 +47,7 @@ export default function App() {
       console.log(response.data);
       setItems(response.data);
       setLoading(false);
+      setSummary(response.data.summary);
       setFeedback(response.data.feedback);
     } catch (err) {
       setItems([]);
@@ -147,30 +146,46 @@ export default function App() {
               <Accordion.Panel>
                 <Accordion.Title className="bg-gray-200 text-gray-800">この日は何をした日？</Accordion.Title>
                 <Accordion.Content>
+                  <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{summary}</p>
                   <p className="mb-2 px-4 py-2 text-gray-500 dark:text-gray-400">{feedback}</p>
                 </Accordion.Content>
               </Accordion.Panel>
             </Accordion>
           </div>
           <ol className="relative border-s border-gray-200 dark:border-gray-700">        
-            {items.items.map((item: TextItem | FileItem, index: number) => (
+            {items.items.map((item: MessageItem, index: number) => (
               <li key={index} className="mb-3 ms-4">
                 <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                  {"text" in item && "timestamp" in item && (
+                  {item.media_type == "text" && "content" in item && "time" in item && (
                     <>
-                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{getTimeFromTimeStamp(item.timestamp)}</time>
-                        <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
-                        {item.text}
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
+                      <p className="mb-2 text-base font-normal text-gray-500 dark:text-gray-400">
+                        {item.content}
                       </p>
                     </>
                   )}
-                {"url" in item && (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    <div>
-                      <img className="h-auto max-w-full rounded-lg" src={item.url} alt=""></img>
-                    </div>
-                  </div>
-                )}
+                  {item.media_type == "image" && "content" in item && "time" in item && (
+                    <>
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
+                      <img className="h-auto max-w-full rounded-lg" src={item.content} alt=""></img>
+                    </>
+                  )}
+                  {item.media_type == "video" && "content" in item && "time" in item && (
+                    <>
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
+                      <video className="h-auto max-w-full rounded-lg" controls>
+                        <source src={item.content} type="video/mp4"></source>
+                      </video>
+                    </>
+                  )}
+                  {item.media_type == "audio" && "content" in item && "time" in item && (
+                    <>
+                      <time className="mb-1 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">{item.time}</time>
+                      <audio className="w-full" controls>
+                        <source src={item.content} type="audio/mp3"></source>
+                      </audio>
+                    </>
+                  )}
               </li>
             ))}
           </ol>

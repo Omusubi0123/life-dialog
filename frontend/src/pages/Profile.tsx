@@ -28,7 +28,7 @@ export default function Profile() {
   const get_fetch_profile = async (user_id: string) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/fetch_profile`, {user_id: user_id});
-      setUserName(response.data.user_name);
+      setUserName(response.data.name);
       setUserIconURL(response.data.icon_url);
       setUserPersonality(response.data.personality);
       setUserStrength(response.data.strength);
