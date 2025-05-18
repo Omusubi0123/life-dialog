@@ -26,6 +26,7 @@ pydantic-settings = "^2.5.2"
 psycopg2-binary = "^2.9.10"
 openai = "^1.52.2"
 schedule = "^1.2.2"
+elasticsearch = "^9.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
