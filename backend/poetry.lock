@@ -502,28 +502,22 @@ develop = ["aiohttp", "furo", "httpx", "opentelemetry-api", "opentelemetry-sdk",
 
 [[package]]
 name = "elasticsearch"
-version = "9.0.1"
+version = "8.13.0"
 description = "Python client for Elasticsearch"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "elasticsearch-9.0.1-py3-none-any.whl", hash = "sha256:9fd110f9bb77310343709d9cccbd523a431a6e528d8441b01a26b97eef3238a3"},
-    {file = "elasticsearch-9.0.1.tar.gz", hash = "sha256:76f9b519cfd15a860f615a94ba90dcb9543b721306bc5144ecc15f0b4d5d2781"},
+    {file = "elasticsearch-8.13.0-py3-none-any.whl", hash = "sha256:4aaf49253e974eb500f01136a487bdd0f09d3cafd37a0456eff6acfff0c9199b"},
+    {file = "elasticsearch-8.13.0.tar.gz", hash = "sha256:e4ebebb22d09f0ef839c26b6aa98e19ccd636bcb77f08c12b562b02cacd5e744"},
 ]
 
 [package.dependencies]
-elastic-transport = ">=8.15.1,<9"
-python-dateutil = "*"
-typing-extensions = "*"
+elastic-transport = ">=8.13,<9"
 
 [package.extras]
 async = ["aiohttp (>=3,<4)"]
-dev = ["aiohttp", "black", "build", "coverage", "isort", "jinja2", "mapbox-vector-tile", "mypy", "nltk", "nox", "numpy", "orjson", "pandas", "pyarrow", "pyright", "pytest", "pytest-asyncio", "pytest-cov", "pytest-mock", "python-dateutil", "pyyaml (>=5.4)", "requests (>=2,<3)", "sentence-transformers", "simsimd", "tqdm", "twine", "types-python-dateutil", "types-tqdm", "unasync"]
-docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme (>=2.0)"]
 orjson = ["orjson (>=3)"]
-pyarrow = ["pyarrow (>=1)"]
-requests = ["requests (>=2.4.0,!=2.32.2,<3.0.0)"]
-vectorstore-mmr = ["numpy (>=1)", "simsimd (>=3)"]
+requests = ["requests (>=2.4.0,<3.0.0)"]
 
 [[package]]
 name = "exceptiongroup"
@@ -2581,4 +2575,4 @@ propcache = ">=0.2.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "4efce973a25386a8a1de809ac2e3fc2c272f5009a417eec56797a8f0de8ae1ac"
+content-hash = "a3d7d795fd6ac740ddccd87d1f05f5d89b201f8ed91659e254e0d1f733ac4fc6"
