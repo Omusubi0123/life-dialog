@@ -1,15 +1,15 @@
-from elasticsearch import Elasticsearch
 from app.db.model import DiaryVector
 from app.utils.session_scope import get_session
 
-es = Elasticsearch("http://elasticsearch:9200")
+from app.elasticsearch_settings import es
+from app.settings import settings
 
 def sync_diary_to_elasticsearch():
     with get_session() as session:
         diaries = session.query(DiaryVector).all()
         for diary in diaries:
             es.index(
-                index="diary_vector_index",
+                index=settings.elasticsearch_index,
                 id=diary.diary_id,
                 body={
                     "user_id": diary.user_id,

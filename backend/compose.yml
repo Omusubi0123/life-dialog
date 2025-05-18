@@ -15,6 +15,7 @@ services:
     command: poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - postgres
+      - elasticsearch
     networks:
       - cloudflared_network
 
@@ -50,6 +51,8 @@ services:
       - "9200:9200"
     volumes:
       - ./esdata:/usr/share/elasticsearch/data
+    depends_on:
+      - postgres
     networks:
       - cloudflared_network
     

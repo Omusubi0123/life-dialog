@@ -1,4 +1,5 @@
 from app.elastic.sync_diary import es
+from app.settings import settings
 
 def search_bm25_diary(user_id: str, query: str, top_k: int = 4):
     body = {
@@ -13,7 +14,7 @@ def search_bm25_diary(user_id: str, query: str, top_k: int = 4):
         "size": top_k
     }
 
-    res = es.search(index="diary_vector_index", body=body)
+    res = es.search(index=settings.elasticsearch_index, body=body)
     return [
         {
             "user_id": hit["_source"]["user_id"],
