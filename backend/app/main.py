@@ -10,6 +10,7 @@ from app.routes.diary import diary_router
 from app.routes.line_bot import line_bot_router
 from app.routes.user_profile import user_router
 from app.scheduler import start_scheduler
+from app.elastic.sync_diary import sync_diary_to_elasticsearch
 
 
 @asynccontextmanager
@@ -17,6 +18,7 @@ async def lifespan(app: FastAPI):
     try:
         Base.metadata.create_all(bind=engine)
         start_scheduler()
+        sync_diary_to_elasticsearch()
         yield
     except SQLAlchemyError as e:
         print(f"Database setup failed: {e}")
