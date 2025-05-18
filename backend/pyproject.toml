@@ -24,10 +24,7 @@ line-bot-sdk = "^3.13.0"
 apscheduler = "^3.10.4"
 pydantic-settings = "^2.5.2"
 psycopg2-binary = "^2.9.10"
-firebase-admin = "^6.5.0"
-google-cloud-storage = "^2.18.2"
 openai = "^1.52.2"
-azure-search-documents = "11.4.0b9"
 schedule = "^1.2.2"
 
 
