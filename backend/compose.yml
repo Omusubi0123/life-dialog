@@ -2,7 +2,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.local
+      dockerfile: Dockerfile.backend
     container_name: backend
     working_dir: /backend
     volumes:
@@ -85,3 +85,4 @@ volumes:
 networks:
   cloudflared_network:
     driver: bridge
+
