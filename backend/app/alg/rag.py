@@ -1,7 +1,15 @@
 from app.alg.prompt.rag_prompt import RAG_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT
-from app.alg.search_cosine_sim import cosine_similar_diary
+from app.alg.hybrid_search import hybrid_search
 from app.utils.llm_response import openai_call
+
+
+def format_related_diaries(diaries: list[dict]) -> str:
+    diaries.sort(key=lambda x: x["date"])
+    formatted_diaries = "\n".join(
+        f"Date: {diary['date']}\nContent: {diary['diary_content']}\n" for diary in diaries
+    )
+    return formatted_diaries
 
 
 def rag_answer(
@@ -19,15 +27,16 @@ def rag_answer(
     Returns:
         str: RAGによる回答
     """
-    results = cosine_similar_diary(user_id, query)
+    results = hybrid_search(user_id, query, final_top_k=10, temporary_top_k=100, debug=False)
 
-    contents_str = "\n\n".join(result["diary_content"] for result in results)
     date_list = [result["date"] for result in results]
     user_id_list = [result["user_id"] for result in results]
+    
+    answer = '\n'.join([f"date: {result['date']}, {result['diary_content'][:100]}" for result in results])
 
     answer = openai_call(
         system_prompt,
-        rag_prompt.format(query=query, searched_diary=contents_str),
+        rag_prompt.format(query=query, searched_diary=format_related_diaries(results)),
         print_response=True,
     )
 
