@@ -2,6 +2,7 @@ __pycache__
 data
 files/
 postgres_data/
+cloudflared/
 .env
 .venv
 
