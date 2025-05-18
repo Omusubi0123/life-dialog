@@ -23,7 +23,6 @@ handler = WebhookHandler(settings.channel_secret)
 async def callback(request: Request):
     signature = request.headers["X-Line-Signature"]
     body = await request.body()
-    print(body)
     try:
         handler.handle(body.decode("utf-8"), signature)
     except InvalidSignatureError:

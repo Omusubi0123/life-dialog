@@ -12,9 +12,10 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://user:password@postgres:5432/db
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     depends_on:
       - postgres
+      - elasticsearch
     networks:
       - cloudflared_network
 
@@ -33,7 +34,29 @@ services:
       - "5432:5432"
     networks:
       - cloudflared_network
-
+  
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./esdata:/usr/share/elasticsearch/data
+    depends_on:
+      - postgres
+    networks:
+      - cloudflared_network
+    
+  
   nginx:
     image: nginx:latest
     container_name: nginx

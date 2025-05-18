@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir poetry
 COPY pyproject.toml poetry.lock ./
 
 # 依存関係インストール（仮想環境を無効化）
-RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction --no-ansi
+RUN poetry config virtualenvs.create true && poetry install --no-root --no-interaction --no-ansi
 
 # アプリケーションコードとFirebase認証情報をコピー
 COPY ./app /backend/app

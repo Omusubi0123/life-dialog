@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     openai_api_key: str
 
     database_url: str
+    
+    elasticsearch_url: str
+    elasticsearch_port: str
+    elasticsearch_index: str
 
     nginx_file_url: str
     frontend_url: str

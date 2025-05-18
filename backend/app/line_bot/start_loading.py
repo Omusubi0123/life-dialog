@@ -13,7 +13,6 @@ def start_loading(chat_id, loading_seconds=5):
     data = {"chatId": chat_id, "loadingSeconds": loading_seconds}
 
     response = requests.post(url, headers=headers, json=data)
-    if response.status_code in [200, 202]:
-        print("Loading animation started:", response.json())
-    else:
+
+    if response.status_code not in [200, 202]:
         print("Error starting loading animation:", response.status_code, response.text)

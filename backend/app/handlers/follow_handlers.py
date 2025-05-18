@@ -22,7 +22,6 @@ def get_user_profile(user_id: str) -> dict | None:
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
-        print("Success:", response.json())
         return response.json()
     else:
         return None
@@ -44,7 +43,6 @@ def get_user_link_token(user_id: str) -> str | None:
     }
     response = requests.post(url, headers=headers)
     if response.status_code == 200:
-        print("Success:", response.json())
         link_token = response.json()["linkToken"]
         return link_token
     else:
