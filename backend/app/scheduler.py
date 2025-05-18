@@ -12,6 +12,7 @@ from app.db.set_user_analysis import set_user_analysis
 
 from app.elastic.wait_for_es import wait_for_es
 from app.elastic.sync_diary import sync_diary_to_elasticsearch
+from app.elastic.save_new_diary import save_diary_to_elasticsearch
 
 scheduler = AsyncIOScheduler()
 
@@ -21,7 +22,8 @@ def register_diary(user_id: str, date: date):
     diary = get_date_diary(user_id, date)
     if diary:
         set_diary_summary(user_id, diary["diary_id"])
-        set_diary_vector(user_id, date)
+        new_diary = set_diary_vector(user_id, date)
+        save_diary_to_elasticsearch(new_diary)
         set_user_analysis(user_id)
 
 
