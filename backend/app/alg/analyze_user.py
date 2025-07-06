@@ -8,8 +8,8 @@ from app.alg.prompt.analyze_user_prompt import ANALYZE_USER_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
 from app.db.get_diary import get_user_all_diary
 from app.db.get_message import get_date_message
-from app.utils.llm_response import openai_call
 from app.utils.count_token import count_tokens
+from app.utils.llm_response import openai_call
 from app.utils.modelname import ModelNames
 
 
@@ -36,7 +36,7 @@ def analyze_user_by_llm(
         )
         diariy_str += format_messages_to_llm_input(message, diary["date"])
         diary_str += "\n\n"
-        
+
         if len(diaries_str + diariy_str) > 120000:
             break
         diaries_str = diary_str + diaries_str

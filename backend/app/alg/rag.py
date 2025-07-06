@@ -1,13 +1,14 @@
+from app.alg.hybrid_search import hybrid_search
 from app.alg.prompt.rag_prompt import RAG_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT
-from app.alg.hybrid_search import hybrid_search
 from app.utils.llm_response import openai_call
 
 
 def format_related_diaries(diaries: list[dict]) -> str:
     diaries.sort(key=lambda x: x["date"])
     formatted_diaries = "\n".join(
-        f"Date: {diary['date']}\nContent: {diary['diary_content']}\n" for diary in diaries
+        f"Date: {diary['date']}\nContent: {diary['diary_content']}\n"
+        for diary in diaries
     )
     return formatted_diaries
 
@@ -27,12 +28,19 @@ def rag_answer(
     Returns:
         str: RAGによる回答
     """
-    results = hybrid_search(user_id, query, final_top_k=10, temporary_top_k=100, debug=False)
+    results = hybrid_search(
+        user_id, query, final_top_k=10, temporary_top_k=100, debug=False
+    )
 
     date_list = [result["date"] for result in results]
     user_id_list = [result["user_id"] for result in results]
-    
-    answer = '\n'.join([f"date: {result['date']}, {result['diary_content'][:100]}" for result in results])
+
+    answer = "\n".join(
+        [
+            f"date: {result['date']}, {result['diary_content'][:100]}"
+            for result in results
+        ]
+    )
 
     answer = openai_call(
         system_prompt,
