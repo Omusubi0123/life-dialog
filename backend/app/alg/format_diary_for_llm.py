@@ -15,7 +15,8 @@ def format_messages_to_llm_input(
     """
     date = f"Day: {date.year}年{date.month}月{date.day}日\n"
     message_entries = [
-        f"- {message['sent_at']}\n  {message['media_type']}: {message['content']}"
+        # f"- {message['sent_at']}\n  {message['media_type']}: {message['content']}"
+        f"- {message['content']}"
         for message in messages
     ]
     return date + "\n".join(message_entries)
@@ -24,7 +25,6 @@ def format_messages_to_llm_input(
 def format_llm_response_json_to_str(
     title: str,
     summary: str,
-    feedback: str,
 ) -> str:
     """LLMの出力を可読性の高い形式に変換する
 
@@ -36,4 +36,4 @@ def format_llm_response_json_to_str(
     Returns:
         str: 可読性の高い形式の文字列
     """
-    return f"Title: {title}\nSummary: {summary}\nFeedback: {feedback}\n"
+    return f"Title: {title}\nSummary: {summary}\n"

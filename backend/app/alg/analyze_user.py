@@ -9,6 +9,8 @@ from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
 from app.db.get_diary import get_user_all_diary
 from app.db.get_message import get_date_message
 from app.utils.llm_response import openai_call
+from app.utils.count_token import count_tokens
+from app.utils.modelname import ModelNames
 
 
 def analyze_user_by_llm(
@@ -24,19 +26,27 @@ def analyze_user_by_llm(
     """
     diary_list = get_user_all_diary(user_id)
     messages_list = [get_date_message(user_id, diary["date"]) for diary in diary_list]
+    print(f"Total diaries: {len(diary_list)}")
 
     diaries_str = ""
-    for message, diary in zip(messages_list, diary_list):
-        diaries_str += format_llm_response_json_to_str(
-            diary.get("title"), diary.get("summary"), diary.get("feedback")
+    # LLMのcontext lengthまで日記を追加。最新の日記から入れるために逆順で処理
+    for message, diary in reversed(list(zip(messages_list, diary_list))):
+        diary_str = format_llm_response_json_to_str(
+            diary.get("title"), diary.get("summary")
         )
-        diaries_str += format_messages_to_llm_input(message, diary["date"])
-        diaries_str += "\n\n"
+        diariy_str += format_messages_to_llm_input(message, diary["date"])
+        diary_str += "\n\n"
+        
+        if len(diaries_str + diariy_str) > 120000:
+            break
+        diaries_str = diary_str + diaries_str
+        print(f"Current diary length: {count_tokens(diaries_str)} tokens")
 
     result = openai_call(
         system_prompt,
         summarize_diary_prompt.format(diaries=diaries_str),
         print_response=print_response,
+        model_name=ModelNames.gpt_4o,
         json_format=True,
     )
 
@@ -46,3 +56,11 @@ def analyze_user_by_llm(
     strength = result_dict.get("strength", "")
     weakness = result_dict.get("weakness", "")
     return personality, strength, weakness
+
+
+if __name__ == "__main__":
+    user_id = "test_user"
+    personality, strength, weakness = analyze_user_by_llm(user_id)
+    print(f"Personality: {personality}")
+    print(f"Strength: {strength}")
+    print(f"Weakness: {weakness}")
