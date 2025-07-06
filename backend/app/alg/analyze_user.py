@@ -10,7 +10,6 @@ from app.db.get_diary import get_user_all_diary
 from app.db.get_message import get_date_message
 from app.utils.count_token import count_tokens
 from app.utils.llm_response import openai_call
-from app.utils.modelname import ModelNames
 
 
 def analyze_user_by_llm(
@@ -34,10 +33,10 @@ def analyze_user_by_llm(
         diary_str = format_llm_response_json_to_str(
             diary.get("title"), diary.get("summary")
         )
-        diariy_str += format_messages_to_llm_input(message, diary["date"])
+        diary_str += format_messages_to_llm_input(message, diary["date"])
         diary_str += "\n\n"
 
-        if len(diaries_str + diariy_str) > 120000:
+        if len(diaries_str + diary_str) > 120000:
             break
         diaries_str = diary_str + diaries_str
         print(f"Current diary length: {count_tokens(diaries_str)} tokens")
@@ -46,7 +45,6 @@ def analyze_user_by_llm(
         system_prompt,
         summarize_diary_prompt.format(diaries=diaries_str),
         print_response=print_response,
-        model_name=ModelNames.gpt_4o.value,
         json_format=True,
     )
 
@@ -57,10 +55,3 @@ def analyze_user_by_llm(
     weakness = result_dict.get("weakness", "")
     return personality, strength, weakness
 
-
-if __name__ == "__main__":
-    user_id = "test_user"
-    personality, strength, weakness = analyze_user_by_llm(user_id)
-    print(f"Personality: {personality}")
-    print(f"Strength: {strength}")
-    print(f"Weakness: {weakness}")
