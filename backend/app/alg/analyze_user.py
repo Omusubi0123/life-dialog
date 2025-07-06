@@ -46,7 +46,7 @@ def analyze_user_by_llm(
         system_prompt,
         summarize_diary_prompt.format(diaries=diaries_str),
         print_response=print_response,
-        model_name=ModelNames.gpt_4o,
+        model_name=ModelNames.gpt_4o.value,
         json_format=True,
     )
 

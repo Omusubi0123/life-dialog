@@ -29,6 +29,7 @@ openai = "^1.52.2"
 tiktoken = "^0.9.0"
 schedule = "^1.2.2"
 elasticsearch = "8.13.0"
+pytz = "^2025.2"
 
 
 [tool.poetry.group.dev.dependencies]
