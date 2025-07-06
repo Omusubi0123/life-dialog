@@ -9,10 +9,9 @@ from app.db.get_user import get_user_names
 from app.db.set_diary_summary import set_diary_summary
 from app.db.set_diary_vector import set_diary_vector
 from app.db.set_user_analysis import set_user_analysis
-
-from app.elastic.wait_for_es import wait_for_es
-from app.elastic.sync_diary import sync_diary_to_elasticsearch
 from app.elastic.save_new_diary import save_diary_to_elasticsearch
+from app.elastic.sync_diary import sync_diary_to_elasticsearch
+from app.elastic.wait_for_es import wait_for_es
 
 scheduler = AsyncIOScheduler()
 
@@ -47,7 +46,11 @@ def get_jst_time_str(hour: int, minute: int) -> str:
 
 scheduler.add_job(scheduler_func, "cron", hour=23, minute=55, timezone="Asia/Tokyo")
 
-scheduler.add_job(lambda: (wait_for_es(), sync_diary_to_elasticsearch()), "date", run_date=datetime.now() + timedelta(seconds=10))
+scheduler.add_job(
+    lambda: (wait_for_es(), sync_diary_to_elasticsearch()),
+    "date",
+    run_date=datetime.now() + timedelta(seconds=10),
+)
 
 
 def start_scheduler():

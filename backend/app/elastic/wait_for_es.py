@@ -1,7 +1,9 @@
 import time
+
 import requests
 
 from app.elasticsearch_settings import es_host
+
 
 def wait_for_es(timeout: int = 30):
     url = f"{es_host}/_cluster/health"

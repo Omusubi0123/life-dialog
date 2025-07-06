@@ -1,6 +1,7 @@
 from app.elasticsearch_settings import es
 from app.settings import settings
 
+
 def save_diary_to_elasticsearch(diary: dict):
     """日記をElasticsearchに保存
 
@@ -11,8 +12,10 @@ def save_diary_to_elasticsearch(diary: dict):
             - date (str): 日記の日付
             - diary_content (str): 日記の内容
     """
-    assert all(key in diary for key in ["diary_id", "user_id", "date", "diary_content"]), "Invalid diary format for Elasticsearch"
-    
+    assert all(
+        key in diary for key in ["diary_id", "user_id", "date", "diary_content"]
+    ), "Invalid diary format for Elasticsearch"
+
     es.index(
         index=settings.elasticsearch_index,
         id=diary["diary_id"],
@@ -21,5 +24,5 @@ def save_diary_to_elasticsearch(diary: dict):
             "diary_id": diary["diary_id"],
             "date": diary["date"],
             "diary_content": diary["diary_content"],
-        }
+        },
     )

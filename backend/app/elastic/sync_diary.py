@@ -1,8 +1,8 @@
 from app.db.model import DiaryVector
-from app.utils.session_scope import get_session
-
 from app.elasticsearch_settings import es
 from app.settings import settings
+from app.utils.session_scope import get_session
+
 
 def sync_diary_to_elasticsearch():
     with get_session() as session:
@@ -15,6 +15,6 @@ def sync_diary_to_elasticsearch():
                     "user_id": diary.user_id,
                     "diary_id": diary.diary_id,
                     "date": diary.date,
-                    "diary_content": diary.diary_content
-                }
+                    "diary_content": diary.diary_content,
+                },
             )

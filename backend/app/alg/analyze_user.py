@@ -8,6 +8,7 @@ from app.alg.prompt.analyze_user_prompt import ANALYZE_USER_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
 from app.db.get_diary import get_user_all_diary
 from app.db.get_message import get_date_message
+from app.utils.count_token import count_tokens
 from app.utils.llm_response import openai_call
 
 
@@ -24,14 +25,21 @@ def analyze_user_by_llm(
     """
     diary_list = get_user_all_diary(user_id)
     messages_list = [get_date_message(user_id, diary["date"]) for diary in diary_list]
+    print(f"Total diaries: {len(diary_list)}")
 
     diaries_str = ""
-    for message, diary in zip(messages_list, diary_list):
-        diaries_str += format_llm_response_json_to_str(
-            diary.get("title"), diary.get("summary"), diary.get("feedback")
+    # LLMのcontext lengthまで日記を追加。最新の日記から入れるために逆順で処理
+    for message, diary in reversed(list(zip(messages_list, diary_list))):
+        diary_str = format_llm_response_json_to_str(
+            diary.get("title"), diary.get("summary")
         )
-        diaries_str += format_messages_to_llm_input(message, diary["date"])
-        diaries_str += "\n\n"
+        diary_str += format_messages_to_llm_input(message, diary["date"])
+        diary_str += "\n\n"
+
+        if len(diaries_str + diary_str) > 120000:
+            break
+        diaries_str = diary_str + diaries_str
+        print(f"Current diary length: {count_tokens(diaries_str)} tokens")
 
     result = openai_call(
         system_prompt,
@@ -46,3 +54,4 @@ def analyze_user_by_llm(
     strength = result_dict.get("strength", "")
     weakness = result_dict.get("weakness", "")
     return personality, strength, weakness
+
