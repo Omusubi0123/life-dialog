@@ -1,25 +1,25 @@
-# ベースイメージ
 FROM python:3.10-slim
-
-# Poetryインストール
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
 
 # 作業ディレクトリ設定
 WORKDIR /backend
 
-# Poetry のインストール
-RUN pip install --no-cache-dir poetry
+# pipxをインストールし、それを使ってuvをインストール
+# pipxはアプリケーションを隔離された環境にインストールするための推奨ツールです
+RUN pip install --no-cache-dir pipx && \
+    pipx install uv
 
-# pyproject.tomlとpoetry.lockをコピーし、依存関係をインストール
-COPY pyproject.toml poetry.lock ./
+# pyproject.tomlとuv.lockをコピー
+# これにより、依存関係に変更がない場合はこのステップ以降をスキップできます
+COPY pyproject.toml uv.lock ./
 
-# 依存関係インストール（仮想環境を無効化）
-RUN poetry config virtualenvs.create false && poetry install --no-root --no-interaction --no-ansi
+# uvを使って依存関係をインストール
+# --systemフラグは仮想環境を作成せず、システムサイトに直接インストールするようuvに指示します
+RUN uv sync --system
 
-# アプリケーションコードとFirebase認証情報をコピー
+# アプリケーションコードと環境ファイルをコピー
 COPY ./app /backend/app
 COPY .env ./
 
-# gunicornとuvicornでアプリケーションを起動
+# GunicornとUvicornでアプリケーションを起動
+# UvicornWorkerは、UvicornをGunicornのワーカーとして実行します
 CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8080"]
