@@ -10,7 +10,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
-from app.auth_settings import auth_settings
+from app.env_settings import env
 from app.db.repositories.auth import GoogleUserRepository, UserGoogleLinkRepository
 from app.db.session import session_scope
 
@@ -38,10 +38,10 @@ security = HTTPBearer()
 def create_access_token(data: dict) -> str:
     """JWTアクセストークンを作成"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=auth_settings.jwt_expire_minutes)
+    expire = datetime.utcnow() + timedelta(minutes=env.jwt_expire_minutes)
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(
-        to_encode, auth_settings.jwt_secret_key, algorithm=auth_settings.jwt_algorithm
+        to_encode, env.jwt_secret_key, algorithm=env.jwt_algorithm
     )
     return encoded_jwt
 
@@ -51,8 +51,8 @@ def verify_token(token: str) -> TokenData:
     try:
         payload = jwt.decode(
             token,
-            auth_settings.jwt_secret_key,
-            algorithms=[auth_settings.jwt_algorithm],
+            env.jwt_secret_key,
+            algorithms=[env.jwt_algorithm],
         )
         google_id: str = payload.get("sub")
         if google_id is None:

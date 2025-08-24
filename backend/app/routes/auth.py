@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.auth_settings import auth_settings
+from app.env_settings import env
 from app.db.repositories.auth import GoogleUserRepository, UserGoogleLinkRepository
 from app.db.repositories.user import UserRepository
 from app.db.session import session_scope
@@ -33,8 +33,8 @@ def google_login():
 
     # Googleの認証URL作成
     params = {
-        "client_id": auth_settings.google_client_id,
-        "redirect_uri": auth_settings.google_redirect_uri,
+        "client_id": env.google_client_id,
+        "redirect_uri": env.google_redirect_uri,
         "scope": "openid email profile",
         "response_type": "code",
         "access_type": "offline",
@@ -53,11 +53,11 @@ async def google_callback(request: GoogleAuthCallbackRequest):
     try:
         # アクセストークンを取得
         token_data = {
-            "client_id": auth_settings.google_client_id,
-            "client_secret": auth_settings.google_client_secret,
+            "client_id": env.google_client_id,
+            "client_secret": env.google_client_secret,
             "code": request.code,
             "grant_type": "authorization_code",
-            "redirect_uri": auth_settings.google_redirect_uri,
+            "redirect_uri": env.google_redirect_uri,
         }
 
         async with httpx.AsyncClient() as client:
