@@ -17,6 +17,14 @@ class Settings(BaseSettings):
     nginx_file_url: str
     frontend_url: str
 
+    google_client_id: str
+    google_client_secret: str
+    google_oauth_redirect_url: str
+
+    jwt_secret_key: str
+    jwt_algorithm: str
+    jwt_expire_minutes: int
+
     model_config = {"env_file": ".env"}
 
 
