@@ -3,8 +3,11 @@
 """
 
 from datetime import datetime, timedelta
-from sqlalchemy import TIMESTAMP, Column, String, Boolean
+
+from sqlalchemy import TIMESTAMP, Boolean, Column, String
+
 from app.utils.get_japan_datetime import get_japan_timestamp
+
 from .base import BaseClass
 
 
@@ -24,15 +27,11 @@ class LinkToken(BaseClass):
     def create_token(cls, line_user_id: str, expires_minutes: int = 30):
         """新しいリンクトークンを作成"""
         import secrets
-        
+
         token = secrets.token_urlsafe(48)
         expires_at = get_japan_timestamp() + timedelta(minutes=expires_minutes)
-        
-        return cls(
-            token=token,
-            line_user_id=line_user_id,
-            expires_at=expires_at
-        )
+
+        return cls(token=token, line_user_id=line_user_id, expires_at=expires_at)
 
     def is_valid(self) -> bool:
         """トークンが有効かどうかを確認"""

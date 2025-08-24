@@ -11,15 +11,17 @@ from app.utils.auth import AuthenticatedUser, get_current_user_with_line_id
 diary_router = APIRouter()
 
 
-@diary_router.post("/diary/fetch_diary", response_model=Diary)
+@diary_router.get("/diary/fetch_diary", response_model=Diary)
 def fetch_diary(
-    fetch_diary: FetchDiary,
+    year: int,
+    month: int,
+    day: int,
     current_user: AuthenticatedUser = Depends(get_current_user_with_line_id),
 ) -> Diary:
     """指定した日付のメッセージを時系列順に並び替えて返す（認証必須）"""
     # 認証されたユーザーのLINE IDを使用
     user_id = current_user.line_user_id
-    view_date = date(fetch_diary.year, fetch_diary.month, fetch_diary.day)
+    view_date = date(year, month, day)
 
     with session_scope() as session:
         message_repo = MessageRepository(session)
@@ -31,9 +33,9 @@ def fetch_diary(
         # TODO: 日付の受け取り方・返し方
         if not messages:
             diary = Diary(
-                year=fetch_diary.year,
-                month=fetch_diary.month,
-                day=fetch_diary.day,
+                year=year,
+                month=month,
+                day=day,
                 items=[],
             )
         else:
@@ -47,9 +49,9 @@ def fetch_diary(
             ]
 
             diary = Diary(
-                year=fetch_diary.year,
-                month=fetch_diary.month,
-                day=fetch_diary.day,
+                year=year,
+                month=month,
+                day=day,
                 items=items,
             )
             if view_diary:
@@ -61,13 +63,15 @@ def fetch_diary(
 
 @diary_router.post("/diary/register_vector", response_model=DiaryVector)
 def register_vector(
-    register_diary: FetchDiary,
+    year: int,
+    month: int,
+    day: int,
     current_user: AuthenticatedUser = Depends(get_current_user_with_line_id),
 ) -> DiaryVector:
     """日記のベクトルを登録・既に存在する場合は更新する（認証必須）"""
     # 認証されたユーザーのLINE IDを使用
     user_id = current_user.line_user_id
-    register_date = date(register_diary.year, register_diary.month, register_diary.day)
+    register_date = date(year, month, day)
     vector = set_diary_vector(user_id, register_date)
     diary_vector = DiaryVector(**vector)
     return diary_vector

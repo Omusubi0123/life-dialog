@@ -32,10 +32,10 @@ const TokenLink: React.FC = () => {
       return;
     }
 
-    // 認証済みの場合は自動的に紐付けを実行
-    if (isAuthenticated && token && !success) {
-      handleTokenLink();
-    }
+      // 認証済みの場合は自動的に紐付けを実行
+  if (isAuthenticated && token && !success && !linkLoading) {
+    handleTokenLink();
+  }
   }, [isAuthenticated, isLoading, token, navigate, success]);
 
   const handleTokenLink = async () => {
@@ -78,10 +78,15 @@ const TokenLink: React.FC = () => {
     } catch (err) {
       console.error('アカウント紐付けに失敗:', err);
       if (axios.isAxiosError(err)) {
+        console.error('Response status:', err.response?.status);
+        console.error('Response data:', err.response?.data);
+        console.error('Request config:', err.config);
+        
         const message = err.response?.data?.detail || 'アカウントの紐付けに失敗しました';
-        setError(message);
+        setError(`エラー詳細: ${message} (ステータス: ${err.response?.status || 'unknown'})`);
       } else {
-        setError('予期しないエラーが発生しました');
+        console.error('Unexpected error:', err);
+        setError(`予期しないエラーが発生しました: ${err instanceof Error ? err.message : 'Unknown error'}`);
       }
     } finally {
       setLinkLoading(false);
@@ -174,12 +179,15 @@ const TokenLink: React.FC = () => {
             </div>
             <h3 className="text-lg font-medium text-gray-900 text-center mb-2">アカウント紐付け中</h3>
             <p className="text-sm text-gray-600 text-center">
-              GoogleアカウントとLINEアカウントを紐付けています...
+              GoogleアカウントとLINEアカウントを自動的に紐付けています...
             </p>
             {user && (
               <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                 <p className="text-xs text-gray-600 text-center">
-                  紐付け先: {user.name} ({user.email})
+                  🔗 紐付け中: {user.name} ({user.email})
+                </p>
+                <p className="text-xs text-gray-500 text-center mt-1">
+                  ↕️ LINE アカウント
                 </p>
               </div>
             )}

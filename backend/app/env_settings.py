@@ -22,8 +22,8 @@ class EnvSettings(BaseSettings):
     google_redirect_uri: str
 
     jwt_secret_key: str
-    jwt_algorithm: str          # ex. "HS256"
-    jwt_expire_minutes: int     # ex. 60 * 24 * 7  # 1週間
+    jwt_algorithm: str  # ex. "HS256"
+    jwt_expire_minutes: int  # ex. 60 * 24 * 7  # 1週間
 
     model_config = {"env_file": ".env"}
 

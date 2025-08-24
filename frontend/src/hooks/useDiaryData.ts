@@ -16,10 +16,10 @@ export const useDiaryData = (selectedDate: Date) => {
     try {
       setItems(null);
       setLoading(true);
-      const response = await axios.post<DiaryResponse>(
+      const response = await axios.get<DiaryResponse>(
         `${import.meta.env.VITE_BACKEND_URL}/diary/fetch_diary`,
-        { year, month: month + 1, day },
         {
+          params: { year, month: month + 1, day },
           headers: {
             Authorization: `Bearer ${token}`,
           },

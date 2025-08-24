@@ -56,11 +56,13 @@ class AuthStatusResponse(BaseModel):
 
 class TokenLinkRequest(BaseModel):
     """トークンベース紐付けリクエスト"""
+
     token: str
 
 
 class TokenLinkResponse(BaseModel):
     """トークンベース紐付けレスポンス"""
+
     success: bool
     access_token: str
     message: str

@@ -10,9 +10,9 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
-from app.env_settings import env
 from app.db.repositories.auth import GoogleUserRepository, UserGoogleLinkRepository
 from app.db.session import session_scope
+from app.env_settings import env
 
 
 class TokenData(BaseModel):
@@ -40,9 +40,7 @@ def create_access_token(data: dict) -> str:
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=env.jwt_expire_minutes)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(
-        to_encode, env.jwt_secret_key, algorithm=env.jwt_algorithm
-    )
+    encoded_jwt = jwt.encode(to_encode, env.jwt_secret_key, algorithm=env.jwt_algorithm)
     return encoded_jwt
 
 

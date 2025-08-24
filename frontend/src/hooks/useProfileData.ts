@@ -20,9 +20,8 @@ export const useProfileData = () => {
     if (!token) return;
 
     try {
-      const response = await axios.post<ProfileResponse>(
+      const response = await axios.get<ProfileResponse>(
         `${import.meta.env.VITE_BACKEND_URL}/user/fetch_profile`,
-        {}, // user_id は不要（認証トークンから取得）
         {
           headers: {
             Authorization: `Bearer ${token}`,

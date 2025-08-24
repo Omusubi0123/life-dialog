@@ -9,9 +9,8 @@ from app.utils.auth import AuthenticatedUser, get_current_user_with_line_id
 user_router = APIRouter()
 
 
-@user_router.post("/user/fetch_profile", response_model=UserProfile)
+@user_router.get("/user/fetch_profile", response_model=UserProfile)
 def fetch_profile(
-    fetch_diary: FetchProfile,
     current_user: AuthenticatedUser = Depends(get_current_user_with_line_id),
 ) -> UserProfile:
     """ユーザープロフィールを取得する（認証必須）"""

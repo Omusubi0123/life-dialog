@@ -1,4 +1,5 @@
 from linebot import LineBotApi
+from linebot.models import TextSendMessage
 
 from app.alg.rag import rag_answer
 from app.db.repositories.diary import DiaryRepository, MessageRepository
@@ -18,33 +19,31 @@ from app.utils.save_media import save_media
 line_bot_api = LineBotApi(env.channel_access_token)
 
 
-def handle_web_auth_request(event, user_id: str):
-    """Web認証用のリンクトークンを生成してユーザーに送信"""
-    from linebot.models import TextSendMessage
-    
+def handle_web_auth_request(user_id: str):
+    """Web認証用のリンクトークンを生成して、認証URLとメッセージを返す"""
+
     with session_scope() as session:
         # 新しいリンクトークンを作成
         link_token = LinkToken.create_token(user_id, expires_minutes=30)
         session.add(link_token)
         session.commit()
-        
+
         # Web認証用URLを生成
         auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}"
-        
+
         message = f"""🔐 Web認証設定
 
-以下のリンクをクリックして、Googleアカウントで認証してください。
-認証後、Webブラウザから日記を閲覧できるようになります。
+以下のリンクをクリックして、Googleアカウントでログインしてください。
+認証が完了すると、自動的にLINEアカウントと紐付けられます。
 
 {auth_url}
 
-⚠️ このリンクは30分で有効期限が切れます。
-⚠️ セキュリティのため、必ずご本人がアクセスしてください。"""
+これで、Webブラウザから日記を閲覧できるようになります✨
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=message)
-        )
+⚠️ このリンクは30分で有効期限が切れます
+⚠️ 必ずご本人がアクセスしてください"""
+
+        return message
 
 
 def handle_text_message(event):
@@ -72,7 +71,7 @@ def handle_text_message(event):
 
         answer, summary, feedback = "", "", ""
         date_list, user_id_list = [], []
-        
+
         if text not in QuickReplyField.get_values():
             if user_status == QuickReplyField.diary_mode.value:
                 # 日記モードの場合はテキストをDBに保存
@@ -97,8 +96,8 @@ def handle_text_message(event):
             _, summary, feedback = set_diary_summary(user_id, diary_id)
         elif text == QuickReplyField.web_auth.value:
             # Web認証設定の処理
-            handle_web_auth_request(event, user_id)
-            return
+            auth_message = handle_web_auth_request(user_id)
+            line_bot_api.push_message(user_id, TextSendMessage(text=auth_message))
 
         session.commit()
 
