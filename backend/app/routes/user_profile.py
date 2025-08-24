@@ -2,8 +2,8 @@ from fastapi import APIRouter
 
 from app.db.repositories.analysis import AnalysisRepository
 from app.db.repositories.user import UserRepository
+from app.db.session import session_scope
 from app.schemas.user_schema import FetchProfile, UserProfile
-from app.utils.session_scope import get_session
 
 user_router = APIRouter()
 
@@ -11,7 +11,7 @@ user_router = APIRouter()
 @user_router.post("/user/fetch_profile", response_model=UserProfile)
 def fetch_profile(fetch_diary: FetchProfile) -> UserProfile:
     """ユーザープロフィールを取得する"""
-    with get_session() as session:
+    with session_scope() as session:
         user_repo = UserRepository(session)
         analysis_repo = AnalysisRepository(session)
 

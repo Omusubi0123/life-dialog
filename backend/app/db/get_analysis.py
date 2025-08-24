@@ -1,5 +1,5 @@
-from app.db.model import Analysis
-from app.utils.session_scope import get_session
+from app.db.session import session_scope
+from app.models.analysis import Analysis
 
 
 def get_user_analysis(user_id: str) -> dict:
@@ -11,6 +11,6 @@ def get_user_analysis(user_id: str) -> dict:
     Returns:
         User: ユーザーのプロフィール
     """
-    with get_session() as session:
+    with session_scope() as session:
         analysis = session.query(Analysis).filter(Analysis.user_id == user_id).first()
         return analysis.to_dict() if analysis else None

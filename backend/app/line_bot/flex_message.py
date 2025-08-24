@@ -4,9 +4,9 @@ from datetime import date
 from linebot.models import FlexSendMessage
 
 from app.db.repositories.diary import DiaryRepository, MessageRepository
+from app.db.session import session_scope
 from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
-from app.utils.session_scope import get_session
 
 
 def get_diary_random_image(user_id: str, date: date) -> str | None:
@@ -19,7 +19,7 @@ def get_diary_random_image(user_id: str, date: date) -> str | None:
     Returns:
         str | None: 画像URL
     """
-    with get_session() as session:
+    with session_scope() as session:
         message_repo = MessageRepository(session)
         messages = message_repo.get_by_user_and_date(user_id, date)
 
@@ -102,7 +102,7 @@ def create_flex_message(
         status == QuickReplyField.interactive_mode.value and date_list and user_id_list
     ):
         cards_data = []
-        with get_session() as session:
+        with session_scope() as session:
             diary_repo = DiaryRepository(session)
             for date, user_id in zip(date_list, user_id_list):
                 diary = diary_repo.get_by_user_and_date(user_id, date)

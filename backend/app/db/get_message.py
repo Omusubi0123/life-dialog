@@ -3,8 +3,8 @@ from datetime import date
 from sqlalchemy import select
 
 from app.db.get_diary import get_or_create_diary_id
-from app.db.model import Message
-from app.utils.session_scope import get_session
+from app.db.session import session_scope
+from app.models.diary import Message
 
 
 def get_date_message(user_id: str, date: date) -> list[dict]:
@@ -18,7 +18,7 @@ def get_date_message(user_id: str, date: date) -> list[dict]:
         list[Message]: 指定したユーザー・日付のメッセージ
     """
     diary_id = get_or_create_diary_id(user_id, date)
-    with get_session() as session:
+    with session_scope() as session:
         stmt = (
             select(Message)
             .where(Message.diary_id == diary_id)

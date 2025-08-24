@@ -3,6 +3,7 @@ from linebot import LineBotApi
 from app.alg.rag import rag_answer
 from app.db.repositories.diary import DiaryRepository, MessageRepository
 from app.db.repositories.user import UserRepository
+from app.db.session import session_scope
 from app.db.set_diary_summary import set_diary_summary
 from app.env_settings import env
 from app.line_bot.quick_reply import create_quick_reply
@@ -12,7 +13,6 @@ from app.utils.data_enum import QuickReplyField
 from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
 from app.utils.save_media import save_media
-from app.utils.session_scope import get_session
 
 line_bot_api = LineBotApi(env.channel_access_token)
 
@@ -30,7 +30,7 @@ def handle_text_message(event):
 
     user_status = get_current_status(user_id, event)
 
-    with get_session() as session:
+    with session_scope() as session:
         user_repo = UserRepository(session)
         diary_repo = DiaryRepository(session)
         message_repo = MessageRepository(session)
@@ -99,7 +99,7 @@ def handle_media_message(event):
     url = save_media(user_id, message_id, message_content, media_type)
 
     # メディアのURLをMessage DBに保存
-    with get_session() as session:
+    with session_scope() as session:
         diary_repo = DiaryRepository(session)
         message_repo = MessageRepository(session)
         user_repo = UserRepository(session)

@@ -3,9 +3,9 @@ from datetime import date
 from fastapi import APIRouter
 
 from app.db.repositories.diary import DiaryRepository, MessageRepository
+from app.db.session import session_scope
 from app.db.set_diary_vector import set_diary_vector
 from app.schemas.diary_schema import Diary, DiaryVector, FetchDiary, MessageItem
-from app.utils.session_scope import get_session
 
 diary_router = APIRouter()
 
@@ -15,7 +15,7 @@ def fetch_diary(fetch_diary: FetchDiary) -> Diary:
     """指定した日付のメッセージを時系列順に並び替えて返す"""
     view_date = date(fetch_diary.year, fetch_diary.month, fetch_diary.day)
 
-    with get_session() as session:
+    with session_scope() as session:
         message_repo = MessageRepository(session)
         diary_repo = DiaryRepository(session)
 

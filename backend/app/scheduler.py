@@ -6,20 +6,20 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from app.db.repositories.diary import DiaryRepository
 from app.db.repositories.user import UserRepository
+from app.db.session import session_scope
 from app.db.set_diary_summary import set_diary_summary
 from app.db.set_diary_vector import set_diary_vector
 from app.db.set_user_analysis import set_user_analysis
 from app.elastic.save_new_diary import save_diary_to_elasticsearch
 from app.elastic.sync_diary import sync_diary_to_elasticsearch
 from app.elastic.wait_for_es import wait_for_es
-from app.utils.session_scope import get_session
 
 scheduler = AsyncIOScheduler()
 
 
 def register_diary(user_id: str, date: date):
     """dateの日記が空でなければ日記のベクトルと要約を生成する"""
-    with get_session() as session:
+    with session_scope() as session:
         diary_repo = DiaryRepository(session)
         diary = diary_repo.get_by_user_and_date(user_id, date)
         if diary:
@@ -32,7 +32,7 @@ def register_diary(user_id: str, date: date):
 def scheduler_func():
     """全ユーザーの日記のベクトルと要約を生成する"""
     today = date.today()
-    with get_session() as session:
+    with session_scope() as session:
         user_repo = UserRepository(session)
         user_ids = [user.user_id for user in user_repo.get_all()]
         for user_id in user_ids:

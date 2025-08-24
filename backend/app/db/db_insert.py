@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy import update
 
-from app.db.model import Analysis, Diary, DiaryVector, Message, User
+from app.models import Analysis, Diary, DiaryVector, Message, User
 
 
 def add_user(
