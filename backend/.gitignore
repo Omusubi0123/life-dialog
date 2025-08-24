@@ -1,4 +1,5 @@
 __pycache__
+.DS_Store
 data
 files/
 postgres_data/
@@ -8,4 +9,3 @@ cloudflared/*
 .env
 .venv
 
-firebase_credential.json

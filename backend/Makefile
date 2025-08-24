@@ -1,24 +1,24 @@
 _isort_check:
-	poetry run isort --check ./
+	uv run isort --check ./
 
 _black_check:
-	poetry run black --check ./
+	uv run black --check ./
 
 _mypy:
-	poetry run mypy ./
+	uv run mypy ./
 
 lint:
 	make -j _isort_check _black_check _mypy
 
 _isort_apply:
-	poetry run isort ./app/
+	uv run isort ./app/
 
 _black_apply:
-	poetry run black ./app/
+	uv run black ./app/
 
 fmt:
 	make _isort_apply _black_apply
 
 test:
-	poetry run pytest
+	uv run pytest
 
