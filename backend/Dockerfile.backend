@@ -8,18 +8,22 @@ WORKDIR /backend
 RUN pip install --no-cache-dir pipx && \
     pipx install uv
 
+# pipxでインストールしたコマンドのパスを通す
+ENV PATH="/root/.local/bin:${PATH}"
+
 # pyproject.tomlとuv.lockをコピー
 # これにより、依存関係に変更がない場合はこのステップ以降をスキップできます
 COPY pyproject.toml uv.lock ./
 
 # uvを使って依存関係をインストール
-# --systemフラグは仮想環境を作成せず、システムサイトに直接インストールするようuvに指示します
-RUN uv sync --system
+RUN uv sync
 
 # アプリケーションコードと環境ファイルをコピー
 COPY ./app /backend/app
 COPY .env ./
+COPY alembic.ini ./
+COPY alembic ./alembic
 
 # GunicornとUvicornでアプリケーションを起動
 # UvicornWorkerは、UvicornをGunicornのワーカーとして実行します
-CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "app.main:app", "-b", "0.0.0.0:8080"]
+CMD ["uv", "run", "alembic", "upgrade", "head", "&&", "uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
