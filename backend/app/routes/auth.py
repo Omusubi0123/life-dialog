@@ -19,6 +19,8 @@ from app.schemas.auth_schema import (
     LinkLineUserRequest,
     LinkLineUserResponse,
     UserInfoResponse,
+    TokenLinkRequest,
+    TokenLinkResponse,
 )
 from app.utils.auth import AuthenticatedUser, create_access_token, get_current_user
 
@@ -32,9 +34,12 @@ def google_login():
     code_verifier = secrets.token_urlsafe(32)
 
     # Googleの認証URL作成
+    # フロントエンドのコールバックページを指定
+    frontend_callback_uri = f"{env.frontend_url}/auth/callback"
+    
     params = {
         "client_id": env.google_client_id,
-        "redirect_uri": env.google_redirect_uri,
+        "redirect_uri": frontend_callback_uri,
         "scope": "openid email profile",
         "response_type": "code",
         "access_type": "offline",
@@ -207,3 +212,65 @@ def get_auth_status(current_user: AuthenticatedUser = Depends(get_current_user))
         requires_line_link=requires_line_link,
         user_info=user_info,
     )
+
+
+@auth_router.post("/auth/link-with-token", response_model=TokenLinkResponse)
+async def link_with_token(
+    request: TokenLinkRequest,
+    current_user: AuthenticatedUser = Depends(get_current_user)
+):
+    """トークンを使用してLINE ユーザーとGoogleユーザーを紐付け"""
+    from app.models.link_token import LinkToken
+    
+    with session_scope() as session:
+        # トークンを検証
+        link_token = session.query(LinkToken).filter(LinkToken.token == request.token).first()
+        
+        if not link_token:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Invalid or expired token"
+            )
+        
+        if not link_token.is_valid():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Token has expired or already been used"
+            )
+        
+        # 既存の紐付けを確認
+        user_link_repo = UserGoogleLinkRepository(session)
+        existing_link = user_link_repo.get_by_line_user_id(link_token.line_user_id)
+        
+        if existing_link:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="This LINE user is already linked to another Google account"
+            )
+        
+        # Google ユーザーの既存紐付けを削除（あれば）
+        user_link_repo.delete_by_google_id(current_user.google_id)
+        
+        # 新しい紐付けを作成
+        user_link_repo.create(
+            line_user_id=link_token.line_user_id,
+            google_id=current_user.google_id
+        )
+        
+        # トークンを使用済みにマーク
+        link_token.mark_as_used()
+        session.commit()
+        
+        # 新しいJWTトークンを発行（LINE user_id付き）
+        token_payload = {
+            "sub": current_user.google_id,
+            "email": current_user.email,
+            "line_user_id": link_token.line_user_id
+        }
+        access_token = create_access_token(token_payload)
+        
+        return TokenLinkResponse(
+            success=True,
+            access_token=access_token,
+            message="Google account successfully linked to LINE account"
+        )

@@ -27,6 +27,8 @@ def create_reply_text(event, user_status: str, answer: str, feedback: str) -> st
         return "【人生と対話】\n何について話す？\n日記を探すこともできるよ♪\n対話のやり取りは保存されないから注意してね(^^♪"
     elif sent_text == QuickReplyField.view_diary.value:
         return feedback
+    elif sent_text == QuickReplyField.web_auth.value:
+        return "【Web認証設定】\nWebブラウザで日記を閲覧するための認証設定を行います。"
     elif user_status == QuickReplyField.interactive_mode.value:
         if sent_text:
             return answer
@@ -49,13 +51,16 @@ def create_quick_reply_buttons(status: str) -> list:
     images = []
     if status == QuickReplyField.diary_mode.value:
         quick_reply_items.append(QuickReplyField.interactive_mode.value)
+        quick_reply_items.append(QuickReplyField.web_auth.value)
         images.append(f"{env.nginx_file_url}/material/dialogue_blue.png")
-        images.append(f"{env.nginx_file_url}/material/book_blue.png")
+        images.append(f"{env.nginx_file_url}/material/book_green.png")  # Web認証用に緑色を使用
     elif status == QuickReplyField.interactive_mode.value:
         quick_reply_items.append(QuickReplyField.diary_mode.value)
+        quick_reply_items.append(QuickReplyField.web_auth.value)
         images.append(f"{env.nginx_file_url}/material/pen_blue.png")
-        images.append(f"{env.nginx_file_url}/material/book_blue.png")
+        images.append(f"{env.nginx_file_url}/material/book_green.png")  # Web認証用に緑色を使用
     quick_reply_items.append(QuickReplyField.view_diary.value)
+    images.append(f"{env.nginx_file_url}/material/book_blue.png")
 
     quick_reply_buttons = [
         QuickReplyButton(action=MessageAction(label=item, text=item), image_url=image)

@@ -8,6 +8,7 @@ class QuickReplyField(Enum):
     interactive_mode = "対話する"
     diary_mode = "記録する"
     day_choice = "日付選択"
+    web_auth = "Web認証"
 
     @classmethod
     def get_values(cls):

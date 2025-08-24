@@ -9,12 +9,42 @@ from app.env_settings import env
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
+from app.models.link_token import LinkToken
 from app.utils.data_enum import QuickReplyField
 from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
 from app.utils.save_media import save_media
 
 line_bot_api = LineBotApi(env.channel_access_token)
+
+
+def handle_web_auth_request(event, user_id: str):
+    """Web認証用のリンクトークンを生成してユーザーに送信"""
+    from linebot.models import TextSendMessage
+    
+    with session_scope() as session:
+        # 新しいリンクトークンを作成
+        link_token = LinkToken.create_token(user_id, expires_minutes=30)
+        session.add(link_token)
+        session.commit()
+        
+        # Web認証用URLを生成
+        auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}"
+        
+        message = f"""🔐 Web認証設定
+
+以下のリンクをクリックして、Googleアカウントで認証してください。
+認証後、Webブラウザから日記を閲覧できるようになります。
+
+{auth_url}
+
+⚠️ このリンクは30分で有効期限が切れます。
+⚠️ セキュリティのため、必ずご本人がアクセスしてください。"""
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=message)
+        )
 
 
 def handle_text_message(event):
@@ -42,6 +72,7 @@ def handle_text_message(event):
 
         answer, summary, feedback = "", "", ""
         date_list, user_id_list = [], []
+        
         if text not in QuickReplyField.get_values():
             if user_status == QuickReplyField.diary_mode.value:
                 # 日記モードの場合はテキストをDBに保存
@@ -64,6 +95,10 @@ def handle_text_message(event):
                 # )
         elif text == QuickReplyField.view_diary.value:
             _, summary, feedback = set_diary_summary(user_id, diary_id)
+        elif text == QuickReplyField.web_auth.value:
+            # Web認証設定の処理
+            handle_web_auth_request(event, user_id)
+            return
 
         session.commit()
 

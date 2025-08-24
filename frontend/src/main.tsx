@@ -7,6 +7,7 @@ import Profile from './pages/Profile.tsx';
 import Login from './pages/Login.tsx';
 import LinkLineUser from './pages/LinkLineUser.tsx';
 import AuthCallback from './pages/AuthCallback.tsx';
+import TokenLink from './pages/TokenLink.tsx';
 import ProtectedRoute from './components/ProtectedRoute.tsx';
 
 createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/link" element={<TokenLink />} />
         <Route path="/link-line-user" element={<LinkLineUser />} />
         <Route path="/" element={
           <ProtectedRoute>

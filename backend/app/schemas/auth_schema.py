@@ -52,3 +52,15 @@ class AuthStatusResponse(BaseModel):
     is_authenticated: bool
     requires_line_link: bool = False
     user_info: Optional[UserInfoResponse] = None
+
+
+class TokenLinkRequest(BaseModel):
+    """トークンベース紐付けリクエスト"""
+    token: str
+
+
+class TokenLinkResponse(BaseModel):
+    """トークンベース紐付けレスポンス"""
+    success: bool
+    access_token: str
+    message: str
