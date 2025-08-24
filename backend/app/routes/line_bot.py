@@ -10,13 +10,13 @@ from linebot.models import (
     VideoMessage,
 )
 
+from app.env_settings import env
 from app.handlers.follow_handlers import handle_follow_event
 from app.handlers.message_handlers import handle_media_message, handle_text_message
-from app.settings import settings
 
 line_bot_router = APIRouter()
 
-handler = WebhookHandler(settings.channel_secret)
+handler = WebhookHandler(env.channel_secret)
 
 
 @line_bot_router.post("/callback")

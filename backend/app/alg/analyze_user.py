@@ -54,4 +54,3 @@ def analyze_user_by_llm(
     strength = result_dict.get("strength", "")
     weakness = result_dict.get("weakness", "")
     return personality, strength, weakness
-

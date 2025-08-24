@@ -1,5 +1,5 @@
 from app.elasticsearch_settings import es
-from app.settings import settings
+from app.env_settings import env
 
 
 def save_diary_to_elasticsearch(diary: dict):
@@ -17,7 +17,7 @@ def save_diary_to_elasticsearch(diary: dict):
     ), "Invalid diary format for Elasticsearch"
 
     es.index(
-        index=settings.elasticsearch_index,
+        index=env.elasticsearch_index,
         id=diary["diary_id"],
         body={
             "user_id": diary["user_id"],

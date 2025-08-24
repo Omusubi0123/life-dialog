@@ -1,9 +1,9 @@
 from openai import OpenAI
 
-from app.settings import settings
+from app.env_settings import env
 from app.utils.modelname import ModelNames
 
-client = OpenAI(api_key=settings.openai_api_key)
+client = OpenAI(api_key=env.openai_api_key)
 
 
 def openai_call(

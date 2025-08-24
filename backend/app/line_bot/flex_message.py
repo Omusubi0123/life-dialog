@@ -5,7 +5,7 @@ from linebot.models import FlexSendMessage
 
 from app.db.get_diary import get_date_diary
 from app.db.get_message import get_date_message
-from app.settings import settings
+from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
 
 
@@ -56,9 +56,11 @@ def create_flex_message(
                         "type": "bubble",
                         "hero": {
                             "type": "image",
-                            "url": thumbnail_image_url
-                            if thumbnail_image_url
-                            else f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
+                            "url": (
+                                thumbnail_image_url
+                                if thumbnail_image_url
+                                else f"{env.nginx_file_url}/material/default_diary_thumbnail.jpg"
+                            ),
                             "size": "full",
                             "aspectRatio": "20:13",
                             "aspectMode": "cover",
@@ -90,7 +92,7 @@ def create_flex_message(
                                     "action": {
                                         "type": "uri",
                                         "label": "この日記を見る",
-                                        "uri": f"{settings.frontend_url}?user_id={event.source.user_id}",
+                                        "uri": f"{env.frontend_url}?user_id={event.source.user_id}",
                                     },
                                 }
                             ],
@@ -122,7 +124,7 @@ def create_flex_message(
                 "hero": {
                     "type": "image",
                     "url": card["thumbnail_image_url"]
-                    or f"{settings.nginx_file_url}/material/default_diary_thumbnail.jpg",
+                    or f"{env.nginx_file_url}/material/default_diary_thumbnail.jpg",
                     "size": "full",
                     "aspectRatio": "20:13",
                     "aspectMode": "cover",
@@ -154,7 +156,7 @@ def create_flex_message(
                             "action": {
                                 "type": "uri",
                                 "label": "この日記を見る",
-                                "uri": f"{settings.frontend_url}?date={card['date']}&user_id={event.source.user_id}&",
+                                "uri": f"{env.frontend_url}?date={card['date']}&user_id={event.source.user_id}&",
                             },
                         }
                     ],

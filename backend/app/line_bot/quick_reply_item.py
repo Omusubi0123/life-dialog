@@ -1,6 +1,6 @@
 from linebot.models import MessageAction, QuickReplyButton, TextMessage
 
-from app.settings import settings
+from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
 
 
@@ -49,12 +49,12 @@ def create_quick_reply_buttons(status: str) -> list:
     images = []
     if status == QuickReplyField.diary_mode.value:
         quick_reply_items.append(QuickReplyField.interactive_mode.value)
-        images.append(f"{settings.nginx_file_url}/material/dialogue_blue.png")
-        images.append(f"{settings.nginx_file_url}/material/book_blue.png")
+        images.append(f"{env.nginx_file_url}/material/dialogue_blue.png")
+        images.append(f"{env.nginx_file_url}/material/book_blue.png")
     elif status == QuickReplyField.interactive_mode.value:
         quick_reply_items.append(QuickReplyField.diary_mode.value)
-        images.append(f"{settings.nginx_file_url}/material/pen_blue.png")
-        images.append(f"{settings.nginx_file_url}/material/book_blue.png")
+        images.append(f"{env.nginx_file_url}/material/pen_blue.png")
+        images.append(f"{env.nginx_file_url}/material/book_blue.png")
     quick_reply_items.append(QuickReplyField.view_diary.value)
 
     quick_reply_buttons = [

@@ -1,5 +1,5 @@
 from linebot import LineBotApi
 
-from app.settings import settings
+from app.env_settings import env
 
-line_bot_api = LineBotApi(settings.channel_access_token)
+line_bot_api = LineBotApi(env.channel_access_token)
