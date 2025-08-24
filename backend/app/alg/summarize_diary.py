@@ -4,7 +4,8 @@ from datetime import date
 from app.alg.format_diary_for_llm import format_messages_to_llm_input
 from app.alg.prompt.summarize_diary_prompt import SUMMARIZE_DIARY_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_message import get_date_message
+from app.db.repositories.diary import MessageRepository
+from app.db.session import session_scope
 from app.utils.data_enum import DiaryField
 from app.utils.llm_response import openai_call
 
@@ -21,8 +22,20 @@ def summarize_diary_by_llm(
     Returns:
         LLMによる日記の要約
     """
-    messages = get_date_message(user_id, date)
-    diary_str = format_messages_to_llm_input(messages, date)
+    with session_scope() as session:
+        message_repo = MessageRepository(session)
+        messages = message_repo.get_by_user_and_date(user_id, date)
+
+        # メッセージを辞書形式に変換してformat_messages_to_llm_inputに渡す
+        messages_dict = [
+            {
+                "media_type": msg.media_type,
+                "content": msg.content,
+                "sent_at": msg.sent_at,
+            }
+            for msg in messages
+        ]
+        diary_str = format_messages_to_llm_input(messages_dict, date)
 
     result = openai_call(
         system_prompt,

@@ -6,8 +6,8 @@ from app.alg.format_diary_for_llm import (
 )
 from app.alg.prompt.analyze_user_prompt import ANALYZE_USER_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT_JSON
-from app.db.get_diary import get_user_all_diary
-from app.db.get_message import get_date_message
+from app.db.repositories.diary import DiaryRepository, MessageRepository
+from app.db.session import session_scope
 from app.utils.count_token import count_tokens
 from app.utils.llm_response import openai_call
 
@@ -23,23 +23,35 @@ def analyze_user_by_llm(
     Returns:
         LLMによるユーザーの性格・強み・弱み
     """
-    diary_list = get_user_all_diary(user_id)
-    messages_list = [get_date_message(user_id, diary["date"]) for diary in diary_list]
-    print(f"Total diaries: {len(diary_list)}")
+    with session_scope() as session:
+        diary_repo = DiaryRepository(session)
+        message_repo = MessageRepository(session)
 
-    diaries_str = ""
-    # LLMのcontext lengthまで日記を追加。最新の日記から入れるために逆順で処理
-    for message, diary in reversed(list(zip(messages_list, diary_list))):
-        diary_str = format_llm_response_json_to_str(
-            diary.get("title"), diary.get("summary")
-        )
-        diary_str += format_messages_to_llm_input(message, diary["date"])
-        diary_str += "\n\n"
+        diary_list = diary_repo.get_user_diaries(user_id)
+        print(f"Total diaries: {len(diary_list)}")
 
-        if len(diaries_str + diary_str) > 120000:
-            break
-        diaries_str = diary_str + diaries_str
-        print(f"Current diary length: {count_tokens(diaries_str)} tokens")
+        diaries_str = ""
+        # LLMのcontext lengthまで日記を追加。最新の日記から入れるために逆順で処理
+        for diary in reversed(diary_list):
+            messages = message_repo.get_by_user_and_date(user_id, diary.date)
+
+            diary_str = format_llm_response_json_to_str(diary.title, diary.summary)
+            # メッセージを辞書形式に変換してformat_messages_to_llm_inputに渡す
+            messages_dict = [
+                {
+                    "media_type": msg.media_type,
+                    "content": msg.content,
+                    "sent_at": msg.sent_at,
+                }
+                for msg in messages
+            ]
+            diary_str += format_messages_to_llm_input(messages_dict, diary.date)
+            diary_str += "\n\n"
+
+            if len(diaries_str + diary_str) > 120000:
+                break
+            diaries_str = diary_str + diaries_str
+            print(f"Current diary length: {count_tokens(diaries_str)} tokens")
 
     result = openai_call(
         system_prompt,
