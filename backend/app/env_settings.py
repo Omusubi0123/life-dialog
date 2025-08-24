@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings
 
 
-class Settings(BaseSettings):
+class EnvSettings(BaseSettings):
     channel_id: str
     channel_secret: str
     channel_access_token: str
@@ -28,4 +28,4 @@ class Settings(BaseSettings):
     model_config = {"env_file": ".env"}
 
 
-settings = Settings()
+env = EnvSettings()

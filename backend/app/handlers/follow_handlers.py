@@ -1,11 +1,11 @@
 import requests
 
 from app.db.db_insert import add_user
-from app.settings import settings
+from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
 from app.utils.session_scope import get_session
 
-channel_access_token = settings.channel_access_token
+channel_access_token = env.channel_access_token
 
 
 def get_user_profile(user_id: str) -> dict | None:
@@ -18,7 +18,7 @@ def get_user_profile(user_id: str) -> dict | None:
         dict | None: ユーザーのプロフィール情報
     """
     url = f"https://api.line.me/v2/bot/profile/{user_id}"
-    headers = {"Authorization": f"Bearer {settings.channel_access_token}"}
+    headers = {"Authorization": f"Bearer {env.channel_access_token}"}
     response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
@@ -67,12 +67,14 @@ def handle_follow_event(event):
                 user_id=user_id,
                 name=user_profile["displayName"],
                 mode=QuickReplyField.diary_mode.value,
-                icon_url=user_profile["pictureUrl"]
-                if "pictureUrl" in user_profile
-                else "",
-                status_message=user_profile["statusMessage"]
-                if "statusMessage" in user_profile
-                else "",
+                icon_url=(
+                    user_profile["pictureUrl"] if "pictureUrl" in user_profile else ""
+                ),
+                status_message=(
+                    user_profile["statusMessage"]
+                    if "statusMessage" in user_profile
+                    else ""
+                ),
                 link_token=link_token,
             )
 

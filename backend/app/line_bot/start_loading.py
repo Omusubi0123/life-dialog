@@ -1,6 +1,6 @@
 import requests
 
-from app.settings import settings
+from app.env_settings import env
 
 
 def start_loading(chat_id, loading_seconds=5):
@@ -8,7 +8,7 @@ def start_loading(chat_id, loading_seconds=5):
     url = "https://api.line.me/v2/bot/chat/loading/start"
     headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {settings.channel_access_token}",
+        "Authorization": f"Bearer {env.channel_access_token}",
     }
     data = {"chatId": chat_id, "loadingSeconds": loading_seconds}
 

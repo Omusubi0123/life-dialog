@@ -1,6 +1,6 @@
 from elasticsearch import Elasticsearch
 
-from app.settings import settings
+from app.env_settings import env
 
-es_host = f"{settings.elasticsearch_url}:{settings.elasticsearch_port}"
+es_host = f"{env.elasticsearch_url}:{env.elasticsearch_port}"
 es = Elasticsearch(es_host)

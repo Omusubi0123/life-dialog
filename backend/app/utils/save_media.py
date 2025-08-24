@@ -1,6 +1,6 @@
 import os
 
-from app.settings import settings
+from app.env_settings import env
 from app.utils.media_enum import MediaExtension, MediaType
 
 
@@ -26,5 +26,5 @@ def save_media(user_id: str, message_id: str, message_content, media_type: str) 
         for chunk in message_content.iter_content():
             f.write(chunk)
 
-    fileurl = os.path.join(settings.nginx_file_url, user_id, media_type, filename)
+    fileurl = os.path.join(env.nginx_file_url, user_id, media_type, filename)
     return fileurl

@@ -1,6 +1,6 @@
 from app.alg.print_search_result import print_search_result
 from app.elastic.sync_diary import es
-from app.settings import settings
+from app.env_settings import env
 
 
 def elasticsearch_diary(
@@ -26,7 +26,7 @@ def elasticsearch_diary(
         "size": top_k,
     }
 
-    results = es.search(index=settings.elasticsearch_index, body=body)
+    results = es.search(index=env.elasticsearch_index, body=body)
 
     results = [
         {

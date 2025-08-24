@@ -1,6 +1,6 @@
 from app.db.model import DiaryVector
 from app.elasticsearch_settings import es
-from app.settings import settings
+from app.env_settings import env
 from app.utils.session_scope import get_session
 
 
@@ -9,7 +9,7 @@ def sync_diary_to_elasticsearch():
         diaries = session.query(DiaryVector).all()
         for diary in diaries:
             es.index(
-                index=settings.elasticsearch_index,
+                index=env.elasticsearch_index,
                 id=diary.diary_id,
                 body={
                     "user_id": diary.user_id,
