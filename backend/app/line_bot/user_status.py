@@ -1,5 +1,6 @@
-from app.db.manage_user_status import get_user_status
+from app.db.repositories.user import UserRepository
 from app.utils.data_enum import QuickReplyField
+from app.utils.session_scope import get_session
 
 
 def get_current_status(user_id, event):
@@ -9,4 +10,7 @@ def get_current_status(user_id, event):
     elif event.message.text == QuickReplyField.interactive_mode.value:
         return QuickReplyField.interactive_mode.value
     else:
-        return get_user_status(user_id)
+        with get_session() as session:
+            user_repo = UserRepository(session)
+            user = user_repo.get_by_id(user_id)
+            return user.mode if user else None

@@ -4,8 +4,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.db.config import engine
-from app.db.model import Base
 from app.routes.diary import diary_router
 from app.routes.line_bot import line_bot_router
 from app.routes.user_profile import user_router
@@ -15,7 +13,6 @@ from app.scheduler import start_scheduler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     try:
-        Base.metadata.create_all(bind=engine)
         start_scheduler()
         yield
     except SQLAlchemyError as e:

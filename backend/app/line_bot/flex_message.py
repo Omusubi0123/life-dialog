@@ -3,10 +3,10 @@ from datetime import date
 
 from linebot.models import FlexSendMessage
 
-from app.db.get_diary import get_date_diary
-from app.db.get_message import get_date_message
+from app.db.repositories.diary import DiaryRepository, MessageRepository
 from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
+from app.utils.session_scope import get_session
 
 
 def get_diary_random_image(user_id: str, date: date) -> str | None:
@@ -14,30 +14,27 @@ def get_diary_random_image(user_id: str, date: date) -> str | None:
 
     Args:
         user_id (str): LINEユーザーID
-        year (int): 日記の年
-        month (int): 日記の月
-        day (int): 日記の日
+        date (date): 日記の日付
 
     Returns:
         str | None: 画像URL
     """
-    """"""
-    messages = get_date_message(user_id, date)
+    with get_session() as session:
+        message_repo = MessageRepository(session)
+        messages = message_repo.get_by_user_and_date(user_id, date)
 
-    if any([message["media_type"] == "image" for message in messages]):
-        # 'mediatype'が'image'のものだけを抽出
-        image_files = [
-            message["content"]
-            for message in messages
-            if message["media_type"] == "image"
-        ]
+        if any([message.media_type == "image" for message in messages]):
+            # 'mediatype'が'image'のものだけを抽出
+            image_files = [
+                message.content for message in messages if message.media_type == "image"
+            ]
 
-        if image_files:
-            return random.choice(image_files)
+            if image_files:
+                return random.choice(image_files)
+            else:
+                return None
         else:
             return None
-    else:
-        return None
 
 
 def create_flex_message(
@@ -105,17 +102,21 @@ def create_flex_message(
         status == QuickReplyField.interactive_mode.value and date_list and user_id_list
     ):
         cards_data = []
-        for date, user_id in zip(date_list, user_id_list):
-            diary = get_date_diary(user_id, date)
+        with get_session() as session:
+            diary_repo = DiaryRepository(session)
+            for date, user_id in zip(date_list, user_id_list):
+                diary = diary_repo.get_by_user_and_date(user_id, date)
 
-            if diary and diary["summary"]:
-                cards_data.append(
-                    {
-                        "date": diary["date"].strftime("%Y%m%d"),
-                        "summary": diary["summary"],
-                        "thumbnail_image_url": get_diary_random_image(user_id, date),
-                    },
-                )
+                if diary and diary.summary:
+                    cards_data.append(
+                        {
+                            "date": diary.date.strftime("%Y%m%d"),
+                            "summary": diary.summary,
+                            "thumbnail_image_url": get_diary_random_image(
+                                user_id, date
+                            ),
+                        },
+                    )
 
         bubbles = []
         for card in cards_data:
