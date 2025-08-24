@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 import parseDateString from '../utils/parseDateString';
 import { ProfileData, ProfileResponse } from '../types/profile';
 
-export const useProfileData = (userId: string | null) => {
+export const useProfileData = () => {
   const [profile, setProfile] = useState<ProfileData>({
     name: null,
     iconUrl: null,
@@ -14,11 +15,19 @@ export const useProfileData = (userId: string | null) => {
     updatedAt: null,
   });
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async () => {
+    const token = Cookies.get('access_token');
+    if (!token) return;
+
     try {
       const response = await axios.post<ProfileResponse>(
         `${import.meta.env.VITE_BACKEND_URL}/user/fetch_profile`,
-        { user_id: userId }
+        {}, // user_id は不要（認証トークンから取得）
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
       setProfile({
         name: response.data.name,
@@ -27,18 +36,21 @@ export const useProfileData = (userId: string | null) => {
         strength: response.data.strength,
         weakness: response.data.weakness,
         createdAt: parseDateString(response.data.created_at),
-        updatedAt: parseDateString(new Date().toISOString()), // updated_at がサーバーから返されない場合を考慮
+        updatedAt: parseDateString(new Date().toISOString()),
       });
     } catch (err) {
       console.error('Failed to fetch profile:', err);
+      // 401エラーの場合はログイン画面にリダイレクト
+      if (axios.isAxiosError(err) && err.response?.status === 401) {
+        Cookies.remove('access_token');
+        window.location.href = '/login';
+      }
     }
   };
 
   useEffect(() => {
-    if (userId) {
-      fetchProfile(userId);
-    }
-  }, [userId]);
+    fetchProfile();
+  }, []);
 
   return { profile };
 };
