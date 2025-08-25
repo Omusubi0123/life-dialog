@@ -19,7 +19,6 @@ class EnvSettings(BaseSettings):
 
     google_client_id: str
     google_client_secret: str
-    google_redirect_uri: str
 
     jwt_secret_key: str
     jwt_algorithm: str  # ex. "HS256"
