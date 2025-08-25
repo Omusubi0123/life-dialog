@@ -27,13 +27,16 @@ AUTH_MESSAGE = """🔐 Web認証設定
 
 {auth_url}
 
-📱 **重要**: このリンクはSafariやChromeなどの**外部ブラウザ**で開いてください
+📱 [重要]: このリンクはSafariやChromeなどの外部ブラウザで開いてください
 LINEアプリ内では認証できません。右上の「...」→「他のアプリで開く」を選択してください。
 
 これで、Webブラウザから日記を閲覧できるようになります✨
 
 ⚠️ このリンクは30分で有効期限が切れます
 ⚠️ 必ずご本人がアクセスしてください
+
+LINEユーザーID（必要な場合）
+{user_id}
 """
 
 
@@ -51,6 +54,7 @@ def handle_web_auth_request(user_id: str):
 
         message = AUTH_MESSAGE.format(
             auth_url=auth_url,
+            user_id=user_id,
         )
 
         return message
