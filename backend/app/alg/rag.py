@@ -1,3 +1,5 @@
+from datetime import date
+
 from app.alg.hybrid_search import hybrid_search
 from app.alg.prompt.rag_prompt import RAG_PROMPT
 from app.alg.prompt.system_prompt import SYSTEM_PROMPT
@@ -5,7 +7,21 @@ from app.utils.llm_response import openai_call
 
 
 def format_related_diaries(diaries: list[dict]) -> str:
-    diaries.sort(key=lambda x: x["date"])
+    def get_date_for_sorting(diary_date):
+        """日付を比較可能な形式に変換する"""
+        if isinstance(diary_date, date):
+            return diary_date
+        elif isinstance(diary_date, str):
+            # 文字列の場合はdateオブジェクトに変換
+            from datetime import datetime
+            return datetime.strptime(diary_date, "%Y-%m-%d").date()
+        else:
+            # その他の場合は文字列として扱う
+            return str(diary_date)
+    
+    # 日付でソート（混在した型を適切に処理）
+    diaries.sort(key=lambda x: get_date_for_sorting(x["date"]))
+    
     formatted_diaries = "\n".join(
         f"Date: {diary['date']}\nContent: {diary['diary_content']}\n"
         for diary in diaries
@@ -34,6 +50,10 @@ def rag_answer(
 
     date_list = [result["date"] for result in results]
     user_id_list = [result["user_id"] for result in results]
+    
+    # debug
+    for rank, date in enumerate(date_list):
+        print(f"rank: {rank}, date: {date}")
 
     answer = "\n".join(
         [

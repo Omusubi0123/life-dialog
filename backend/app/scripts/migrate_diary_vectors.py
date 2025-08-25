@@ -110,17 +110,4 @@ if __name__ == "__main__":
         check_missing_diary_vectors()
     else:
         # 実行モード：実際にベクトル生成を実行
-        print("DiaryVectorマイグレーションを開始します...")
-        print("事前チェックを実行しますか？ (y/n): ", end="")
-        
-        # 実際のプロダクション環境では入力を求めずに実行する場合は下記をコメントアウト
-        # choice = input().lower()
-        # if choice == 'y':
-        #     check_missing_diary_vectors()
-        #     print("\n実際のマイグレーションを実行しますか？ (y/n): ", end="")
-        #     choice = input().lower()
-        #     if choice != 'y':
-        #         print("マイグレーションをキャンセルしました。")
-        #         sys.exit(0)
-        
         migrate_diary_vectors()
