@@ -1,9 +1,9 @@
 import requests
 
-from app.db.db_insert import add_user
+from app.db.repositories.user import UserRepository
+from app.db.session import session_scope
 from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
-from app.utils.session_scope import get_session
 
 channel_access_token = env.channel_access_token
 
@@ -61,9 +61,9 @@ def handle_follow_event(event):
     user_profile = get_user_profile(user_id)
 
     if link_token and user_profile:
-        with get_session() as session:
-            add_user(
-                session,
+        with session_scope() as session:
+            user_repo = UserRepository(session)
+            user_repo.upsert(
                 user_id=user_id,
                 name=user_profile["displayName"],
                 mode=QuickReplyField.diary_mode.value,
@@ -77,5 +77,6 @@ def handle_follow_event(event):
                 ),
                 link_token=link_token,
             )
+            session.commit()
 
         print(f"Follow Event: user_id: {user_id}")

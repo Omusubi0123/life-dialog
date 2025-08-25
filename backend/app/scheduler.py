@@ -4,8 +4,9 @@ from datetime import date, datetime, timedelta
 import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from app.db.get_diary import get_date_diary
-from app.db.get_user import get_user_names
+from app.db.repositories.diary import DiaryRepository
+from app.db.repositories.user import UserRepository
+from app.db.session import session_scope
 from app.db.set_diary_summary import set_diary_summary
 from app.db.set_diary_vector import set_diary_vector
 from app.db.set_user_analysis import set_user_analysis
@@ -18,20 +19,24 @@ scheduler = AsyncIOScheduler()
 
 def register_diary(user_id: str, date: date):
     """dateの日記が空でなければ日記のベクトルと要約を生成する"""
-    diary = get_date_diary(user_id, date)
-    if diary:
-        set_diary_summary(user_id, diary["diary_id"])
-        new_diary = set_diary_vector(user_id, date)
-        save_diary_to_elasticsearch(new_diary)
-        set_user_analysis(user_id)
+    with session_scope() as session:
+        diary_repo = DiaryRepository(session)
+        diary = diary_repo.get_by_user_and_date(user_id, date)
+        if diary:
+            set_diary_summary(user_id, diary.diary_id)
+            new_diary = set_diary_vector(user_id, date)
+            save_diary_to_elasticsearch(new_diary)
+            set_user_analysis(user_id)
 
 
 def scheduler_func():
     """全ユーザーの日記のベクトルと要約を生成する"""
     today = date.today()
-    user_names = get_user_names()
-    for user_name in user_names:
-        register_diary(user_name, today)
+    with session_scope() as session:
+        user_repo = UserRepository(session)
+        user_ids = [user.user_id for user in user_repo.get_all()]
+        for user_id in user_ids:
+            register_diary(user_id, today)
 
 
 def get_jst_time_str(hour: int, minute: int) -> str:

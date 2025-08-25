@@ -1,11 +1,11 @@
-from app.db.model import DiaryVector
+from app.db.session import session_scope
 from app.elasticsearch_settings import es
 from app.env_settings import env
-from app.utils.session_scope import get_session
+from app.models.vector import DiaryVector
 
 
 def sync_diary_to_elasticsearch():
-    with get_session() as session:
+    with session_scope() as session:
         diaries = session.query(DiaryVector).all()
         for diary in diaries:
             es.index(
