@@ -81,6 +81,7 @@ def handle_text_message(event):
         diary_id = diary.diary_id
 
         answer, summary, feedback = "", "", ""
+        auth_message = ""
         date_list, user_id_list = [], []
 
         if text not in QuickReplyField.get_values():

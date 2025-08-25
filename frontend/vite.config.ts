@@ -9,4 +9,12 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
   },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+  },
+  preview: {
+    port: 4173,
+    host: true,
+  },
 })
