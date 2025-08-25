@@ -2,13 +2,25 @@
  * ログインページ
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 const Login: React.FC = () => {
   const { loginWithGoogle, isLoading, error } = useAuth();
+  const [isLineApp, setIsLineApp] = useState(false);
+
+  // LINEアプリ内ブラウザかどうかを検出
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const isLineInApp = userAgent.includes('Line') || userAgent.includes('LINE');
+    setIsLineApp(isLineInApp);
+  }, []);
 
   const handleGoogleLogin = () => {
+    if (isLineApp) {
+      alert('LINEアプリ内では認証できません。右上の「...」→「他のアプリで開く」を選択して、SafariやChromeで開いてください。');
+      return;
+    }
     loginWithGoogle();
   };
 
@@ -36,6 +48,23 @@ const Login: React.FC = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          {isLineApp && (
+            <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded relative">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  ⚠️
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm font-medium">LINEアプリ内ブラウザが検出されました</p>
+                  <p className="text-xs mt-1">
+                    Google認証を行うには、右上の「...」→「他のアプリで開く」を選択して、
+                    SafariやChromeで開いてください。
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           {error && (
             <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
               <span className="block sm:inline">{error}</span>
