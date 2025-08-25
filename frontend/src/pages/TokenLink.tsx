@@ -15,8 +15,16 @@ const TokenLink: React.FC = () => {
   const [linkLoading, setLinkLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isLineApp, setIsLineApp] = useState(false);
 
   const token = searchParams.get('token');
+
+  // LINEアプリ内ブラウザかどうかを検出
+  useEffect(() => {
+    const userAgent = navigator.userAgent;
+    const isLineInApp = userAgent.includes('Line') || userAgent.includes('LINE');
+    setIsLineApp(isLineInApp);
+  }, []);
 
   useEffect(() => {
     if (!token) {
@@ -139,6 +147,23 @@ const TokenLink: React.FC = () => {
       <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            {isLineApp && (
+              <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded relative">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    ⚠️
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium">LINEアプリ内ブラウザが検出されました</p>
+                    <p className="text-xs mt-1">
+                      Google認証を行うには、右上の「...」→「他のアプリで開く」を選択して、
+                      SafariやChromeで開いてください。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div className="flex items-center justify-center w-12 h-12 mx-auto bg-red-100 rounded-full mb-4">
               <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
