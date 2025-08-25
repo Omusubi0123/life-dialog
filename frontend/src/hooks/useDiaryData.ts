@@ -42,16 +42,7 @@ export const useDiaryData = (selectedDate: Date) => {
 
   // 初回ロード時の処理
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const dateParam = searchParams.get('date');
-    if (dateParam) {
-      const year = parseInt(dateParam.substring(0, 4), 10);
-      const month = parseInt(dateParam.substring(4, 6), 10) - 1;
-      const day = parseInt(dateParam.substring(6, 8), 10);
-      fetchDiary(year, month, day);
-    } else {
-      fetchDiary(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
-    }
+    fetchDiary(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
   }, []);
 
   // 日付変更時の処理
