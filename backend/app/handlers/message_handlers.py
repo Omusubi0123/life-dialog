@@ -108,7 +108,6 @@ def handle_text_message(event):
         elif text == QuickReplyField.web_auth.value:
             # Web認証設定の処理
             auth_message = handle_web_auth_request(user_id)
-            line_bot_api.push_message(user_id, TextSendMessage(text=auth_message))
 
         session.commit()
 
@@ -117,6 +116,7 @@ def handle_text_message(event):
         event,
         user_status,
         get_japan_date(),
+        auth_message,
         summary,
         feedback,
         answer,
