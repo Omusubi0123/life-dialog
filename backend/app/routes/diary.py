@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from app.db.repositories.diary import DiaryRepository, MessageRepository
 from app.db.session import session_scope
 from app.db.set_diary_vector import set_diary_vector
-from app.schemas.diary_schema import Diary, DiaryVector, FetchDiary, MessageItem
+from app.schemas.diary_schema import Diary, DiaryVector, MessageItem
 from app.utils.auth import AuthenticatedUser, get_current_user_with_line_id
 
 diary_router = APIRouter()
@@ -55,9 +55,9 @@ def fetch_diary(
                 items=items,
             )
             if view_diary:
-                diary.title = (view_diary.title,)
-                diary.summary = (view_diary.summary,)
-                diary.feedback = (view_diary.feedback,)
+                diary.title = view_diary.title
+                diary.summary = view_diary.summary
+                diary.feedback = view_diary.feedback
         return diary
 
 
