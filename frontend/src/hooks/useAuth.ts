@@ -27,8 +27,7 @@ export const useAuth = () => {
    * 認証状態を初期化
    */
   const initializeAuth = useCallback(async () => {
-    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
-
+    // トークンがない場合は即座に未認証状態に設定
     if (!checkAuthenticated()) {
       setAuthState({
         isAuthenticated: false,
@@ -39,6 +38,9 @@ export const useAuth = () => {
       });
       return;
     }
+
+    // トークンがある場合のみローディング状態に
+    setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
       const status = await getAuthStatus();

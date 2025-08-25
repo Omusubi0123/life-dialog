@@ -2,9 +2,11 @@
  * 認証が必要なルートのプロテクションコンポーネント
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { isAuthenticated as checkToken } from '../utils/authApi';
+import SkeletonLoader from './SkeletonLoader';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,24 +14,27 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading, requiresLineLink } = useAuth();
+  const [initialCheck, setInitialCheck] = useState(true);
 
-  // ローディング中は読み込み画面を表示
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-blue-100 rounded-full mb-4">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 text-center mb-2">認証確認中</h3>
-            <p className="text-sm text-gray-600 text-center">
-              認証状態を確認しています。しばらくお待ちください...
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+  // 初期トークンチェック
+  useEffect(() => {
+    if (!checkToken()) {
+      // トークンがない場合は即座にリダイレクト（ローディング表示なし）
+      setInitialCheck(false);
+    } else {
+      // トークンがある場合は認証確認
+      setInitialCheck(false);
+    }
+  }, []);
+
+  // トークンがない場合は即座にログインページへ
+  if (initialCheck && !checkToken()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // ローディング中はスケルトンローディング表示
+  if (isLoading && checkToken()) {
+    return <SkeletonLoader />;
   }
 
   // 認証されていない場合はログインページにリダイレクト
