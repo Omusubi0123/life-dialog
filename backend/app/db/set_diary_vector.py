@@ -24,7 +24,7 @@ def set_diary_vector(user_id: str, date: date) -> dict:
         messages = get_date_message(user_id, date)
 
         summary_str = format_llm_response_json_to_str(
-            diary.get("title"), diary.get("summary"), diary.get("feedback")
+            diary.get("title"), diary.get("summary")
         )
         diary_str = format_messages_to_llm_input(messages, date)
 
