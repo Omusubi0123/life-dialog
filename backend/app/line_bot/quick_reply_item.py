@@ -4,7 +4,9 @@ from app.env_settings import env
 from app.utils.data_enum import QuickReplyField
 
 
-def create_reply_text(event, user_status: str, answer: str, feedback: str) -> str:
+def create_reply_text(
+    event, user_status: str, answer: str, feedback: str, auth_message: str
+) -> str:
     """quick replyのボタンに対応したテキストを返す
 
     Args:
@@ -28,7 +30,7 @@ def create_reply_text(event, user_status: str, answer: str, feedback: str) -> st
     elif sent_text == QuickReplyField.view_diary.value:
         return feedback
     elif sent_text == QuickReplyField.web_auth.value:
-        return "【Web認証設定】\n日記を閲覧するためにGoogleアカウントで認証を行います。"
+        return auth_message
     elif user_status == QuickReplyField.interactive_mode.value:
         if sent_text:
             return answer

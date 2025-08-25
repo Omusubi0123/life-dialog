@@ -11,6 +11,7 @@ def create_quick_reply(
     event,
     user_status: str,
     date: date,
+    auth_message: str = "",
     summary: str = "",
     feedback: str = "",
     answer: str = "",
@@ -34,7 +35,7 @@ def create_quick_reply(
     Returns:
         list: 送信するメッセージ
     """
-    reply_text = create_reply_text(event, user_status, answer, feedback)
+    reply_text = create_reply_text(event, user_status, answer, feedback, auth_message)
     quick_reply_buttons = create_quick_reply_buttons(user_status)
     quick_reply_message = TextSendMessage(
         text=reply_text, quick_reply=QuickReply(items=quick_reply_buttons)

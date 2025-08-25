@@ -15,7 +15,7 @@ class EnvSettings(BaseSettings):
     elasticsearch_index: str
 
     nginx_file_url: str
-    frontend_url: str
+    frontend_url: str  # ex: http://localhost:5173 (最後に/を含めない)
 
     google_client_id: str
     google_client_secret: str
