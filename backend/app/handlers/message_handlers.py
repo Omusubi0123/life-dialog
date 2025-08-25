@@ -46,8 +46,8 @@ def handle_web_auth_request(user_id: str):
         session.add(link_token)
         session.commit()
 
-        # Web認証用URLを生成
-        auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}"
+        # Web認証用URLを生成 - より確実にトークンを渡すため複数の方法を使用
+        auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}#token={link_token.token}"
 
         message = AUTH_MESSAGE.format(
             auth_url=auth_url,

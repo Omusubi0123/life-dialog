@@ -17,7 +17,34 @@ const TokenLink: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [isLineApp, setIsLineApp] = useState(false);
 
-  const token = searchParams.get('token');
+  // トークンを複数のソースから取得（優先順位順）
+  const getTokenFromUrl = () => {
+    // 1. クエリパラメータを確認
+    const queryToken = searchParams.get('token');
+    if (queryToken) {
+      console.log('Token found in query params:', queryToken);
+      return queryToken;
+    }
+    
+    // 2. ハッシュフラグメントからも確認
+    const hash = window.location.hash;
+    const hashMatch = hash.match(/token=([^&]*)/);
+    if (hashMatch) {
+      console.log('Token found in hash fragment:', hashMatch[1]);
+      return hashMatch[1];
+    }
+    
+    // 3. セッションストレージから確認（フォールバック）
+    const sessionToken = sessionStorage.getItem('pending_link_token');
+    if (sessionToken) {
+      console.log('Token found in sessionStorage:', sessionToken);
+      return sessionToken;
+    }
+    
+    return null;
+  };
+  
+  const token = getTokenFromUrl();
 
   // LINEアプリ内ブラウザかどうかを検出
   useEffect(() => {
@@ -27,14 +54,17 @@ const TokenLink: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    console.log('TokenLink useEffect:', { token, isAuthenticated, isLoading });
+    
     if (!token) {
-      setError('無効なリンクです。トークンが見つかりません。');
+      setError('無効なリンクです。トークンが見つかりません。現在のURL: ' + window.location.href);
       return;
     }
 
     // 認証されていない場合はGoogleログインに誘導
     if (!isLoading && !isAuthenticated) {
       // トークンをセッションストレージに保存してログイン後に使用
+      console.log('Saving token to sessionStorage:', token);
       sessionStorage.setItem('pending_link_token', token);
       navigate('/login?redirect=token-link');
       return;
@@ -42,6 +72,7 @@ const TokenLink: React.FC = () => {
 
       // 認証済みの場合は自動的に紐付けを実行
   if (isAuthenticated && token && !success && !linkLoading) {
+    console.log('Starting token link process');
     handleTokenLink();
   }
   }, [isAuthenticated, isLoading, token, navigate, success]);

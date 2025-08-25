@@ -3,17 +3,24 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const Login: React.FC = () => {
   const { loginWithGoogle, isLoading, error } = useAuth();
   const [isLineApp, setIsLineApp] = useState(false);
+  const [searchParams] = useSearchParams();
 
   // LINEアプリ内ブラウザかどうかを検出
   useEffect(() => {
     const userAgent = navigator.userAgent;
     const isLineInApp = userAgent.includes('Line') || userAgent.includes('LINE');
     setIsLineApp(isLineInApp);
+    
+    // デバッグ：pending tokenの状態を確認
+    const pendingToken = sessionStorage.getItem('pending_link_token');
+    console.log('Login page - pending token:', pendingToken);
+    console.log('Login page - redirect param:', searchParams.get('redirect'));
   }, []);
 
   const handleGoogleLogin = () => {

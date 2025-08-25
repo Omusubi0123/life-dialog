@@ -35,6 +35,17 @@ const AuthCallback: React.FC = () => {
   // 認証処理後のリダイレクト
   useEffect(() => {
     if (!isLoading && !error) {
+      // セッションストレージからペンディングトークンを確認
+      const pendingToken = sessionStorage.getItem('pending_link_token');
+      console.log('AuthCallback: pendingToken found:', pendingToken);
+      
+      if (pendingToken) {
+        // トークンがある場合は、トークンリンクページに自動リダイレクト
+        sessionStorage.removeItem('pending_link_token');
+        navigate(`/auth/link?token=${pendingToken}`);
+        return;
+      }
+      
       if (requiresLineLink) {
         navigate('/link-line-user');
       } else {
