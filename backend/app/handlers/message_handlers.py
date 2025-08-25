@@ -19,6 +19,24 @@ from app.utils.save_media import save_media
 line_bot_api = LineBotApi(env.channel_access_token)
 
 
+AUTH_MESSAGE = """🔐 Web認証設定
+
+日記を閲覧するには、事前に認証を行う必要があります。
+以下のリンクをクリックして、Googleアカウントでログインしてください。
+認証が完了すると、自動的にLINEアカウントと紐付けられます。
+
+{auth_url}
+
+これで、Webブラウザから日記を閲覧できるようになります✨
+
+⚠️ このリンクは30分で有効期限が切れます
+⚠️ 必ずご本人がアクセスしてください
+
+あなたのLINEユーザーID（必要な場合）
+{user_id}
+"""
+
+
 def handle_web_auth_request(user_id: str):
     """Web認証用のリンクトークンを生成して、認証URLとメッセージを返す"""
 
@@ -31,17 +49,10 @@ def handle_web_auth_request(user_id: str):
         # Web認証用URLを生成
         auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}"
 
-        message = f"""🔐 Web認証設定
-
-以下のリンクをクリックして、Googleアカウントでログインしてください。
-認証が完了すると、自動的にLINEアカウントと紐付けられます。
-
-{auth_url}
-
-これで、Webブラウザから日記を閲覧できるようになります✨
-
-⚠️ このリンクは30分で有効期限が切れます
-⚠️ 必ずご本人がアクセスしてください"""
+        message = AUTH_MESSAGE.format(
+            auth_url=auth_url,
+            user_id=user_id,
+        )
 
         return message
 
