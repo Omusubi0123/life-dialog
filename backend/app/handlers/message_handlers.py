@@ -1,4 +1,5 @@
 from linebot import LineBotApi
+from linebot.models import TextSendMessage
 
 from app.alg.rag import rag_answer
 from app.db.repositories.diary import DiaryRepository, MessageRepository
@@ -9,12 +10,51 @@ from app.env_settings import env
 from app.line_bot.quick_reply import create_quick_reply
 from app.line_bot.start_loading import start_loading
 from app.line_bot.user_status import get_current_status
+from app.models.link_token import LinkToken
 from app.utils.data_enum import QuickReplyField
 from app.utils.get_japan_datetime import get_japan_date
 from app.utils.media_enum import MediaType
 from app.utils.save_media import save_media
 
 line_bot_api = LineBotApi(env.channel_access_token)
+
+
+AUTH_MESSAGE = """🔐 Web認証設定
+
+日記を閲覧するには、事前に認証を行う必要があります。
+以下のリンクをクリックして、Googleアカウントでログインしてください。
+認証が完了すると、自動的にLINEアカウントと紐付けられます。
+
+{auth_url}
+
+これで、Webブラウザから日記を閲覧できるようになります✨
+
+⚠️ このリンクは30分で有効期限が切れます
+⚠️ 必ずご本人がアクセスしてください
+
+あなたのLINEユーザーID（必要な場合）
+{user_id}
+"""
+
+
+def handle_web_auth_request(user_id: str):
+    """Web認証用のリンクトークンを生成して、認証URLとメッセージを返す"""
+
+    with session_scope() as session:
+        # 新しいリンクトークンを作成
+        link_token = LinkToken.create_token(user_id, expires_minutes=30)
+        session.add(link_token)
+        session.commit()
+
+        # Web認証用URLを生成
+        auth_url = f"{env.frontend_url}/auth/link?token={link_token.token}"
+
+        message = AUTH_MESSAGE.format(
+            auth_url=auth_url,
+            user_id=user_id,
+        )
+
+        return message
 
 
 def handle_text_message(event):
@@ -42,6 +82,7 @@ def handle_text_message(event):
 
         answer, summary, feedback = "", "", ""
         date_list, user_id_list = [], []
+
         if text not in QuickReplyField.get_values():
             if user_status == QuickReplyField.diary_mode.value:
                 # 日記モードの場合はテキストをDBに保存
@@ -64,6 +105,10 @@ def handle_text_message(event):
                 # )
         elif text == QuickReplyField.view_diary.value:
             _, summary, feedback = set_diary_summary(user_id, diary_id)
+        elif text == QuickReplyField.web_auth.value:
+            # Web認証設定の処理
+            auth_message = handle_web_auth_request(user_id)
+            line_bot_api.push_message(user_id, TextSendMessage(text=auth_message))
 
         session.commit()
 

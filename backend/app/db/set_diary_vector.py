@@ -33,7 +33,8 @@ def set_diary_vector(user_id: str, target_date: date) -> dict:
             return None
 
         summary_str = format_llm_response_json_to_str(
-            diary.title, diary.summary
+            diary.title,
+            diary.summary,
         )
         diary_str = format_messages_to_llm_input(
             [

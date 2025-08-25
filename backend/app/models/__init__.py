@@ -6,8 +6,10 @@ Alembicがautogenerate時に認識できるようにする
 """
 
 from .analysis import Analysis
+from .auth import GoogleUser, UserGoogleLink
 from .base import Base, BaseClass
 from .diary import Diary, Message
+from .link_token import LinkToken
 from .user import User
 from .vector import DiaryVector
 
@@ -20,4 +22,7 @@ __all__ = [
     "Diary",
     "Message",
     "DiaryVector",
+    "GoogleUser",
+    "UserGoogleLink",
+    "LinkToken",
 ]

@@ -1,9 +1,11 @@
-import { useRouting } from './useRouting';
 import { useProfileData } from './useProfileData';
 
 export const useProfile = () => {
-  const { userId, diaryLink, profileLink } = useRouting();
-  const { profile } = useProfileData(userId);
+  const { profile } = useProfileData();
+
+  // 認証済みユーザーのみアクセス可能なため、ルーティング関連は簡略化
+  const diaryLink = { pathname: '/', search: '' };
+  const profileLink = { pathname: '/profile', search: '' };
 
   return {
     profile,

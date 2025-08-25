@@ -89,7 +89,7 @@ def create_flex_message(
                                     "action": {
                                         "type": "uri",
                                         "label": "この日記を見る",
-                                        "uri": f"{env.frontend_url}?user_id={event.source.user_id}",
+                                        "uri": f"{env.frontend_url}",
                                     },
                                 }
                             ],
@@ -157,7 +157,7 @@ def create_flex_message(
                             "action": {
                                 "type": "uri",
                                 "label": "この日記を見る",
-                                "uri": f"{env.frontend_url}?date={card['date']}&user_id={event.source.user_id}&",
+                                "uri": f"{env.frontend_url}?date={card['date']}",
                             },
                         }
                     ],

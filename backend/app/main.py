@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import SQLAlchemyError
 
+from app.routes.auth import auth_router
 from app.routes.diary import diary_router
 from app.routes.line_bot import line_bot_router
 from app.routes.user_profile import user_router
@@ -22,6 +23,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.include_router(auth_router)
 app.include_router(diary_router)
 app.include_router(user_router)
 app.include_router(line_bot_router)
